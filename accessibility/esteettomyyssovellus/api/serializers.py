@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
+from . models import ArEntrance
 from rest_framework import serializers
-from . models import Form
+# from . models import Form
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -14,7 +15,13 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name']
 
 
-class FormSerializer(serializers.HyperlinkedModelSerializer):
+# class FormSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Form
+#         fields = ['form_id']
+
+
+class ArEntranceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Form
-        fields = ['form_id']
+        model = ArEntrance
+        fields = '__all__'

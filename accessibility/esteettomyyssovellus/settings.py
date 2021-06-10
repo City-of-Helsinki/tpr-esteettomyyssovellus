@@ -75,24 +75,35 @@ WSGI_APPLICATION = 'esteettomyyssovellus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# TODO: ADD CORRECT DATABASE HERE
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 
-#         'USER': 
-#         'PASSWORD':
-#         'HOST':
-#         'PORT':
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+# TODO: ADD CORRECT DATABASE HERE
+DATABASES = {
+    # 'auth_db': { 
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
+    # 'default': {}
+    'default': {
+    },
+    'auth_db': { 
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'ar_db': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'hki',
+        'USER': 'ar_dev',
+        'PASSWORD': 'ar_dev',
+        'HOST': '10.158.123.184',
+        'PORT': 5432
+    },
+}
 
 
 
@@ -144,3 +155,5 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+
+DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.Api',]
