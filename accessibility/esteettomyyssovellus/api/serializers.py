@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
-from . models import ArEntrance, ArForm, ArXQuestion
+from . models import *
 from rest_framework import serializers
 # from . models import Form
 
@@ -33,3 +33,9 @@ class ArXQuestionSerializer(serializers.ModelSerializer):
         model = ArXQuestion
         fields = '__all__'
 
+
+
+class ArXQuestionBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionBlock
+        fields = '__all__'

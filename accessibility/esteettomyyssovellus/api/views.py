@@ -41,6 +41,14 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     """
     API endpoint for forms.
     """
-    queryset = ArXQuestion.objects.all().filter(form_id = 0)
+    queryset = ArXQuestion.objects.all()
     serializer_class = ArXQuestionSerializer
+
+
+class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for forms.
+    """
+    queryset = ArXQuestionBlock.objects.all()
+    serializer_class = ArXQuestionBlockSerializer
     
