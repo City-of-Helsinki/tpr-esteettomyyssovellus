@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from . serializers import  ArEntranceSerializer, UserSerializer, GroupSerializer
-from . models import ArEntrance
+from . serializers import *
+from . models import ArEntrance, ArForm, ArXQuestion
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -24,8 +24,23 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class ArEntranceViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows ArEntrances to be viewed or edited.
     """
     queryset = ArEntrance.objects.all()
     serializer_class = ArEntranceSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+class ArFormViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for forms.
+    """
+    queryset = ArForm.objects.all()
+    serializer_class = ArFormSerializer
+
+class ArXQuestionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for forms.
+    """
+    queryset = ArXQuestion.objects.all().filter(form_id = 0)
+    serializer_class = ArXQuestionSerializer
+    
