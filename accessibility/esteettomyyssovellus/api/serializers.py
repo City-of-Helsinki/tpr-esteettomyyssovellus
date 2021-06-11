@@ -39,3 +39,9 @@ class ArXQuestionBlockSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionBlock
         fields = '__all__'
+
+
+class ArServicepointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArServicepoint
+        fields = '__all__'

@@ -52,3 +52,10 @@ class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionBlock.objects.all()
     serializer_class = ArXQuestionBlockSerializer
     
+
+class ArServicepointViewSet(viewsets.ModelViewSet):
+    """
+
+    """
+    queryset = ArServicepoint.objects.all()
+    serializer_class = ArServicepointSerializer
