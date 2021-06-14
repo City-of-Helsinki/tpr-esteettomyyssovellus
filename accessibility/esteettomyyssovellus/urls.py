@@ -25,6 +25,9 @@ router.register(r'ArForms', views.ArFormViewSet)
 router.register(r'ArXQuestions', views.ArXQuestionViewSet)
 router.register(r'ArXQuestionBlocks', views.ArXQuestionBlockViewSet)
 router.register(r'ArServicepoints', views.ArServicepointViewSet)
+router.register(r'ArSystems', views.ArSystemViewSet)
+router.register(r'ArSystemForms', views.ArSystemFormViewSet)
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

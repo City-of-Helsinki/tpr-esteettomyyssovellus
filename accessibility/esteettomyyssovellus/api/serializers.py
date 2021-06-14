@@ -45,3 +45,15 @@ class ArServicepointSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArServicepoint
         fields = '__all__'
+
+
+class ArSystemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArSystem
+        fields = '__all__'
+
+
+class ArSystemFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArSystemForm
+        fields = '__all__'

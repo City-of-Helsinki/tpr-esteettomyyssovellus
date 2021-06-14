@@ -62,3 +62,23 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     """
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
+
+class ArSystemViewSet(viewsets.ModelViewSet):
+    """
+
+    """
+    queryset = ArSystem.objects.all()
+    serializer_class = ArSystemSerializer
+
+    permission_classes = [permissions.IsAuthenticated]
+
+
+    
+class ArSystemFormViewSet(viewsets.ModelViewSet):
+    """
+
+    """
+    queryset = ArSystemForm.objects.all()
+    serializer_class = ArSystemFormSerializer
+    
+    permission_classes = [permissions.IsAuthenticated]
