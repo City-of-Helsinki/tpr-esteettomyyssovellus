@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'esteettomyyssovellus.api'
+    'esteettomyyssovellus.api',
+    'django_filters',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'esteettomyyssovellus.urls'
@@ -153,7 +156,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.Api',]
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+# For now. Change later for production
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:3000',
+)

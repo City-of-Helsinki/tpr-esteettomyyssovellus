@@ -44,6 +44,9 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestion.objects.all()
     serializer_class = ArXQuestionSerializer
 
+    # In order to filter form_id with URL type for example: 
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    filter_fields = ('form_id',)
 
 class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
     """
@@ -59,3 +62,23 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     """
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
+
+class ArSystemViewSet(viewsets.ModelViewSet):
+    """
+
+    """
+    queryset = ArSystem.objects.all()
+    serializer_class = ArSystemSerializer
+
+    permission_classes = [permissions.IsAuthenticated]
+
+
+    
+class ArSystemFormViewSet(viewsets.ModelViewSet):
+    """
+
+    """
+    queryset = ArSystemForm.objects.all()
+    serializer_class = ArSystemFormSerializer
+    
+    permission_classes = [permissions.IsAuthenticated]
