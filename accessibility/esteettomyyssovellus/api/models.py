@@ -8,6 +8,120 @@
 from django.db import models
 
 
+class ArBackendCopyableEntrance(models.Model):
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    copyable_entrance_id = models.BigIntegerField(blank=True, null=True)
+    copyable_servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_copyable_entrance'
+
+
+class ArBackendEntranceAnswer(models.Model):
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_id = models.BigIntegerField(blank=True, null=True)
+    question_choice_id = models.BigIntegerField(blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    comment_fi = models.CharField(max_length=500, blank=True, null=True)
+    comment_sv = models.CharField(max_length=500, blank=True, null=True)
+    comment_en = models.CharField(max_length=500, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_entrance_answer'
+
+
+class ArBackendEntrancePhoto(models.Model):
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_id = models.BigIntegerField(blank=True, null=True)
+    photo_number = models.BigIntegerField(blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_entrance_photo'
+
+
+class ArBackendForm(models.Model):
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    text = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    guide_title = models.CharField(max_length=200, blank=True, null=True)
+    guide_url = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_form'
+
+
+class ArBackendQuestion(models.Model):
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.IntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_id = models.IntegerField(blank=True, null=True)
+    question_code = models.CharField(max_length=20, blank=True, null=True)
+    text = models.CharField(max_length=2000, blank=True, null=True)
+    visible_if_question_choice = models.CharField(max_length=100, blank=True, null=True)
+    question_level = models.SmallIntegerField(blank=True, null=True)
+    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    yes_no_question = models.CharField(max_length=1, blank=True, null=True)
+    can_add_location = models.CharField(max_length=1, blank=True, null=True)
+    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
+    can_add_comment = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_question'
+
+
+class ArBackendQuestionBlock(models.Model):
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.IntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_block_code = models.CharField(max_length=1, blank=True, null=True)
+    text = models.CharField(max_length=1, blank=True, null=True)
+    visible_if_question_choice = models.TextField(blank=True, null=True)
+    question_block_order_text = models.CharField(max_length=99, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_question_block'
+
+
+class ArBackendQuestionChoice(models.Model):
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.IntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_id = models.IntegerField(blank=True, null=True)
+    question_choice_id = models.BigIntegerField(blank=True, null=True)
+    text = models.CharField(max_length=2000, blank=True, null=True)
+    choice_order_text = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_question_choice'
+
+
 class ArEntrance(models.Model):
     entrance_id = models.BigAutoField(primary_key=True)
     name_fi = models.CharField(max_length=500, blank=True, null=True)
@@ -87,6 +201,216 @@ class ArLanguage(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_language'
+
+
+class ArRest01AccessVariable(models.Model):
+    variable_id = models.IntegerField(blank=True, null=True)
+    variable_name = models.CharField(max_length=99, blank=True, null=True)
+    values_data = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_access_variable'
+
+
+class ArRest01AccessViewpoint(models.Model):
+    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    name_fi = models.TextField(blank=True, null=True)
+    name_sv = models.TextField(blank=True, null=True)
+    name_en = models.TextField(blank=True, null=True)
+    values_data = models.TextField(blank=True, null=True)
+    viewpoint_order = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_access_viewpoint'
+
+
+class ArRest01Entrance(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    is_main_entrance = models.CharField(max_length=1, blank=True, null=True)
+    name_fi = models.CharField(max_length=500, blank=True, null=True)
+    name_sv = models.CharField(max_length=500, blank=True, null=True)
+    name_en = models.CharField(max_length=500, blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    streetview_url = models.CharField(max_length=500, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.CharField(max_length=50, blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=50, blank=True, null=True)
+    sentences_created = models.DateTimeField(blank=True, null=True)
+    sentences_created_by = models.TextField(blank=True, null=True)
+    sentences_modified = models.DateTimeField(blank=True, null=True)
+    sentences_modified_by = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_entrance'
+
+
+class ArRest01EntranceAccessibility(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    variable_id = models.IntegerField(blank=True, null=True)
+    variable_name = models.CharField(max_length=99, blank=True, null=True)
+    value_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    rest_value = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_entrance_accessibility'
+
+
+class ArRest01Reportshortage(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    viewpoint_id = models.IntegerField(blank=True, null=True)
+    is_indoor_servicepoint = models.CharField(max_length=1, blank=True, null=True)
+    evaluation_zone = models.TextField(blank=True, null=True)
+    easy_to_fix = models.TextField(blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=True)
+    requirement_text = models.CharField(max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(max_length=1000, blank=True, null=True)
+    shortage_fi = models.CharField(max_length=1000, blank=True, null=True)
+    shortage_sv = models.CharField(max_length=1000, blank=True, null=True)
+    shortage_en = models.CharField(max_length=1000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_reportshortage'
+
+
+class ArRest01Reportsummary(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    is_accessible = models.TextField(blank=True, null=True)
+    shortage_count = models.BigIntegerField(blank=True, null=True)
+    shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
+    wheel_is_accessible = models.TextField(blank=True, null=True)
+    wheel_shortage_count = models.BigIntegerField(blank=True, null=True)
+    wheel_shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
+    wheel_shortage_count_outside = models.BigIntegerField(blank=True, null=True)
+    wheel_shortage_count_entrance = models.BigIntegerField(blank=True, null=True)
+    wheel_shortage_count_inside = models.BigIntegerField(blank=True, null=True)
+    visual_is_accessible = models.TextField(blank=True, null=True)
+    visual_shortage_count = models.BigIntegerField(blank=True, null=True)
+    visual_shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
+    visual_shortage_count_outside = models.BigIntegerField(blank=True, null=True)
+    visual_shortage_count_entrance = models.BigIntegerField(blank=True, null=True)
+    visual_shortage_count_inside = models.BigIntegerField(blank=True, null=True)
+    hearing_is_accessible = models.TextField(blank=True, null=True)
+    toilet_is_accessible = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_reportsummary'
+
+
+class ArRest01Requirement(models.Model):
+    requirement_id = models.IntegerField(blank=True, null=True)
+    requirement_text = models.TextField(blank=True, null=True)
+    is_indoor_requirement = models.TextField(blank=True, null=True)
+    evaluation_zone = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_requirement'
+
+
+class ArRest01Sentence(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    sentence_group_id = models.SmallIntegerField(blank=True, null=True)
+    sentence_group_fi = models.CharField(max_length=255, blank=True, null=True)
+    sentence_group_sv = models.CharField(max_length=255, blank=True, null=True)
+    sentence_group_en = models.CharField(max_length=255, blank=True, null=True)
+    sentence_id = models.IntegerField(blank=True, null=True)
+    sentence_order_text = models.TextField(blank=True, null=True)
+    sentence_fi = models.CharField(max_length=4000, blank=True, null=True)
+    sentence_sv = models.CharField(max_length=4000, blank=True, null=True)
+    sentence_en = models.CharField(max_length=4000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_sentence'
+
+
+class ArRest01Servicepoint(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
+    address_street_name = models.CharField(max_length=100, blank=True, null=True)
+    address_no = models.CharField(max_length=100, blank=True, null=True)
+    address_city = models.CharField(max_length=100, blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    accessibility_phone = models.CharField(max_length=250, blank=True, null=True)
+    accessibility_email = models.CharField(max_length=250, blank=True, null=True)
+    accessibility_www = models.CharField(max_length=250, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
+    created_by = models.CharField(max_length=50, blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
+    modified_by = models.CharField(max_length=50, blank=True, null=True)
+    entrances = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_servicepoint'
+
+
+class ArRest01ServicepointAccessibility(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    variable_id = models.IntegerField(blank=True, null=True)
+    variable_name = models.CharField(max_length=99, blank=True, null=True)
+    value_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    rest_value = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_servicepoint_accessibility'
+
+
+class ArRest01Shortage(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    viewpoint_id = models.IntegerField(blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=True)
+    shortage_fi = models.CharField(max_length=1000, blank=True, null=True)
+    shortage_sv = models.CharField(max_length=1000, blank=True, null=True)
+    shortage_en = models.CharField(max_length=1000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_shortage'
+
+
+class ArRest01Summary(models.Model):
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    viewpoint_id = models.IntegerField(blank=True, null=True)
+    is_accessible = models.TextField(blank=True, null=True)
+    shortage_count = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_rest01_summary'
 
 
 class ArServicepoint(models.Model):
@@ -574,6 +898,157 @@ class ArXStoredShortageHelper(models.Model):
         unique_together = (('servicepoint_id', 'viewpoint_id', 'requirement_id'),)
 
 
+class ArXViewAccessReqQuickReport(models.Model):
+    accessibility_case_id = models.IntegerField(blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=True)
+    subcondition_id = models.IntegerField(blank=True, null=True)
+    rest_variable_id = models.IntegerField(blank=True, null=True)
+    condition_type = models.CharField(max_length=1, blank=True, null=True)
+    rest_value = models.CharField(max_length=99, blank=True, null=True)
+    requirement_text = models.CharField(max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(max_length=255, blank=True, null=True)
+    effort_to_fix = models.CharField(max_length=10, blank=True, null=True)
+    shortcoming_fi = models.CharField(max_length=255, blank=True, null=True)
+    shortcoming_sv = models.CharField(max_length=255, blank=True, null=True)
+    shortcoming_en = models.CharField(max_length=255, blank=True, null=True)
+    evaluation_subject = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_access_req_quick_report'
+
+
+class ArXViewAccessibilityOut(models.Model):
+    question_id = models.IntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_code = models.TextField(blank=True, null=True)
+    question_order_text = models.TextField(blank=True, null=True)
+    question_level = models.SmallIntegerField(blank=True, null=True)
+    question_text = models.TextField(blank=True, null=True)
+    question_active = models.TextField(blank=True, null=True)
+    question_description = models.TextField(blank=True, null=True)
+    question_url = models.TextField(blank=True, null=True)
+    question_url_text = models.TextField(blank=True, null=True)
+    dep = models.TextField(blank=True, null=True)
+    choice01 = models.TextField(blank=True, null=True)
+    choice02 = models.TextField(blank=True, null=True)
+    choice03 = models.TextField(blank=True, null=True)
+    choice04 = models.TextField(blank=True, null=True)
+    choice05 = models.TextField(blank=True, null=True)
+    choice06 = models.TextField(blank=True, null=True)
+    choice07 = models.TextField(blank=True, null=True)
+    choice08 = models.TextField(blank=True, null=True)
+    choice09 = models.TextField(blank=True, null=True)
+    choice10 = models.TextField(blank=True, null=True)
+    choice11 = models.TextField(blank=True, null=True)
+    choice12 = models.TextField(blank=True, null=True)
+    choice13 = models.TextField(blank=True, null=True)
+    choice14 = models.TextField(blank=True, null=True)
+    choice15 = models.TextField(blank=True, null=True)
+    choice16 = models.TextField(blank=True, null=True)
+    choice17 = models.TextField(blank=True, null=True)
+    choice18 = models.TextField(blank=True, null=True)
+    choice19 = models.TextField(blank=True, null=True)
+    choice20 = models.TextField(blank=True, null=True)
+    choice21 = models.TextField(blank=True, null=True)
+    choice22 = models.TextField(blank=True, null=True)
+    choice23 = models.TextField(blank=True, null=True)
+    choice24 = models.TextField(blank=True, null=True)
+    choice25 = models.TextField(blank=True, null=True)
+    choice26 = models.TextField(blank=True, null=True)
+    choice27 = models.TextField(blank=True, null=True)
+    choice28 = models.TextField(blank=True, null=True)
+    choice29 = models.TextField(blank=True, null=True)
+    choice30 = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_accessibility_out'
+
+
+class ArXViewCopyableAccessiblty(models.Model):
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    other_servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    other_entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_copyable_accessiblty'
+
+
+class ArXViewCopyableAccessiblty2(models.Model):
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    other_servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    other_entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_copyable_accessiblty2'
+
+
+class ArXViewEntranceAnswer(models.Model):
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_id = models.FloatField(blank=True, null=True)
+    choice_id = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_entrance_answer'
+
+
+class ArXViewShortageHelper(models.Model):
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=True)
+    requirement_text = models.TextField(blank=True, null=True)
+    is_indoor_servicepoint = models.TextField(blank=True, null=True)
+    evaluation_subject = models.TextField(blank=True, null=True)
+    big_flag = models.TextField(blank=True, null=True)
+    ok_flag = models.TextField(blank=True, null=True)
+    explanation_why_not = models.TextField(blank=True, null=True)
+    shortage_fi = models.TextField(blank=True, null=True)
+    shortage_sv = models.TextField(blank=True, null=True)
+    shortage_en = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_shortage_helper'
+
+
+class ArXViewShortageHelperOld(models.Model):
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=True)
+    requirement_text = models.TextField(blank=True, null=True)
+    is_indoor_servicepoint = models.TextField(blank=True, null=True)
+    evaluation_subject = models.TextField(blank=True, null=True)
+    big_flag = models.TextField(blank=True, null=True)
+    ok_flag = models.TextField(blank=True, null=True)
+    explanation_why_not = models.TextField(blank=True, null=True)
+    shortage_fi = models.TextField(blank=True, null=True)
+    shortage_sv = models.TextField(blank=True, null=True)
+    shortage_en = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_x_view_shortage_helper_old'
+
+
+class DjangoMigrations(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    app = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    applied = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_migrations'
+
+
 class SysAddressPostoffice(models.Model):
     municipality_id = models.IntegerField()
     post_office = models.CharField(max_length=50, blank=True, null=True)
@@ -662,7 +1137,7 @@ class TpTempEstKokouslause(models.Model):
 
 
 class TpTempEstKysymyskaannos(models.Model):
-    kys_id = models.IntegerField(blank=True, null=True)
+    id = models.IntegerField(blank=True, null=False, primary_key=True)
     koodi = models.CharField(max_length=20, blank=True, null=True)
     fi = models.CharField(max_length=1000, blank=True, null=True)
     sv = models.CharField(max_length=1000, blank=True, null=True)
