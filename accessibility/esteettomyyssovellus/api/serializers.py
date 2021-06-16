@@ -57,3 +57,9 @@ class ArSystemFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArSystemForm
         fields = '__all__'
+
+
+class ArXQuestionAnswerPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionAnswerPhoto
+        fields = '__all__'
