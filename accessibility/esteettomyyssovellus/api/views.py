@@ -1,10 +1,14 @@
+from copy import Error
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from . serializers import *
-from . models import ArEntrance, ArForm, ArXQuestion
 import psycopg2
 from rest_framework.response import Response
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -46,8 +50,8 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestion.objects.all()
     serializer_class = ArXQuestionSerializer
 
-    # In order to filter form_id with URL type for example: 
-    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    # In order to filter form_id with URL type for example:
+    # http://localhost:8000/api/ArBackendQuestions/?form_id=1
     filter_fields = ('form_id',)
 
 class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
@@ -56,7 +60,7 @@ class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
     """
     queryset = ArXQuestionBlock.objects.all()
     serializer_class = ArXQuestionBlockSerializer
-    
+
 
 class ArServicepointViewSet(viewsets.ModelViewSet):
     """
@@ -75,17 +79,22 @@ class ArSystemViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-    
+
 class ArSystemFormViewSet(viewsets.ModelViewSet):
     """
 
     """
     queryset = ArSystemForm.objects.all()
     serializer_class = ArSystemFormSerializer
-    
+
     permission_classes = [permissions.IsAuthenticated]
 
-
+#
+#
+#   EXAMPLE ON HOW TO ACCESS DATA IN THE DATABASE
+#   WITHOUT USING DJANGO ORM!
+#
+#
 class InfoTextViewSet(viewsets.ViewSet):
 
     def list(self, request):
@@ -97,14 +106,11 @@ class InfoTextViewSet(viewsets.ViewSet):
                                             port="5432",
                                             database="hki")
 
-            cursor = ps_connection.cursor()
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
             # call stored procedure
-            cursor.callproc('arp_store_other_sentences', [1, "fi"])
+            cursor.execute("""SELECT * FROM ar_dev.ar_backend_question;""")
             result = cursor.fetchall()
-            for row in result:
-                print(row)
-            
             return Response(result)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -122,8 +128,68 @@ class InfoTextViewSet(viewsets.ViewSet):
 
 class ArXQuestionAnswerPhotoViewSet(viewsets.ModelViewSet):
     """
-    
+
     """
     queryset = ArXQuestionAnswerPhoto.objects.all()
     serializer_class = ArXQuestionAnswerPhotoSerializer
-    
+
+
+# class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
+#     queryset = ArBackendCopyableEntrance.objects.all()
+#     serializer_class = ArBackendCopyableEntranceSerializer
+
+
+class ArFormLanguageViewSet(viewsets.ModelViewSet):
+    """
+    """
+    queryset = ArFormLanguage.objects.all()
+    serializer_class = ArFormLanguageSerializer
+
+
+class ArXQuestionLanguageViewSet(viewsets.ModelViewSet):
+    """
+    """
+    queryset = ArXQuestionLanguage.objects.all()
+    serializer_class = ArXQuestionLanguageSerializer
+
+
+class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
+    """
+    Endpoint for ar_x_stored_sentence_lang table.
+    Use with entrance_id parameter.
+    http://localhost:8000/api/ArXStoredSentenceLangs/?entrance_id=1
+    """
+    def list(self, request):
+        try:
+            # TODO: Move to constants 
+            ps_connection = psycopg2.connect(user="ar_dev",
+                                            password="ar_dev",
+                                            host="10.158.123.184",
+                                            port="5432",
+                                            database="hki")
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Get url parameters from request
+            parsed = urlparse.urlparse(self.request.get_raw_uri())
+
+            # Check if entrance_id parameter is given, if no parameter is given return an empty api enpoint
+            try:
+                entrance_id = parse_qs(parsed.query)['entrance_id']
+            except:
+                entrance_id = "0"
+
+            cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s""", entrance_id)
+            result = cursor.fetchall()
+            return Response(result)
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while connecting to PostgreSQL", error)
+
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+

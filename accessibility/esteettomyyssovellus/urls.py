@@ -29,6 +29,10 @@ router.register(r'ArSystems', views.ArSystemViewSet)
 router.register(r'ArSystemForms', views.ArSystemFormViewSet)
 router.register(r'ArXQuestionAnswerPhotos', views.ArXQuestionAnswerPhotoViewSet)
 router.register(r'texts', views.InfoTextViewSet, basename='text')
+# router.register(r'ArBackendCopyableEntrances', views.ArBackendCopyableEntranceViewSet)
+router.register(r'ArFormLanguages', views.ArFormLanguageViewSet)
+router.register(r'ArXQuestionLanguages', views.ArXQuestionLanguageViewSet)
+router.register(r'ArXStoredSentenceLangs', views.ArXStoredSentenceLangViewSet, basename='storedsentencelang')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
