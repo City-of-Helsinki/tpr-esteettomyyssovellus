@@ -35,6 +35,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArEntrance.objects.all()
     serializer_class = ArEntranceSerializer
     # permission_classes = [permissions.IsAuthenticated]
+    filter_fields = ('servicepoint',)
 
 class ArFormViewSet(viewsets.ModelViewSet):
     """
@@ -51,7 +52,7 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     serializer_class = ArXQuestionSerializer
 
     # In order to filter form_id with URL type for example:
-    # http://localhost:8000/api/ArBackendQuestions/?form_id=1
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
 
 class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
@@ -178,8 +179,8 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
                 entrance_id = parse_qs(parsed.query)['entrance_id']
             except:
                 entrance_id = "0"
-
-            cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s""", entrance_id)
+    
+            cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s ORDER BY sentence_order_text""", entrance_id)
             result = cursor.fetchall()
             return Response(result)
 
@@ -193,3 +194,9 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
                 ps_connection.close()
                 print("PostgreSQL connection is closed")
 
+
+
+
+class ArBackendQuestionViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendQuestion.objects.all()
+    serializer_class = ArBackendQuestionSerializer

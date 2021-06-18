@@ -33,6 +33,8 @@ router.register(r'texts', views.InfoTextViewSet, basename='text')
 router.register(r'ArFormLanguages', views.ArFormLanguageViewSet)
 router.register(r'ArXQuestionLanguages', views.ArXQuestionLanguageViewSet)
 router.register(r'ArXStoredSentenceLangs', views.ArXStoredSentenceLangViewSet, basename='storedsentencelang')
+router.register(r'ArBackendQuestions', views.ArBackendQuestionViewSet)
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

@@ -84,3 +84,8 @@ class ArXQuestionLanguageSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = ArXStoredSentenceLang
 #         fields = '__all__'
+
+class ArBackendQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestion
+         fields = '__all__'

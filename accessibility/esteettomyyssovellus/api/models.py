@@ -69,6 +69,7 @@ class ArBackendForm(models.Model):
 
 
 class ArBackendQuestion(models.Model):
+    technical_id = models.TextField(primary_key=True)
     form_id = models.IntegerField(blank=True, null=True)
     language_id = models.IntegerField(blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
