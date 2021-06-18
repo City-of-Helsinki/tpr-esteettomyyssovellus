@@ -96,33 +96,33 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
 #   WITHOUT USING DJANGO ORM!
 #
 #
-class InfoTextViewSet(viewsets.ViewSet):
+# class InfoTextViewSet(viewsets.ViewSet):
 
-    def list(self, request):
-        try:
+#     def list(self, request):
+#         try:
 
-            ps_connection = psycopg2.connect(user="ar_dev",
-                                            password="ar_dev",
-                                            host="10.158.123.184",
-                                            port="5432",
-                                            database="hki")
+#             ps_connection = psycopg2.connect(user="ar_dev",
+#                                             password="ar_dev",
+#                                             host="10.158.123.184",
+#                                             port="5432",
+#                                             database="hki")
 
-            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+#             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-            # call stored procedure
-            cursor.execute("""SELECT * FROM ar_dev.ar_backend_question;""")
-            result = cursor.fetchall()
-            return Response(result)
+#             # call stored procedure
+#             cursor.execute("""SELECT * FROM ar_dev.ar_backend_question;""")
+#             result = cursor.fetchall()
+#             return Response(result)
 
-        except (Exception, psycopg2.DatabaseError) as error:
-            print("Error while connecting to PostgreSQL", error)
+#         except (Exception, psycopg2.DatabaseError) as error:
+#             print("Error while connecting to PostgreSQL", error)
 
-        finally:
-            # closing database connection.
-            if ps_connection:
-                cursor.close()
-                ps_connection.close()
-                print("PostgreSQL connection is closed")
+#         finally:
+#             # closing database connection.
+#             if ps_connection:
+#                 cursor.close()
+#                 ps_connection.close()
+#                 print("PostgreSQL connection is closed")
 
 
 
