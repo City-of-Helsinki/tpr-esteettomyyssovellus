@@ -34,7 +34,6 @@ class ArXQuestionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class ArXQuestionBlockSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionBlock
@@ -63,3 +62,41 @@ class ArXQuestionAnswerPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionAnswerPhoto
         fields = '__all__'
+
+
+class ArFormLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArFormLanguage
+        fields = '__all__'
+
+# class ArBackendCopyableEntranceSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArBackendCopyableEntrance
+#         fields = '__all__'
+
+class ArXQuestionLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionLanguage
+        fields = '__all__'
+
+
+# class ArXStoredSentenceLangSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArXStoredSentenceLang
+#         fields = '__all__'
+
+class ArBackendQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestion
+         fields = '__all__'
+
+class ArBackendQuestionBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestionBlock
+         fields = '__all__'
+
+
+class ArBackendQuestionChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestionChoice
+         fields = '__all__'
