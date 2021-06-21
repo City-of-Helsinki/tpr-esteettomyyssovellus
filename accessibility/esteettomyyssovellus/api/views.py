@@ -200,3 +200,13 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
 class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestion.objects.all()
     serializer_class = ArBackendQuestionSerializer
+
+
+class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendQuestionBlock.objects.all()
+    serializer_class = ArBackendQuestionBlockSerializer
+
+
+class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendQuestionChoice.objects.all()
+    serializer_class = ArBackendQuestionChoiceSerializer

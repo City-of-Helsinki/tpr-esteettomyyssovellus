@@ -89,3 +89,14 @@ class ArBackendQuestionSerializer(serializers.ModelSerializer):
     class Meta:
          model = ArBackendQuestion
          fields = '__all__'
+
+class ArBackendQuestionBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestionBlock
+         fields = '__all__'
+
+
+class ArBackendQuestionChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = ArBackendQuestionChoice
+         fields = '__all__'
