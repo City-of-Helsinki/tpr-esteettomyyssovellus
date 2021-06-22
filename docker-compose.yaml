@@ -1,0 +1,33 @@
+version: "3.9"
+services: 
+    # tpr-esteettomyyssovellus
+    tpr-esteettomyyssovellus:
+        hostname: tpr-esteettomyyssovellus
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: bash -c "./run_web.sh"
+        restart: always
+        ports:
+            - 8000:8000
+        volumes:
+            - ./accessibility:/app
+            - ./local_dev/run_web.sh:/app/run_web.sh
+        networks:
+            - default
+    # tpr-reverse-proxy
+    tpr-reverse-proxy:
+        hostname: tpr-reverse-proxy
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile.nginx
+        environment:
+            - HOSTIP=$HOSTIP
+        restart: always
+        depends_on:
+            - tpr-esteettomyyssovellus
+            #- tpr-ilmoituslomake-db
+        ports:
+            - 80:80
+        networks:
+            - default
