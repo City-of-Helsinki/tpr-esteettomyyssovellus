@@ -51,7 +51,7 @@ pip install -r requirements.txt
 
 ```
 cd accessibility/
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 
 ## if nothing seems to work double check: venv python version :D hours used: 3 (+ dependencies)
@@ -62,3 +62,16 @@ python manage.py runserver
 (python manage.py makemigrations)
 python manage.py migrate
 ```
+
+
+# DOCKER
+
+Requires docker and docker-compose on the system.
+
+To build:
+./rebuild_dev.sh
+
+To run:
+./run_dev.sh
+
+(might need sudo !!)
