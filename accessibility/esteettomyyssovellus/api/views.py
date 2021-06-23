@@ -201,12 +201,22 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestion.objects.all()
     serializer_class = ArBackendQuestionSerializer
 
+    # In order to filter form_id with URL type for example:
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    filter_fields = ('form_id',)
 
 class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionBlock.objects.all()
     serializer_class = ArBackendQuestionBlockSerializer
 
+    # In order to filter form_id with URL type for example:
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    filter_fields = ('form_id',)
 
 class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionChoice.objects.all()
     serializer_class = ArBackendQuestionChoiceSerializer
+
+    # In order to filter form_id with URL type for example:
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    filter_fields = ('form_id',)
