@@ -12,8 +12,8 @@ requires python 3.9 and django 3.2.3
 
 ```
 sudo apt-get install postgresql
-sudo apt-get install python-psycopg2
 sudo apt-get install libpq-dev
+sudo apt-get install python-psycopg2
 ```
 
 ## if libpq-dev doesn't work run, install dependencies manually, e.g. (NOTICE THIS IS EXAMPLE -> VERSION NUMBERS ETC):

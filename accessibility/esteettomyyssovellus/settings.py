@@ -25,13 +25,13 @@ SECRET_KEY = 'django-insecure-616n+sxdkwqu0qc(sk=pdg$mmc00ch3z^6_6mz#74q8iy#hop5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '172.19.0.1', "asiointi.hel.fi"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    #'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,8 +40,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'esteettomyyssovellus.api',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    'users',
+    'social_django',
+    "helusers.apps.HelusersConfig",
+    "helusers.apps.HelusersAdminConfig",
 ]
+
+AUTH_USER_MODEL = "users.User"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,6 +99,8 @@ DATABASES = {
     # },
     # 'default': {}
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     },
     'auth_db': { 
         'ENGINE': 'django.db.backends.sqlite3',
@@ -107,6 +115,28 @@ DATABASES = {
         'PORT': 5432
     },
 }
+
+
+# Authentication
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+
+AUTHENTICATION_BACKENDS = [
+    "helusers.tunnistamo_oidc.TunnistamoOIDCAuth",
+    "django.contrib.auth.backends.ModelBackend",
+]
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+
+# TODO: Don't hardcode these
+SOCIAL_AUTH_TUNNISTAMO_KEY = env()
+SOCIAL_AUTH_TUNNISTAMO_SECRET = env()
+SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT = "https://api.hel.fi/sso/"
+
+SOCIAL_AUTH_TUNNISTAMO_AUTH_EXTRA_ARGUMENTS = {
+    "ui_locales": "fi"
+}  # query param = ui_locales=<language code>
+# HELUSERS_PASSWORD_LOGIN_DISABLED = True
 
 
 
@@ -158,6 +188,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'helusers.oidc.ApiTokenAuthentication',
+    # ),
 }
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.Api',]

@@ -6,5 +6,7 @@
 sleep 20
 
 python manage.py migrate --database=ar_db
+python manage.py makemigrations
+python manage.py migrate --database=auth_db
 
 python manage.py runserver 0.0.0.0:8000

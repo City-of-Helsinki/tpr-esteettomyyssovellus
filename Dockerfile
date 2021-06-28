@@ -2,7 +2,7 @@ FROM python:3.7
 
 RUN apt update
 # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/install/geolibs/
-#RUN apt-get install -y binutils libproj-dev gdal-bin
+RUN apt-get install -y binutils libproj-dev gdal-bin
 
 # add requirements.txt to the image
 COPY requirements.txt /app/requirements.txt
