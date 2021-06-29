@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
+
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False),
+    FORCE_SCRIPT_NAME=(str, ""),
+    FULL_WEB_ADDRESS=(str, "http://localhost"),
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -129,8 +138,8 @@ LOGOUT_REDIRECT_URL = "/"
 
 
 # TODO: Don't hardcode these
-SOCIAL_AUTH_TUNNISTAMO_KEY = env()
-SOCIAL_AUTH_TUNNISTAMO_SECRET = env()
+SOCIAL_AUTH_TUNNISTAMO_KEY = env("TUNNISTAMO_CLIENT_ID")
+SOCIAL_AUTH_TUNNISTAMO_SECRET = env("TUNNISTAMO_CLIENT_SECRET")
 SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT = "https://api.hel.fi/sso/"
 
 SOCIAL_AUTH_TUNNISTAMO_AUTH_EXTRA_ARGUMENTS = {

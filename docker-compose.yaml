@@ -8,6 +8,8 @@ services:
             dockerfile: Dockerfile
         command: bash -c "./run_web.sh"
         restart: always
+        env_file:
+            - ./local_dev/.env
         ports:
             - 8000:8000
         volumes:
@@ -23,7 +25,7 @@ services:
             dockerfile: Dockerfile.nginx
         environment:
             - HOSTIP=$HOSTIP
-        restart: always
+        restart: always 
         depends_on:
             - tpr-esteettomyyssovellus
             #- tpr-ilmoituslomake-db
