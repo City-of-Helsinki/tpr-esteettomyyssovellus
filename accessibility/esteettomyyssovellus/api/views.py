@@ -204,6 +204,7 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
+    pagination_class = None
 
 class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionBlock.objects.all()
@@ -212,6 +213,7 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
+    pagination_class = None
 
 class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionChoice.objects.all()
@@ -220,3 +222,4 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
+    pagination_class = None
