@@ -4,6 +4,7 @@ from . models import *
 from rest_framework import serializers
 # from . models import Form
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -21,7 +22,7 @@ class ArEntranceSerializer(serializers.ModelSerializer):
         model = ArEntrance
         fields = '__all__'
 
-    
+
 class ArFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArForm
@@ -74,6 +75,7 @@ class ArFormLanguageSerializer(serializers.ModelSerializer):
 #         model = ArBackendCopyableEntrance
 #         fields = '__all__'
 
+
 class ArXQuestionLanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionLanguage
@@ -85,18 +87,20 @@ class ArXQuestionLanguageSerializer(serializers.ModelSerializer):
 #         model = ArXStoredSentenceLang
 #         fields = '__all__'
 
+
 class ArBackendQuestionSerializer(serializers.ModelSerializer):
     class Meta:
-         model = ArBackendQuestion
-         fields = '__all__'
+        model = ArBackendQuestion
+        fields = '__all__'
+
 
 class ArBackendQuestionBlockSerializer(serializers.ModelSerializer):
     class Meta:
-         model = ArBackendQuestionBlock
-         fields = '__all__'
+        model = ArBackendQuestionBlock
+        fields = '__all__'
 
 
 class ArBackendQuestionChoiceSerializer(serializers.ModelSerializer):
     class Meta:
-         model = ArBackendQuestionChoice
-         fields = '__all__'
+        model = ArBackendQuestionChoice
+        fields = '__all__'

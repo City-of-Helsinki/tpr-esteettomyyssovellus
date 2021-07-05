@@ -1,4 +1,3 @@
-from copy import Error
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -7,7 +6,6 @@ import psycopg2
 from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,12 +35,14 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     filter_fields = ('servicepoint',)
 
+
 class ArFormViewSet(viewsets.ModelViewSet):
     """
     API endpoint for forms.
     """
     queryset = ArForm.objects.all()
     serializer_class = ArFormSerializer
+
 
 class ArXQuestionViewSet(viewsets.ModelViewSet):
     """
@@ -54,6 +54,7 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
+
 
 class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
     """
@@ -70,6 +71,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
 
+
 class ArSystemViewSet(viewsets.ModelViewSet):
     """
 
@@ -78,7 +80,6 @@ class ArSystemViewSet(viewsets.ModelViewSet):
     serializer_class = ArSystemSerializer
 
     permission_classes = [permissions.IsAuthenticated]
-
 
 
 class ArSystemFormViewSet(viewsets.ModelViewSet):
@@ -107,7 +108,8 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
 #                                             port="5432",
 #                                             database="hki")
 
-#             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+#             cursor = ps_connection.cursor(
+#                   cursor_factory=psycopg2.extras.RealDictCursor)
 
 #             # call stored procedure
 #             cursor.execute("""SELECT * FROM ar_dev.ar_backend_question;""")
@@ -123,8 +125,6 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
 #                 cursor.close()
 #                 ps_connection.close()
 #                 print("PostgreSQL connection is closed")
-
-
 
 
 class ArXQuestionAnswerPhotoViewSet(viewsets.ModelViewSet):
@@ -162,25 +162,30 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
     """
     def list(self, request):
         try:
-            # TODO: Move to constants 
+            # TODO: Move to constants
             ps_connection = psycopg2.connect(user="ar_dev",
-                                            password="ar_dev",
-                                            host="10.158.123.184",
-                                            port="5432",
-                                            database="hki")
+                                             password="ar_dev",
+                                             host="10.158.123.184",
+                                             port="5432",
+                                             database="hki")
 
-            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = ps_connection.cursor(
+                cursor_factory=psycopg2.extras.RealDictCursor)
 
             # Get url parameters from request
             parsed = urlparse.urlparse(self.request.get_raw_uri())
 
-            # Check if entrance_id parameter is given, if no parameter is given return an empty api enpoint
+            # Check if entrance_id parameter is given,
+            # if no parameter is given return an empty api enpoint
             try:
                 entrance_id = parse_qs(parsed.query)['entrance_id']
             except:
                 entrance_id = "0"
-    
-            cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s ORDER BY sentence_order_text""", entrance_id)
+
+            cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang
+                            WHERE entrance_id=%s
+                            ORDER BY sentence_order_text""",
+                            entrance_id)
             result = cursor.fetchall()
             return Response(result)
 
@@ -195,8 +200,6 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
                 print("PostgreSQL connection is closed")
 
 
-
-
 class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestion.objects.all()
     serializer_class = ArBackendQuestionSerializer
@@ -206,6 +209,7 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     filter_fields = ('form_id',)
     pagination_class = None
 
+
 class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionBlock.objects.all()
     serializer_class = ArBackendQuestionBlockSerializer
@@ -214,6 +218,7 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
     pagination_class = None
+
 
 class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionChoice.objects.all()
