@@ -41,6 +41,8 @@ router.register(r'ArBackendQuestionBlocks',
                 views.ArBackendQuestionBlockViewSet)
 router.register(r'ArBackendQuestionChoice',
                 views.ArBackendQuestionChoiceViewSet)
+router.register(r'ArBackendEntranceAnswer',
+                views.ArBackendEntranceAnswerViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

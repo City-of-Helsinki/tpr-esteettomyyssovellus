@@ -228,3 +228,13 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('form_id',)
     pagination_class = None
+
+
+class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceAnswer.objects.all()
+    serializer_class = ArBackendEntranceAnswerSerializer
+
+    # In order to filter form_id with URL type for example:
+    # http://localhost:8000/api/ArXQuestions/?form_id=1
+    filter_fields = ('entrance_id',)
+    pagination_class = None

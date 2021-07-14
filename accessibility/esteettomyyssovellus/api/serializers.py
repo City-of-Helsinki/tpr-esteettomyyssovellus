@@ -104,3 +104,9 @@ class ArBackendQuestionChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendQuestionChoice
         fields = '__all__'
+
+
+class ArBackendEntranceAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntranceAnswer
+        fields = '__all__'
