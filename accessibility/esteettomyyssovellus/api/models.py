@@ -2,9 +2,12 @@
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
+#   * Make sure each ForeignKey and OneToOneField has `on_delete`
+#   set to the desired behavior
+#   * Remove `managed = False` lines if you wish to allow Django to create,
+#   modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values
+#   or field names.
 from django.db import models
 
 
@@ -12,7 +15,8 @@ class ArBackendCopyableEntrance(models.Model):
     entrance_id = models.BigIntegerField(blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
     copyable_entrance_id = models.BigIntegerField(blank=True, null=True)
-    copyable_servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
+    copyable_servicepoint_name = models.CharField(
+        max_length=500, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -76,9 +80,11 @@ class ArBackendQuestion(models.Model):
     question_id = models.IntegerField(blank=True, null=True)
     question_code = models.CharField(max_length=20, blank=True, null=True)
     text = models.CharField(max_length=2000, blank=True, null=True)
-    visible_if_question_choice = models.CharField(max_length=100, blank=True, null=True)
+    visible_if_question_choice = models.CharField(
+        max_length=100, blank=True, null=True)
     question_level = models.SmallIntegerField(blank=True, null=True)
-    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    question_order_text = models.CharField(
+        max_length=99, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
@@ -100,7 +106,8 @@ class ArBackendQuestionBlock(models.Model):
     question_block_code = models.CharField(max_length=1, blank=True, null=True)
     text = models.CharField(max_length=1, blank=True, null=True)
     visible_if_question_choice = models.TextField(blank=True, null=True)
-    question_block_order_text = models.CharField(max_length=99, blank=True, null=True)
+    question_block_order_text = models.CharField(
+        max_length=99, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
@@ -158,7 +165,8 @@ class ArExternalServicepoint(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_external_servicepoint'
-        unique_together = (('external_servicepoint_id', 'system'), ('servicepoint', 'system'),)
+        unique_together = (('external_servicepoint_id', 'system'),
+                           ('servicepoint', 'system'),)
 
 
 class ArForm(models.Model):
@@ -217,7 +225,8 @@ class ArRest01AccessVariable(models.Model):
 
 
 class ArRest01AccessViewpoint(models.Model):
-    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    viewpoint_id = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     name_fi = models.TextField(blank=True, null=True)
     name_sv = models.TextField(blank=True, null=True)
     name_en = models.TextField(blank=True, null=True)
@@ -231,7 +240,8 @@ class ArRest01AccessViewpoint(models.Model):
 
 class ArRest01Entrance(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     is_main_entrance = models.CharField(max_length=1, blank=True, null=True)
@@ -258,12 +268,14 @@ class ArRest01Entrance(models.Model):
 
 class ArRest01EntranceAccessibility(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     variable_id = models.IntegerField(blank=True, null=True)
     variable_name = models.CharField(max_length=99, blank=True, null=True)
-    value_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    value_id = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     rest_value = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -273,15 +285,18 @@ class ArRest01EntranceAccessibility(models.Model):
 
 class ArRest01Reportshortage(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     viewpoint_id = models.IntegerField(blank=True, null=True)
-    is_indoor_servicepoint = models.CharField(max_length=1, blank=True, null=True)
+    is_indoor_servicepoint = models.CharField(
+        max_length=1, blank=True, null=True)
     evaluation_zone = models.TextField(blank=True, null=True)
     easy_to_fix = models.TextField(blank=True, null=True)
     requirement_id = models.IntegerField(blank=True, null=True)
     requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=1000, blank=True, null=True)
     shortage_fi = models.CharField(max_length=1000, blank=True, null=True)
     shortage_sv = models.CharField(max_length=1000, blank=True, null=True)
     shortage_en = models.CharField(max_length=1000, blank=True, null=True)
@@ -293,23 +308,33 @@ class ArRest01Reportshortage(models.Model):
 
 class ArRest01Reportsummary(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     is_accessible = models.TextField(blank=True, null=True)
     shortage_count = models.BigIntegerField(blank=True, null=True)
     shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
     wheel_is_accessible = models.TextField(blank=True, null=True)
-    wheel_shortage_count = models.BigIntegerField(blank=True, null=True)
-    wheel_shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
-    wheel_shortage_count_outside = models.BigIntegerField(blank=True, null=True)
-    wheel_shortage_count_entrance = models.BigIntegerField(blank=True, null=True)
+    wheel_shortage_count = models.BigIntegerField(
+        blank=True, null=True)
+    wheel_shortage_count_easy_to_fix = models.BigIntegerField(
+        blank=True, null=True)
+    wheel_shortage_count_outside = models.BigIntegerField(
+        blank=True, null=True)
+    wheel_shortage_count_entrance = models.BigIntegerField(
+        blank=True, null=True)
     wheel_shortage_count_inside = models.BigIntegerField(blank=True, null=True)
     visual_is_accessible = models.TextField(blank=True, null=True)
-    visual_shortage_count = models.BigIntegerField(blank=True, null=True)
-    visual_shortage_count_easy_to_fix = models.BigIntegerField(blank=True, null=True)
-    visual_shortage_count_outside = models.BigIntegerField(blank=True, null=True)
-    visual_shortage_count_entrance = models.BigIntegerField(blank=True, null=True)
-    visual_shortage_count_inside = models.BigIntegerField(blank=True, null=True)
+    visual_shortage_count = models.BigIntegerField(
+        blank=True, null=True)
+    visual_shortage_count_easy_to_fix = models.BigIntegerField(
+        blank=True, null=True)
+    visual_shortage_count_outside = models.BigIntegerField(
+        blank=True, null=True)
+    visual_shortage_count_entrance = models.BigIntegerField(
+        blank=True, null=True)
+    visual_shortage_count_inside = models.BigIntegerField(
+        blank=True, null=True)
     hearing_is_accessible = models.TextField(blank=True, null=True)
     toilet_is_accessible = models.TextField(blank=True, null=True)
 
@@ -331,7 +356,8 @@ class ArRest01Requirement(models.Model):
 
 class ArRest01Sentence(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     log_id = models.BigIntegerField(blank=True, null=True)
@@ -352,16 +378,21 @@ class ArRest01Sentence(models.Model):
 
 class ArRest01Servicepoint(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
-    address_street_name = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_name = models.CharField(
+        max_length=500, blank=True, null=True)
+    address_street_name = models.CharField(
+        max_length=100, blank=True, null=True)
     address_no = models.CharField(max_length=100, blank=True, null=True)
     address_city = models.CharField(max_length=100, blank=True, null=True)
     loc_easting = models.IntegerField(blank=True, null=True)
     loc_northing = models.IntegerField(blank=True, null=True)
-    accessibility_phone = models.CharField(max_length=250, blank=True, null=True)
-    accessibility_email = models.CharField(max_length=250, blank=True, null=True)
+    accessibility_phone = models.CharField(
+        max_length=250, blank=True, null=True)
+    accessibility_email = models.CharField(
+        max_length=250, blank=True, null=True)
     accessibility_www = models.CharField(max_length=250, blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
     created_by = models.CharField(max_length=50, blank=True, null=True)
@@ -376,11 +407,13 @@ class ArRest01Servicepoint(models.Model):
 
 class ArRest01ServicepointAccessibility(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     variable_id = models.IntegerField(blank=True, null=True)
     variable_name = models.CharField(max_length=99, blank=True, null=True)
-    value_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    value_id = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     rest_value = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -390,7 +423,8 @@ class ArRest01ServicepointAccessibility(models.Model):
 
 class ArRest01Shortage(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     viewpoint_id = models.IntegerField(blank=True, null=True)
     requirement_id = models.IntegerField(blank=True, null=True)
@@ -405,7 +439,8 @@ class ArRest01Shortage(models.Model):
 
 class ArRest01Summary(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
-    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    external_servicepoint_id = models.CharField(
+        max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
     viewpoint_id = models.IntegerField(blank=True, null=True)
     is_accessible = models.TextField(blank=True, null=True)
@@ -427,15 +462,20 @@ class ArServicepoint(models.Model):
     created_by = models.CharField(max_length=50)
     modified = models.DateTimeField()
     modified_by = models.CharField(max_length=50)
-    address_street_name = models.CharField(max_length=100, blank=True, null=True)
+    address_street_name = models.CharField(
+        max_length=100, blank=True, null=True)
     address_no = models.CharField(max_length=100, blank=True, null=True)
-    address_city = models.CharField(max_length=100, blank=True, null=True)
-    accessibility_phone = models.CharField(max_length=250, blank=True, null=True)
-    accessibility_email = models.CharField(max_length=250, blank=True, null=True)
+    address_city = models.CharField(
+        max_length=100, blank=True, null=True)
+    accessibility_phone = models.CharField(
+        max_length=250, blank=True, null=True)
+    accessibility_email = models.CharField(
+        max_length=250, blank=True, null=True)
     accessibility_www = models.CharField(max_length=250, blank=True, null=True)
     is_searchable = models.CharField(max_length=1)
     organisation_id = models.UUIDField(blank=True, null=True)
-    system = models.ForeignKey('ArSystem', models.DO_NOTHING, blank=True, null=True)
+    system = models.ForeignKey(
+        'ArSystem', models.DO_NOTHING, blank=True, null=True)
     loc_easting = models.IntegerField(blank=True, null=True)
     loc_northing = models.IntegerField(blank=True, null=True)
     location_id = models.CharField(max_length=50, blank=True, null=True)
@@ -443,7 +483,9 @@ class ArServicepoint(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_servicepoint'
-        unique_together = (('business_id', 'system_id_old', 'ext_servicepoint_id'), ('ext_servicepoint_id', 'system'),)
+        unique_together = (('business_id', 'system_id_old',
+                            'ext_servicepoint_id'),
+                           ('ext_servicepoint_id', 'system'),)
 
 
 class ArSystem(models.Model):
@@ -457,7 +499,8 @@ class ArSystem(models.Model):
 
 
 class ArSystemForm(models.Model):
-    system = models.OneToOneField(ArSystem, models.DO_NOTHING, primary_key=True)
+    system = models.OneToOneField(
+        ArSystem, models.DO_NOTHING, primary_key=True)
     form = models.ForeignKey(ArForm, models.DO_NOTHING)
 
     class Meta:
@@ -473,11 +516,15 @@ class ArXAccessibilityReqIn(models.Model):
     rest_variable_id = models.IntegerField()
     condition_type = models.CharField(max_length=1)
     rest_value = models.CharField(max_length=99)
-    accessibility_case_names = models.CharField(max_length=1000, blank=True, null=True)
-    accessibility_fault_title = models.CharField(max_length=255, blank=True, null=True)
+    accessibility_case_names = models.CharField(
+        max_length=1000, blank=True, null=True)
+    accessibility_fault_title = models.CharField(
+        max_length=255, blank=True, null=True)
     bits_qrs = models.CharField(max_length=20, blank=True, null=True)
-    requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=255, blank=True, null=True)
+    requirement_text = models.CharField(
+        max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=255, blank=True, null=True)
     effort_to_fix = models.CharField(max_length=10, blank=True, null=True)
     shortcoming_fi = models.CharField(max_length=255, blank=True, null=True)
     shortcoming_sv = models.CharField(max_length=255, blank=True, null=True)
@@ -495,11 +542,15 @@ class ArXAccessibilityRequirement(models.Model):
     rest_variable_id = models.IntegerField()
     condition_type = models.CharField(max_length=1)
     rest_value = models.CharField(max_length=99)
-    accessibility_case_names = models.CharField(max_length=1000, blank=True, null=True)
-    accessibility_fault_title = models.CharField(max_length=255, blank=True, null=True)
-    bits_qrs = models.CharField(max_length=20, blank=True, null=True)
+    accessibility_case_names = models.CharField(
+        max_length=1000, blank=True, null=True)
+    accessibility_fault_title = models.CharField(
+        max_length=255, blank=True, null=True)
+    bits_qrs = models.CharField(
+        max_length=20, blank=True, null=True)
     requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=255, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=255, blank=True, null=True)
     effort_to_fix = models.CharField(max_length=10, blank=True, null=True)
     shortcoming_fi = models.CharField(max_length=255, blank=True, null=True)
     shortcoming_sv = models.CharField(max_length=255, blank=True, null=True)
@@ -508,18 +559,25 @@ class ArXAccessibilityRequirement(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_x_accessibility_requirement'
-        unique_together = (('accessibility_case_proto_id', 'requirement_id', 'subcondition_id', 'rest_variable_id', 'condition_type', 'rest_value'),)
+        unique_together = (('accessibility_case_proto_id', 'requirement_id',
+                            'subcondition_id',
+                            'rest_variable_id',
+                            'condition_type', 'rest_value'),)
 
 
 class ArXAnswerLog(models.Model):
     log_id = models.BigAutoField(primary_key=True)
     entrance = models.ForeignKey(ArEntrance, models.DO_NOTHING)
-    ip_address = models.CharField(max_length=255, blank=True, null=True)
+    ip_address = models.CharField(
+        max_length=255, blank=True, null=True)
     started_answering = models.DateTimeField(blank=True, null=True)
     finished_answering = models.DateTimeField(blank=True, null=True)
-    form_submitted = models.CharField(max_length=1, blank=True, null=True)
-    form_cancelled = models.CharField(max_length=1, blank=True, null=True)
-    accessibility_editor = models.CharField(max_length=255, blank=True, null=True)
+    form_submitted = models.CharField(
+        max_length=1, blank=True, null=True)
+    form_cancelled = models.CharField(
+        max_length=1, blank=True, null=True)
+    accessibility_editor = models.CharField(
+        max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -530,12 +588,15 @@ class ArXQuestion(models.Model):
     question_id = models.IntegerField(primary_key=True)
     question_block = models.ForeignKey('ArXQuestionBlock', models.DO_NOTHING)
     form_id = models.IntegerField()
-    question_code = models.CharField(max_length=20, blank=True, null=True)
-    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    question_code = models.CharField(
+        max_length=20, blank=True, null=True)
+    question_order_text = models.CharField(
+        max_length=99, blank=True, null=True)
     question_level = models.SmallIntegerField(blank=True, null=True)
     question_text = models.CharField(max_length=2000, blank=True, null=True)
     question_active = models.CharField(max_length=1, blank=True, null=True)
-    question_description = models.CharField(max_length=2000, blank=True, null=True)
+    question_description = models.CharField(
+        max_length=2000, blank=True, null=True)
     question_url = models.CharField(max_length=255, blank=True, null=True)
     question_url_text = models.CharField(max_length=255, blank=True, null=True)
 
@@ -545,8 +606,10 @@ class ArXQuestion(models.Model):
 
 
 class ArXQuestionAnswer(models.Model):
-    log = models.OneToOneField(ArXAnswerLog, models.DO_NOTHING, primary_key=True)
-    question_choice = models.ForeignKey('ArXQuestionChoice', models.DO_NOTHING)
+    log = models.OneToOneField(
+        ArXAnswerLog, models.DO_NOTHING, primary_key=True)
+    question_choice = models.ForeignKey(
+        'ArXQuestionChoice', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -603,13 +666,20 @@ class ArXQuestionAnswerPhotoTxt(models.Model):
 class ArXQuestionBlock(models.Model):
     question_block_id = models.IntegerField(primary_key=True)
     form_id = models.IntegerField()
-    question_block_code = models.CharField(max_length=20, blank=True, null=True)
-    question_block_order_text = models.CharField(max_length=99, blank=True, null=True)
-    question_block_name = models.CharField(max_length=255, blank=True, null=True)
-    question_block_active = models.CharField(max_length=1, blank=True, null=True)
-    question_block_decription = models.CharField(max_length=2000, blank=True, null=True)
-    question_block_url = models.CharField(max_length=255, blank=True, null=True)
-    question_block_url_text = models.CharField(max_length=255, blank=True, null=True)
+    question_block_code = models.CharField(
+        max_length=20, blank=True, null=True)
+    question_block_order_text = models.CharField(
+        max_length=99, blank=True, null=True)
+    question_block_name = models.CharField(
+        max_length=255, blank=True, null=True)
+    question_block_active = models.CharField(
+        max_length=1, blank=True, null=True)
+    question_block_decription = models.CharField(
+        max_length=2000, blank=True, null=True)
+    question_block_url = models.CharField(
+        max_length=255, blank=True, null=True)
+    question_block_url_text = models.CharField(
+        max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -617,16 +687,20 @@ class ArXQuestionBlock(models.Model):
 
 
 class ArXQuestionBlockDependency(models.Model):
-    question_block = models.OneToOneField(ArXQuestionBlock, models.DO_NOTHING, primary_key=True)
+    question_block = models.OneToOneField(
+        ArXQuestionBlock, models.DO_NOTHING, primary_key=True)
     condition_type = models.CharField(max_length=1)
-    condition_question_choice = models.ForeignKey('ArXQuestionChoice', models.DO_NOTHING)
+    condition_question_choice = models.ForeignKey(
+        'ArXQuestionChoice', models.DO_NOTHING)
     condition_question_id = models.IntegerField()
     condition_choice_id = models.IntegerField()
 
     class Meta:
         managed = False
         db_table = 'ar_x_question_block_dependency'
-        unique_together = (('question_block', 'condition_question_choice'), ('question_block', 'condition_question_id', 'condition_choice_id'),)
+        unique_together = (('question_block', 'condition_question_choice'),
+                           ('question_block', 'condition_question_id',
+                            'condition_choice_id'),)
 
 
 class ArXQuestionBlockDesc(models.Model):
@@ -652,7 +726,8 @@ class ArXQuestionBlockDescPhoto(models.Model):
 
 
 class ArXQuestionBlockLanguage(models.Model):
-    question_block = models.OneToOneField(ArXQuestionBlock, models.DO_NOTHING, primary_key=True)
+    question_block = models.OneToOneField(
+        ArXQuestionBlock, models.DO_NOTHING, primary_key=True)
     language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
     name = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
@@ -691,7 +766,8 @@ class ArXQuestionChoice(models.Model):
 
 
 class ArXQuestionChoiceLanguage(models.Model):
-    question_choice = models.OneToOneField(ArXQuestionChoice, models.DO_NOTHING, primary_key=True)
+    question_choice = models.OneToOneField(
+        ArXQuestionChoice, models.DO_NOTHING, primary_key=True)
     language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
     text = models.CharField(max_length=2000, blank=True, null=True)
 
@@ -726,16 +802,20 @@ class ArXQuestionChoicePlus(models.Model):
 
 
 class ArXQuestionDependency(models.Model):
-    question = models.OneToOneField(ArXQuestion, models.DO_NOTHING, primary_key=True)
+    question = models.OneToOneField(
+        ArXQuestion, models.DO_NOTHING, primary_key=True)
     condition_type = models.CharField(max_length=1)
-    condition_question_choice = models.ForeignKey(ArXQuestionChoice, models.DO_NOTHING)
+    condition_question_choice = models.ForeignKey(
+        ArXQuestionChoice, models.DO_NOTHING)
     condition_question_id = models.IntegerField()
     condition_choice_id = models.IntegerField()
 
     class Meta:
         managed = False
         db_table = 'ar_x_question_dependency'
-        unique_together = (('question', 'condition_question_choice'), ('question', 'condition_question_id', 'condition_choice_id'),)
+        unique_together = (('question', 'condition_question_choice'),
+                           ('question', 'condition_question_id',
+                            'condition_choice_id'),)
 
 
 class ArXQuestionDesc(models.Model):
@@ -773,7 +853,8 @@ class ArXQuestionExtradata(models.Model):
 
 
 class ArXQuestionLanguage(models.Model):
-    question = models.OneToOneField(ArXQuestion, models.DO_NOTHING, primary_key=True)
+    question = models.OneToOneField(
+        ArXQuestion, models.DO_NOTHING, primary_key=True)
     language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
     text = models.CharField(max_length=2000, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
@@ -789,7 +870,8 @@ class ArXQuestionLanguage(models.Model):
 class ArXRestVariable(models.Model):
     rest_variable_id = models.IntegerField(unique=True, blank=True, null=True)
     rest_variable_name = models.CharField(max_length=99, blank=True, null=True)
-    rest_variable_explanation = models.CharField(max_length=99, blank=True, null=True)
+    rest_variable_explanation = models.CharField(
+        max_length=99, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -798,8 +880,10 @@ class ArXRestVariable(models.Model):
 
 class ArXRestVariablePlus(models.Model):
     rest_variable_id = models.IntegerField(blank=True, null=True)
-    rest_variable_name = models.CharField(max_length=240, blank=True, null=True)
-    rest_variable_explanation = models.CharField(max_length=20, blank=True, null=True)
+    rest_variable_name = models.CharField(
+        max_length=240, blank=True, null=True)
+    rest_variable_explanation = models.CharField(
+        max_length=20, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -809,7 +893,8 @@ class ArXRestVariablePlus(models.Model):
 class ArXSentence(models.Model):
     sentence_id = models.IntegerField(primary_key=True)
     question_block_id = models.IntegerField()
-    sentence_order_text = models.CharField(max_length=10, blank=True, null=True)
+    sentence_order_text = models.CharField(
+        max_length=10, blank=True, null=True)
     sentence_active = models.CharField(max_length=1, blank=True, null=True)
     sentence_criteria = models.CharField(max_length=255, blank=True, null=True)
     sentence_fi = models.CharField(max_length=2000, blank=True, null=True)
@@ -877,19 +962,24 @@ class ArXStoredSentenceLang(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_x_stored_sentence_lang'
-        unique_together = (('entrance_id', 'log_id', 'language_code', 'sentence_id'),)
+        unique_together = (
+            ('entrance_id', 'log_id', 'language_code', 'sentence_id'),)
 
 
 class ArXStoredShortageHelper(models.Model):
     servicepoint_id = models.BigIntegerField()
     viewpoint_id = models.IntegerField()
     requirement_id = models.IntegerField()
-    requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    is_indoor_servicepoint = models.CharField(max_length=1, blank=True, null=True)
-    evaluation_subject = models.CharField(max_length=1, blank=True, null=True)
+    requirement_text = models.CharField(
+        max_length=1000, blank=True, null=True)
+    is_indoor_servicepoint = models.CharField(
+        max_length=1, blank=True, null=True)
+    evaluation_subject = models.CharField(
+        max_length=1, blank=True, null=True)
     big_flag = models.CharField(max_length=1, blank=True, null=True)
     ok_flag = models.CharField(max_length=1, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=1000, blank=True, null=True)
     shortage_fi = models.CharField(max_length=1000, blank=True, null=True)
     shortage_sv = models.CharField(max_length=1000, blank=True, null=True)
     shortage_en = models.CharField(max_length=1000, blank=True, null=True)
@@ -898,7 +988,8 @@ class ArXStoredShortageHelper(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_x_stored_shortage_helper'
-        unique_together = (('servicepoint_id', 'viewpoint_id', 'requirement_id'),)
+        unique_together = (
+            ('servicepoint_id', 'viewpoint_id', 'requirement_id'),)
 
 
 class ArXViewAccessReqQuickReport(models.Model):
@@ -909,7 +1000,8 @@ class ArXViewAccessReqQuickReport(models.Model):
     condition_type = models.CharField(max_length=1, blank=True, null=True)
     rest_value = models.CharField(max_length=99, blank=True, null=True)
     requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=255, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=255, blank=True, null=True)
     effort_to_fix = models.CharField(max_length=10, blank=True, null=True)
     shortcoming_fi = models.CharField(max_length=255, blank=True, null=True)
     shortcoming_sv = models.CharField(max_length=255, blank=True, null=True)
@@ -1005,7 +1097,8 @@ class ArXViewEntranceAnswer(models.Model):
 
 class ArXViewShortageHelper(models.Model):
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    viewpoint_id = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     requirement_id = models.IntegerField(blank=True, null=True)
     requirement_text = models.TextField(blank=True, null=True)
     is_indoor_servicepoint = models.TextField(blank=True, null=True)
@@ -1024,7 +1117,8 @@ class ArXViewShortageHelper(models.Model):
 
 class ArXViewShortageHelperOld(models.Model):
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    viewpoint_id = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    viewpoint_id = models.DecimalField(
+        max_digits=65535, decimal_places=65535, blank=True, null=True)
     requirement_id = models.IntegerField(blank=True, null=True)
     requirement_text = models.TextField(blank=True, null=True)
     is_indoor_servicepoint = models.TextField(blank=True, null=True)
@@ -1156,11 +1250,13 @@ class TpTempStoredShortageHelper(models.Model):
     viewpoint_id = models.IntegerField()
     requirement_id = models.IntegerField()
     requirement_text = models.CharField(max_length=1000, blank=True, null=True)
-    is_indoor_servicepoint = models.CharField(max_length=1, blank=True, null=True)
+    is_indoor_servicepoint = models.CharField(
+        max_length=1, blank=True, null=True)
     evaluation_subject = models.CharField(max_length=1, blank=True, null=True)
     big_flag = models.CharField(max_length=1, blank=True, null=True)
     ok_flag = models.CharField(max_length=1, blank=True, null=True)
-    explanation_why_not = models.CharField(max_length=1000, blank=True, null=True)
+    explanation_why_not = models.CharField(
+        max_length=1000, blank=True, null=True)
     shortage_fi = models.CharField(max_length=1000, blank=True, null=True)
     shortage_sv = models.CharField(max_length=1000, blank=True, null=True)
     shortage_en = models.CharField(max_length=1000, blank=True, null=True)
