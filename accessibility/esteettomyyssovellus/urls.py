@@ -48,7 +48,7 @@ router.register(r'ArXQuesitonAnswerComment', views.ArXQuestionAnswerCommentVieSe
 router.register(r'ArXQuesitonAnswerLocation', views.ArXQuestionAnswerLocationVieSet)
 router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoVieSet)
 router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtVieSet)
-
+router.register(r'ArXAnswerLog', views.ArXAnswerLogViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

@@ -281,3 +281,9 @@ class ArXQuestionAnswerLocationVieSet(viewsets.ModelViewSet):
 
     filter_fields = ('log',)
     pagination_class = None
+
+
+class ArXAnswerLogViewSet(viewsets.ModelViewSet):
+    queryset = ArXAnswerLog.objects.all()
+    serializer_class = ArXAnswerLogSerializer
+    pagination_class = None
