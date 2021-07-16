@@ -206,7 +206,7 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ('form_id',)
+    filter_fields = ('form_id', 'question_id')
     pagination_class = None
 
 
@@ -236,7 +236,7 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ('entrance_id',)
+    filter_fields = ('entrance_id', 'log_id')
     pagination_class = None
 
 
