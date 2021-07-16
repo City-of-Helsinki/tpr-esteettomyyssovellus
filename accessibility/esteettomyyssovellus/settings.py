@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'esteettomyyssovellus.api',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    'drf_multiple_model',
 ]
 
 MIDDLEWARE = [
