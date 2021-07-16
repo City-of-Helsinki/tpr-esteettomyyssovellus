@@ -6,7 +6,7 @@ import psycopg2
 from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-
+from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -237,4 +237,47 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ('entrance_id',)
+    pagination_class = None
+
+
+class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
+
+    search_fields = ["log", "question"]
+    querylist = [
+        {'queryset': ArXQuestionAnswerComment.objects.all(), 'serializer_class': ArXQuestionAnswerCommentSerializer, 'label': "comment"},
+        {'queryset': ArXQuestionAnswerLocation.objects.all(), 'serializer_class': ArXQuestionAnswerLocationSerializer, 'label': "location"},
+        {'queryset': ArXQuestionAnswerPhoto.objects.all(), 'serializer_class': ArXQuestionAnswerPhotoSerializer, 'label': "photo"}
+    ]
+    pagination_class = None
+
+
+class ArXQuestionAnswerPhotoTxtVieSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionAnswerPhotoTxt.objects.all()
+    serializer_class = ArXQuestionAnswerPhotoTxtSerializer
+
+    filter_fields = ('answer_photo_id',)
+    pagination_class = None
+
+
+class ArXQuestionAnswerPhotoVieSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionAnswerPhoto.objects.all()
+    serializer_class = ArXQuestionAnswerPhotoSerializer
+
+    filter_fields = ('log',)
+    pagination_class = None
+
+
+class ArXQuestionAnswerCommentVieSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionAnswerComment.objects.all()
+    serializer_class = ArXQuestionAnswerCommentSerializer
+
+    filter_fields = ('log',)
+    pagination_class = None
+
+
+class ArXQuestionAnswerLocationVieSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionAnswerLocation.objects.all()
+    serializer_class = ArXQuestionAnswerLocationSerializer
+
+    filter_fields = ('log',)
     pagination_class = None

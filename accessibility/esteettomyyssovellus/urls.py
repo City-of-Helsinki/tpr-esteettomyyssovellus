@@ -43,6 +43,11 @@ router.register(r'ArBackendQuestionChoice',
                 views.ArBackendQuestionChoiceViewSet)
 router.register(r'ArBackendEntranceAnswer',
                 views.ArBackendEntranceAnswerViewSet)
+router.register(r'ArXAdditionalinfo', views.ArXAdditionalinfoViewSet, basename="additionalinfo")
+router.register(r'ArXQuesitonAnswerComment', views.ArXQuestionAnswerCommentVieSet)
+router.register(r'ArXQuesitonAnswerLocation', views.ArXQuestionAnswerLocationVieSet)
+router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoVieSet)
+router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtVieSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

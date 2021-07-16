@@ -4,3 +4,4 @@ djangorestframework
 django-filter
 django-cors-headers==3.7.0
 psycopg2==2.8.6
+django-rest-multiple-models==2.1.3
