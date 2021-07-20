@@ -141,3 +141,9 @@ class ArXAnswerLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXAnswerLog
         fields = '__all__'
+
+
+class ArXQuestionAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionAnswer
+        fields = '__all__'
