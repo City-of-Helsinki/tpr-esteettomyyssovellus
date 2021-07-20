@@ -44,11 +44,12 @@ router.register(r'ArBackendQuestionChoice',
 router.register(r'ArBackendEntranceAnswer',
                 views.ArBackendEntranceAnswerViewSet)
 router.register(r'ArXAdditionalinfo', views.ArXAdditionalinfoViewSet, basename="additionalinfo")
-router.register(r'ArXQuesitonAnswerComment', views.ArXQuestionAnswerCommentVieSet)
-router.register(r'ArXQuesitonAnswerLocation', views.ArXQuestionAnswerLocationVieSet)
-router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoVieSet)
-router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtVieSet)
-
+router.register(r'ArXQuesitonAnswerComment', views.ArXQuestionAnswerCommentViewSet)
+router.register(r'ArXQuesitonAnswerLocation', views.ArXQuestionAnswerLocationViewSet)
+router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoViewSet)
+router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtViewSet)
+router.register(r'ArXAnswerLog', views.ArXAnswerLogViewSet)
+router.register(r'ArXQuestionAnswer', views.ArXQuestionAnswerViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

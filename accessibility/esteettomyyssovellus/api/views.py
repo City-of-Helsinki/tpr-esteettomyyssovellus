@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework import permissions
 from . serializers import *
 import psycopg2
@@ -251,7 +251,7 @@ class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
     pagination_class = None
 
 
-class ArXQuestionAnswerPhotoTxtVieSet(viewsets.ModelViewSet):
+class ArXQuestionAnswerPhotoTxtViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswerPhotoTxt.objects.all()
     serializer_class = ArXQuestionAnswerPhotoTxtSerializer
 
@@ -259,7 +259,7 @@ class ArXQuestionAnswerPhotoTxtVieSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
-class ArXQuestionAnswerPhotoVieSet(viewsets.ModelViewSet):
+class ArXQuestionAnswerPhotoViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswerPhoto.objects.all()
     serializer_class = ArXQuestionAnswerPhotoSerializer
 
@@ -267,7 +267,7 @@ class ArXQuestionAnswerPhotoVieSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
-class ArXQuestionAnswerCommentVieSet(viewsets.ModelViewSet):
+class ArXQuestionAnswerCommentViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswerComment.objects.all()
     serializer_class = ArXQuestionAnswerCommentSerializer
 
@@ -275,9 +275,32 @@ class ArXQuestionAnswerCommentVieSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
-class ArXQuestionAnswerLocationVieSet(viewsets.ModelViewSet):
+class ArXQuestionAnswerLocationViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswerLocation.objects.all()
     serializer_class = ArXQuestionAnswerLocationSerializer
 
     filter_fields = ('log',)
+    pagination_class = None
+
+
+class ArXAnswerLogViewSet(viewsets.ModelViewSet):
+    queryset = ArXAnswerLog.objects.all()
+    serializer_class = ArXAnswerLogSerializer
+    pagination_class = None
+    filter_fields = ("entrance",)
+
+    # Function for creating a new answer log so that the request returns the log_id
+    def create(self, request, *args, **kwargs):
+        serializer = ArXAnswerLogSerializer(data=request.data)
+        if serializer.is_valid():
+            log = serializer.save()
+            log_id = log.log_id
+            return Response(log_id, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionAnswer.objects.all()
+    serializer_class = ArXQuestionAnswerSerializer
     pagination_class = None

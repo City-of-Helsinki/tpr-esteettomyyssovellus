@@ -135,3 +135,15 @@ class ArXQuestionAnswerPhotoTxtSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionAnswerPhotoTxt
         fields = '__all__'
+
+
+class ArXAnswerLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXAnswerLog
+        fields = '__all__'
+
+
+class ArXQuestionAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionAnswer
+        fields = '__all__'
