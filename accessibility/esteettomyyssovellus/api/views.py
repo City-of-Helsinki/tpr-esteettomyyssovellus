@@ -291,8 +291,6 @@ class ArXAnswerLogViewSet(viewsets.ModelViewSet):
 
     # Function for creating a new answer log so that the request returns the log_id
     def create(self, request, *args, **kwargs):
-        print("AAAAAAAAAAAAAAAAA")
-        print(request.data)
         serializer = ArXAnswerLogSerializer(data=request.data)
         if serializer.is_valid():
             log = serializer.save()
