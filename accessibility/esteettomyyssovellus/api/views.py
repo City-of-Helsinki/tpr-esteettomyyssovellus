@@ -1,3 +1,4 @@
+from typing import Set
 from django.contrib.auth.models import User, Group
 from rest_framework import status, viewsets
 from rest_framework import permissions
@@ -304,3 +305,41 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswer.objects.all()
     serializer_class = ArXQuestionAnswerSerializer
     pagination_class = None
+    filter_fields = ("log",)
+
+    def create(self, request, *args, **kwargs):
+        data = []
+        try:
+            log_id = request.data["log"]
+            data = request.data["data"]
+        except:
+            print("corrupted data")
+        filtered_data = set(data)
+        try:
+                            # TODO: Move to constants
+            ps_connection = psycopg2.connect(user="ar_dev",
+                                            password="ar_dev",
+                                            host="10.158.123.184",
+                                            port="5432",
+                                            database="hki")
+
+            cursor = ps_connection.cursor(
+                    cursor_factory=psycopg2.extras.RealDictCursor)
+
+            for item in filtered_data:
+                cursor.execute("INSERT INTO ar_dev.ar_x_question_answer VALUES (%s, %s)", (log_id, item))
+                ps_connection.commit()
+            count = cursor.rowcount
+            print(count, "Record inserted successfully into mobile table")
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while inserting to database", error)
+            return Response("Error while inserting to database" + error, status=status.HTTP_400_BAD_REQUEST)
+
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+                return Response("Items added to the database", status=status.HTTP_201_CREATED)
