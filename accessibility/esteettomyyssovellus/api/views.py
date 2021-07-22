@@ -71,6 +71,18 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     """
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
+    pagination_class = None
+    filter_fields = ("ext_servicepoint_id",)
+    # Function for creating a new answer log so that the request returns the log_id
+    # def create(self, request, *args, **kwargs):
+    #     serializer = ArServicepointSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         servicePoint = serializer.save()
+    #         log_id = servicePoint.log_id
+    #         return Response(log_id, status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ArSystemViewSet(viewsets.ModelViewSet):
