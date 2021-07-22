@@ -79,8 +79,9 @@ class ArSystemViewSet(viewsets.ModelViewSet):
     """
     queryset = ArSystem.objects.all()
     serializer_class = ArSystemSerializer
-
-    permission_classes = [permissions.IsAuthenticated]
+    filter_fields = ("system_id",)
+    pagination_class = None
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ArSystemFormViewSet(viewsets.ModelViewSet):
