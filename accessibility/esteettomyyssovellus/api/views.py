@@ -2,6 +2,7 @@ from typing import Set
 from django.contrib.auth.models import User, Group
 from rest_framework import status, viewsets
 from rest_framework import permissions
+from rest_framework.views import APIView
 from . serializers import *
 import psycopg2
 from rest_framework.response import Response
@@ -356,3 +357,60 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 ps_connection.close()
                 print("PostgreSQL connection is closed")
                 return Response("Items added to the database", status=status.HTTP_201_CREATED)
+
+
+class ChopAddressView(APIView):
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response("Get called for a funcion call that requires parameters and a post")
+
+    def post(self, request, format=None):
+        # Post request to call the ptv_chop_address function in the psql database
+        address = ""
+        post_office = ""
+
+        #
+        try:
+            address = request.data["address"]
+            post_office = request.data["postOffice"]
+        except:
+            print("Address data missing")
+
+
+        try:
+                            # TODO: Move to constants
+            ps_connection = psycopg2.connect(user="ar_dev",
+                                            password="ar_dev",
+                                            host="10.158.123.184",
+                                            port="5432",
+                                            database="hki")
+
+            cursor = ps_connection.cursor(
+                    cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute("SELECT ar_dev.ptv_chop_address(%s, %s)", (address, post_office))
+
+            # Get the returned values
+            return_cursor = cursor.fetchall()
+
+            # The psql function returns a string of type "('address',1,Helsinki)". Strip the data
+            # and turn it into a List
+
+            # First strip the "(" and ")"
+            return_string = return_cursor[0]["ptv_chop_address"][1:][:-1]
+            # Split by commas
+            return_strings = return_string.split(',')
+            # Strip the additional quotes from the address
+            return_strings[0] = return_strings[0][1:][:-1]
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while inserting to database", error)
+            return Response("Error while inserting to database", status=status.HTTP_400_BAD_REQUEST)
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+                return Response(return_strings, status=status.HTTP_201_CREATED)

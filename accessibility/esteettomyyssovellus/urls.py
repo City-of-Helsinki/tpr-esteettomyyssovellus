@@ -50,10 +50,16 @@ router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoViewSet)
 router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtViewSet)
 router.register(r'ArXAnswerLog', views.ArXAnswerLogViewSet)
 router.register(r'ArXQuestionAnswer', views.ArXQuestionAnswerViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls',
-                              namespace='rest_framework'))
+                              namespace='rest_framework')),
+]
+
+# Add endpoint for the ptv_chop_address psql function.
+urlpatterns += [
+    path('api/ChopAddress/', views.ChopAddressView.as_view())
 ]
