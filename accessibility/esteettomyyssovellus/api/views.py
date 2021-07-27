@@ -9,6 +9,7 @@ from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
 from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
+from rest_framework.decorators import action
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -84,7 +85,43 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #     else:
     #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+    @action(detail=True, methods=['POST'], url_path='update_address')
+    def update_address(self, request, *args, **kwargs):
+        servicepoint = self.get_object()
+        request_data = request.data
+        data = {
+            "business_id": servicepoint["business_id"],
+            "organisation_code": servicepoint["organisation_code"],
+            "system_id_old": servicepoint["system_id_old"],
+            "servicepoint_name": servicepoint["servicepoint_name"],
+            "ext_servicepoint_id": servicepoint["ext_servicepoint_id"],
+            "created": servicepoint["created"],
+            "created_by": servicepoint["created_by"],
+            "modified": servicepoint["modified"],
+            "modified_by": servicepoint["modified_by"],
+            "address_street_name": request_data["address_street_name"],
+            "address_no": request_data["address_no"],
+            "address_city": request_data["address_city"],
+            "accessibility_phone": servicepoint["accessibility_phone"],
+            "accessibility_email": servicepoint["accessibility_email"],
+            "accessibility_www": servicepoint["accessibility_www"],
+            "is_searchable": servicepoint["is_searchable"],
+            "organisation_id": servicepoint["organisation_id"],
+            "loc_easting": servicepoint["loc_easting"],
+            "loc_northing": servicepoint["loc_northing"],
+            "location_id": servicepoint["location_id"],
+            "system": servicepoint["system"]
+        }
+        serializer = ArServicepointSerializer(data=data)
+        if serializer.is_valid():
+            servicepoint.set_address_street_name(serializer.validated_data['address_street_name'])
+            servicepoint.set_address_no(serializer.validated_data['address_no'])
+            servicepoint.set_address_city(serializer.validated_data['address_city'])
+            servicepoint.save()
+            return Response({'status': 'address updated'})
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 class ArSystemViewSet(viewsets.ModelViewSet):
     """
