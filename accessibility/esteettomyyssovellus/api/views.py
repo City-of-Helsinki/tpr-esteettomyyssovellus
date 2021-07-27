@@ -36,7 +36,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArEntrance.objects.all()
     serializer_class = ArEntranceSerializer
     # permission_classes = [permissions.IsAuthenticated]
-    filter_fields = ('servicepoint',)
+    filter_fields = ('servicepoint', 'form',)
 
 
 class ArFormViewSet(viewsets.ModelViewSet):
@@ -93,6 +93,8 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.address_street_name = request_data["address_street_name"]
             servicepoint.address_no = request_data["address_no"]
             servicepoint.address_city = request_data["address_city"]
+            servicepoint.modified_by = request_data["modified_by"]
+            servicepoint.modified = request_data["modified"]
             servicepoint.save()
             return Response({'status': 'address updated'})
         except:
