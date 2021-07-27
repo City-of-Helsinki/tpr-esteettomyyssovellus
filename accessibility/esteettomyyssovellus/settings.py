@@ -165,7 +165,6 @@ REST_FRAMEWORK = {
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.Api']
 
-CORS_ORIGIN_ALLOW_ALL = False
 
 # For now. Change later for production
 CORS_ORIGIN_WHITELIST = (
