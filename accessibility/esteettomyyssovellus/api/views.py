@@ -1,4 +1,3 @@
-from typing import Set
 from django.contrib.auth.models import User, Group
 from rest_framework import status, viewsets
 from rest_framework import permissions
@@ -157,14 +156,6 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
 #                 print("PostgreSQL connection is closed")
 
 
-class ArXQuestionAnswerPhotoViewSet(viewsets.ModelViewSet):
-    """
-
-    """
-    queryset = ArXQuestionAnswerPhoto.objects.all()
-    serializer_class = ArXQuestionAnswerPhotoSerializer
-
-
 # class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
 #     queryset = ArBackendCopyableEntrance.objects.all()
 #     serializer_class = ArBackendCopyableEntranceSerializer
@@ -215,7 +206,7 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
             cursor.execute("""SELECT * FROM ar_dev.ar_x_stored_sentence_lang
                             WHERE entrance_id=%s
                             ORDER BY sentence_order_text""",
-                            entrance_id)
+                           entrance_id)
             result = cursor.fetchall()
             return Response(result)
 
@@ -327,7 +318,8 @@ class ArXAnswerLogViewSet(viewsets.ModelViewSet):
             log_id = log.log_id
             return Response(log_id, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
@@ -347,23 +339,25 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
         try:
                             # TODO: Move to constants
             ps_connection = psycopg2.connect(user="ar_dev",
-                                            password="ar_dev",
-                                            host="10.158.123.184",
-                                            port="5432",
-                                            database="hki")
+                                             password="ar_dev",
+                                             host="10.158.123.184",
+                                             port="5432",
+                                             database="hki")
 
             cursor = ps_connection.cursor(
                     cursor_factory=psycopg2.extras.RealDictCursor)
 
             for item in filtered_data:
-                cursor.execute("INSERT INTO ar_dev.ar_x_question_answer VALUES (%s, %s)", (log_id, item))
+                cursor.execute("INSERT INTO ar_dev.ar_x_question_answer VALUES (%s, %s)",
+                               (log_id, item))
                 ps_connection.commit()
             count = cursor.rowcount
             print(count, "Record inserted successfully into mobile table")
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while inserting to database", error)
-            return Response("Error while inserting to database" + error, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Error while inserting to database" + error,
+                            status=status.HTTP_400_BAD_REQUEST)
 
         finally:
             # closing database connection.
@@ -371,16 +365,65 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 cursor.close()
                 ps_connection.close()
                 print("PostgreSQL connection is closed")
-                return Response("Items added to the database", status=status.HTTP_201_CREATED)
+                return Response("Items added to the database",
+                                status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['POST'], url_path='generate_sentences')
+    def generate_sentences(self, request, format=None):
+        # Post request to call the arp_store_sentences function in the psql
+        # database
+
+        entrance_id = -1
+        #
+        try:
+            entrance_id = request.data["entrance_id"]
+        except:
+            print("Address data missing")
+
+
+        if entrance_id > 0:
+            try:
+                                # TODO: Move to constants
+                ps_connection = psycopg2.connect(user="ar_dev",
+                                                 password="ar_dev",
+                                                 host="10.158.123.184",
+                                                 port="5432",
+                                                 database="hki")
+
+                cursor = ps_connection.cursor(
+                        cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Call the psql function that chops the address
+                cursor.execute("SELECT ar_dev.arp_store_sentences(%s)",
+                               (entrance_id))
+                ps_connection.commit()
+
+            except (Exception, psycopg2.DatabaseError) as error:
+                print("Error while inserting to database", error)
+                return Response("Error while inserting to database",
+                                status=status.HTTP_400_BAD_REQUEST)
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                    print("PostgreSQL connection is closed")
+                    return Response("Sentences created",
+                                    status=status.HTTP_201_CREATED)
+        else:
+            return Response("Entrance_id missing. No function called.",
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChopAddressView(APIView):
     def get(self, request, format=None):
         # Placeholder endpoint for get request
-        return Response("Get called for a funcion call that requires parameters and a post")
+        return Response("""Get called for a funcion call that requires
+                        parameters and a post""")
 
     def post(self, request, format=None):
-        # Post request to call the ptv_chop_address function in the psql database
+        # Post request to call the ptv_chop_address function in the psql
+        # database
         address = ""
         post_office = ""
 
@@ -395,21 +438,23 @@ class ChopAddressView(APIView):
         try:
                             # TODO: Move to constants
             ps_connection = psycopg2.connect(user="ar_dev",
-                                            password="ar_dev",
-                                            host="10.158.123.184",
-                                            port="5432",
-                                            database="hki")
+                                             password="ar_dev",
+                                             host="10.158.123.184",
+                                             port="5432",
+                                             database="hki")
 
             cursor = ps_connection.cursor(
                     cursor_factory=psycopg2.extras.RealDictCursor)
 
             # Call the psql function that chops the address
-            cursor.execute("SELECT ar_dev.ptv_chop_address(%s, %s)", (address, post_office))
+            cursor.execute("SELECT ar_dev.ptv_chop_address(%s, %s)",
+                           (address, post_office))
 
             # Get the returned values
             return_cursor = cursor.fetchall()
 
-            # The psql function returns a string of type "('address',1,Helsinki)". Strip the data
+            # The psql function returns a string of type
+            # "('address',1,Helsinki)". Strip the data
             # and turn it into a List
 
             # First strip the "(" and ")"
@@ -421,7 +466,8 @@ class ChopAddressView(APIView):
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while inserting to database", error)
-            return Response("Error while inserting to database", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Error while inserting to database",
+                            status=status.HTTP_400_BAD_REQUEST)
         finally:
             # closing database connection.
             if ps_connection:

@@ -1,5 +1,3 @@
-
-
 class AuthRouter:
     route_app_labels = {'auth', 'contenttypes', 'sessions', 'admin'}
 
