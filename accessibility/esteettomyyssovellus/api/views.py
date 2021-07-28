@@ -458,11 +458,13 @@ class ChopAddressView(APIView):
             # and turn it into a List
 
             # First strip the "(" and ")"
+            print(return_cursor[0]["ptv_chop_address"])
             return_string = return_cursor[0]["ptv_chop_address"][1:][:-1]
             # Split by commas
             return_strings = return_string.split(',')
             # Strip the additional quotes from the address
-            return_strings[0] = return_strings[0][1:][:-1]
+            if return_strings[0][0] == '"':
+                return_strings[0] = return_strings[0][1:][:-1]
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while inserting to database", error)
