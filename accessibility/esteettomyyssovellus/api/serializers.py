@@ -1,6 +1,4 @@
 from django.contrib.auth.models import User, Group
-from django.db import models
-from django.db.models import fields
 from . models import *
 from rest_framework import serializers
 # from . models import Form
@@ -122,12 +120,6 @@ class ArXQuestionAnswerCommentSerializer(serializers.ModelSerializer):
 class ArXQuestionAnswerLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionAnswerLocation
-        fields = '__all__'
-
-
-class ArXQuestionAnswerPhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArXQuestionAnswerPhoto
         fields = '__all__'
 
 

@@ -29,9 +29,6 @@ router.register(r'ArSystems', views.ArSystemViewSet)
 router.register(r'ArSystemForms', views.ArSystemFormViewSet)
 router.register(r'ArXQuestionAnswerPhotos',
                 views.ArXQuestionAnswerPhotoViewSet)
-# router.register(r'texts', views.InfoTextViewSet, basename='text')
-# router.register(r'ArBackendCopyableEntrances',
-#   views.ArBackendCopyableEntranceViewSet)
 router.register(r'ArFormLanguages', views.ArFormLanguageViewSet)
 router.register(r'ArXQuestionLanguages', views.ArXQuestionLanguageViewSet)
 router.register(r'ArXStoredSentenceLangs', views.ArXStoredSentenceLangViewSet,
@@ -43,13 +40,20 @@ router.register(r'ArBackendQuestionChoice',
                 views.ArBackendQuestionChoiceViewSet)
 router.register(r'ArBackendEntranceAnswer',
                 views.ArBackendEntranceAnswerViewSet)
-router.register(r'ArXAdditionalinfo', views.ArXAdditionalinfoViewSet, basename="additionalinfo")
-router.register(r'ArXQuesitonAnswerComment', views.ArXQuestionAnswerCommentViewSet)
-router.register(r'ArXQuesitonAnswerLocation', views.ArXQuestionAnswerLocationViewSet)
-router.register(r'ArXQuesitonAnswerPhoto', views.ArXQuestionAnswerPhotoViewSet)
-router.register(r'ArXQuesitonAnswerPhotoTxt', views.ArXQuestionAnswerPhotoTxtViewSet)
-router.register(r'ArXAnswerLog', views.ArXAnswerLogViewSet)
-router.register(r'ArXQuestionAnswer', views.ArXQuestionAnswerViewSet)
+router.register(r'ArXAdditionalinfo', views.ArXAdditionalinfoViewSet,
+                basename="additionalinfo")
+router.register(r'ArXQuesitonAnswerComment',
+                views.ArXQuestionAnswerCommentViewSet)
+router.register(r'ArXQuesitonAnswerLocation',
+                views.ArXQuestionAnswerLocationViewSet)
+router.register(r'ArXQuesitonAnswerPhoto',
+                views.ArXQuestionAnswerPhotoViewSet)
+router.register(r'ArXQuesitonAnswerPhotoTxt',
+                views.ArXQuestionAnswerPhotoTxtViewSet)
+router.register(r'ArXAnswerLog',
+                views.ArXAnswerLogViewSet)
+router.register(r'ArXQuestionAnswer',
+                views.ArXQuestionAnswerViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
