@@ -416,11 +416,11 @@ class GenerateSentencesView(APIView):
 
                 # Call the psql function that chops the address
                 cursor.execute("SELECT ar_dev.arp_store_sentences(%s)",
-                               (entrance_id))
+                               [entrance_id])
                 ps_connection.commit()
 
             except (Exception, psycopg2.DatabaseError) as error:
-                print("Error while using database function", error)
+                print("Error while using database function arp_store_sentences", error)
                 return Response("Error while using database function",
                                 status=status.HTTP_400_BAD_REQUEST)
             finally:
