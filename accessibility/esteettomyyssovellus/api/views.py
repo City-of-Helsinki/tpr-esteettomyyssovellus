@@ -74,15 +74,6 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     serializer_class = ArServicepointSerializer
     pagination_class = None
     filter_fields = ("ext_servicepoint_id",)
-    # Function for creating a new answer log so that the request returns the log_id
-    # def create(self, request, *args, **kwargs):
-    #     serializer = ArServicepointSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         servicePoint = serializer.save()
-    #         log_id = servicePoint.log_id
-    #         return Response(log_id, status=status.HTTP_201_CREATED)
-    #     else:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['POST'], url_path='update_address')
     def update_address(self, request, *args, **kwargs):
@@ -119,46 +110,6 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
     serializer_class = ArSystemFormSerializer
 
     permission_classes = [permissions.IsAuthenticated]
-
-#
-#
-#   EXAMPLE ON HOW TO ACCESS DATA IN THE DATABASE
-#   WITHOUT USING DJANGO ORM!
-#
-#
-# class InfoTextViewSet(viewsets.ViewSet):
-
-#     def list(self, request):
-#         try:
-
-#             ps_connection = psycopg2.connect(user="ar_dev",
-#                                             password="ar_dev",
-#                                             host="10.158.123.184",
-#                                             port="5432",
-#                                             database="hki")
-
-#             cursor = ps_connection.cursor(
-#                   cursor_factory=psycopg2.extras.RealDictCursor)
-
-#             # call stored procedure
-#             cursor.execute("""SELECT * FROM ar_dev.ar_backend_question;""")
-#             result = cursor.fetchall()
-#             return Response(result)
-
-#         except (Exception, psycopg2.DatabaseError) as error:
-#             print("Error while connecting to PostgreSQL", error)
-
-#         finally:
-#             # closing database connection.
-#             if ps_connection:
-#                 cursor.close()
-#                 ps_connection.close()
-#                 print("PostgreSQL connection is closed")
-
-
-# class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
-#     queryset = ArBackendCopyableEntrance.objects.all()
-#     serializer_class = ArBackendCopyableEntranceSerializer
 
 
 class ArFormLanguageViewSet(viewsets.ModelViewSet):
@@ -368,52 +319,6 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 return Response("Items added to the database",
                                 status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['POST'], url_path='generate_sentences')
-    def generate_sentences(self, request, format=None):
-        # Post request to call the arp_store_sentences function in the psql
-        # database
-
-        entrance_id = -1
-        #
-        try:
-            entrance_id = request.data["entrance_id"]
-        except:
-            print("Address data missing")
-
-
-        if entrance_id > 0:
-            try:
-                                # TODO: Move to constants
-                ps_connection = psycopg2.connect(user="ar_dev",
-                                                 password="ar_dev",
-                                                 host="10.158.123.184",
-                                                 port="5432",
-                                                 database="hki")
-
-                cursor = ps_connection.cursor(
-                        cursor_factory=psycopg2.extras.RealDictCursor)
-
-                # Call the psql function that chops the address
-                cursor.execute("SELECT ar_dev.arp_store_sentences(%s)",
-                               (entrance_id))
-                ps_connection.commit()
-
-            except (Exception, psycopg2.DatabaseError) as error:
-                print("Error while inserting to database", error)
-                return Response("Error while inserting to database",
-                                status=status.HTTP_400_BAD_REQUEST)
-            finally:
-                # closing database connection.
-                if ps_connection:
-                    cursor.close()
-                    ps_connection.close()
-                    print("PostgreSQL connection is closed")
-                    return Response("Sentences created",
-                                    status=status.HTTP_201_CREATED)
-        else:
-            return Response("Entrance_id missing. No function called.",
-                            status=status.HTTP_400_BAD_REQUEST)
-
 
 class ChopAddressView(APIView):
     def get(self, request, format=None):
@@ -458,15 +363,17 @@ class ChopAddressView(APIView):
             # and turn it into a List
 
             # First strip the "(" and ")"
+            print(return_cursor[0]["ptv_chop_address"])
             return_string = return_cursor[0]["ptv_chop_address"][1:][:-1]
             # Split by commas
             return_strings = return_string.split(',')
             # Strip the additional quotes from the address
-            return_strings[0] = return_strings[0][1:][:-1]
+            if return_strings[0][0] == '"':
+                return_strings[0] = return_strings[0][1:][:-1]
 
         except (Exception, psycopg2.DatabaseError) as error:
-            print("Error while inserting to database", error)
-            return Response("Error while inserting to database",
+            print("Error while using database function", error)
+            return Response("Error while using database function",
                             status=status.HTTP_400_BAD_REQUEST)
         finally:
             # closing database connection.
@@ -475,3 +382,55 @@ class ChopAddressView(APIView):
                 ps_connection.close()
                 print("PostgreSQL connection is closed")
                 return Response(return_strings, status=status.HTTP_201_CREATED)
+
+
+class GenerateSentencesView(APIView):
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response("""Get called for a funcion call that requires
+                        parameters and a post""")
+
+    def post(self, request, format=None):
+        # Post request to call the arp_store_sentences function in the psql
+        # database
+
+        entrance_id = -1
+        #
+        try:
+            entrance_id = request.data["entrance_id"]
+        except:
+            print("Address data missing")
+
+
+        if entrance_id > 0:
+            try:
+                                # TODO: Move to constants
+                ps_connection = psycopg2.connect(user="ar_dev",
+                                                 password="ar_dev",
+                                                 host="10.158.123.184",
+                                                 port="5432",
+                                                 database="hki")
+
+                cursor = ps_connection.cursor(
+                        cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Call the psql function that chops the address
+                cursor.execute("SELECT ar_dev.arp_store_sentences(%s)",
+                               (entrance_id))
+                ps_connection.commit()
+
+            except (Exception, psycopg2.DatabaseError) as error:
+                print("Error while using database function", error)
+                return Response("Error while using database function",
+                                status=status.HTTP_400_BAD_REQUEST)
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                    print("PostgreSQL connection is closed")
+                    return Response("Sentences created",
+                                    status=status.HTTP_201_CREATED)
+        else:
+            return Response("Entrance_id missing. No function called.",
+                            status=status.HTTP_400_BAD_REQUEST)
