@@ -42,13 +42,13 @@ router.register(r'ArBackendEntranceAnswer',
                 views.ArBackendEntranceAnswerViewSet)
 router.register(r'ArXAdditionalinfo', views.ArXAdditionalinfoViewSet,
                 basename="additionalinfo")
-router.register(r'ArXQuesitonAnswerComment',
+router.register(r'ArXQuestionAnswerComment',
                 views.ArXQuestionAnswerCommentViewSet)
-router.register(r'ArXQuesitonAnswerLocation',
+router.register(r'ArXQuestionAnswerLocation',
                 views.ArXQuestionAnswerLocationViewSet)
-router.register(r'ArXQuesitonAnswerPhoto',
+router.register(r'ArXQuestionAnswerPhoto',
                 views.ArXQuestionAnswerPhotoViewSet)
-router.register(r'ArXQuesitonAnswerPhotoTxt',
+router.register(r'ArXQuestionAnswerPhotoTxt',
                 views.ArXQuestionAnswerPhotoTxtViewSet)
 router.register(r'ArXAnswerLog',
                 views.ArXAnswerLogViewSet)
@@ -65,5 +65,6 @@ urlpatterns = [
 
 # Add endpoint for the ptv_chop_address psql function.
 urlpatterns += [
-    path('api/ChopAddress/', views.ChopAddressView.as_view())
+    path('api/ChopAddress/', views.ChopAddressView.as_view()),
+    path('api/GenerateSentences/', views.GenerateSentencesView.as_view())
 ]
