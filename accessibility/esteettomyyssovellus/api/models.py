@@ -216,7 +216,7 @@ class ArLanguage(models.Model):
 
 
 class ArRest01AccessVariable(models.Model):
-    variable_id = models.IntegerField(blank=True, null=True)
+    variable_id = models.IntegerField(blank=True, null=False, primary_key=True)
     variable_name = models.CharField(max_length=99, blank=True, null=True)
     values_data = models.TextField(blank=True, null=True)
 
@@ -227,7 +227,8 @@ class ArRest01AccessVariable(models.Model):
 
 class ArRest01AccessViewpoint(models.Model):
     viewpoint_id = models.DecimalField(
-        max_digits=65535, decimal_places=65535, blank=True, null=True)
+        max_digits=65535, decimal_places=65535, blank=True, null=False,
+        primary_key=True)
     name_fi = models.TextField(blank=True, null=True)
     name_sv = models.TextField(blank=True, null=True)
     name_en = models.TextField(blank=True, null=True)
@@ -345,7 +346,8 @@ class ArRest01Reportsummary(models.Model):
 
 
 class ArRest01Requirement(models.Model):
-    requirement_id = models.IntegerField(blank=True, null=True)
+    requirement_id = models.IntegerField(blank=True, null=False,
+                                         primary_key=True)
     requirement_text = models.TextField(blank=True, null=True)
     is_indoor_requirement = models.TextField(blank=True, null=True)
     evaluation_zone = models.TextField(blank=True, null=True)
