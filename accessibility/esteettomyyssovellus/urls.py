@@ -54,7 +54,6 @@ router.register(r'ArXAnswerLog',
                 views.ArXAnswerLogViewSet)
 router.register(r'ArXQuestionAnswer',
                 views.ArXQuestionAnswerViewSet)
-
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -67,4 +66,14 @@ urlpatterns = [
 urlpatterns += [
     path('api/ChopAddress/', views.ChopAddressView.as_view()),
     path('api/GenerateSentences/', views.GenerateSentencesView.as_view())
+]
+
+# Public APIs
+urlpatterns += [
+    path('api/v1/accessibility/variables/',
+         views.ArRest01AccessVariableView.as_view()),
+    path('api/v1/accessibility/viewpoints/',
+         views.ArRest01AccessViewpointView.as_view()),
+    path('api/v1/accessibility/requirements/',
+         views.ArRest01RequirementView.as_view()),
 ]

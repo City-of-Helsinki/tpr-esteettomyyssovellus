@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User, Group
+from django.http.response import HttpResponse
+from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
@@ -434,3 +436,59 @@ class GenerateSentencesView(APIView):
         else:
             return Response("Entrance_id missing. No function called.",
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArRest01AccessVariableView(APIView):
+
+    def get(self, request, format=JSON):
+        data = ArRest01AccessVariable.objects.all()
+        modified_data = []
+        for item in data:
+            modified_data.append({
+                "variableId": item.variable_id,
+                "variableName": item.variable_name,
+                "values": item.values_data.split(',')
+            })
+        return HttpResponse([modified_data])
+
+
+class ArRest01AccessViewpointView(APIView):
+
+    def get(self, request, format=JSON):
+        data = ArRest01AccessViewpoint.objects.all()
+        modified_data = []
+        for item in data:
+            modified_data.append({
+                "viewpointId": item.viewpoint_id,
+                "names": [
+                    {
+                        "language": "fi",
+                        "value": item.name_fi,
+                    },
+                                        {
+                        "language": "sv",
+                        "value": item.name_sv,
+                    },                    {
+                        "language": "en",
+                        "value": item.name_en,
+                    }
+                ],
+                "values": item.values_data.split(','),
+                "viewPointOrderText": item.viewpoint_order
+            })
+        return HttpResponse([modified_data])
+
+
+class ArRest01RequirementView(APIView):
+
+    def get(self, request, format=JSON):
+        data = ArRest01Requirement.objects.all()
+        modified_data = []
+        for item in data:
+            modified_data.append({
+                "requirementId": item.requirement_id,
+                "requirementText": item.requirement_text,
+                "isIndoorRequirement": item.is_indoor_requirement,
+                "evaluationZone": item.evaluation_zone
+            })
+        return HttpResponse([modified_data])
