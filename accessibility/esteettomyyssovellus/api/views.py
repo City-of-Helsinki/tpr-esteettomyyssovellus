@@ -450,7 +450,7 @@ class ArRest01AccessVariableView(APIView):
                 "variableName": item.variable_name,
                 "values": item.values_data.split(',')
             })
-        return HttpResponse([modified_data])
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])
 
 
 class ArRest01AccessViewpointView(APIView):
@@ -477,7 +477,7 @@ class ArRest01AccessViewpointView(APIView):
                 "values": item.values_data.split(','),
                 "viewPointOrderText": item.viewpoint_order
             })
-        return HttpResponse([modified_data])
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])
 
 
 class ArRest01RequirementView(APIView):
@@ -492,7 +492,7 @@ class ArRest01RequirementView(APIView):
                 "isIndoorRequirement": item.is_indoor_requirement,
                 "evaluationZone": item.evaluation_zone
             })
-        return HttpResponse([modified_data])
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])
 
 
 def ArRest01ServicepointView(request, systemId, servicePointId):
@@ -517,7 +517,7 @@ def ArRest01ServicepointView(request, systemId, servicePointId):
         "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
         "entrances": list(integer_map)
     }
-    return HttpResponse([json.dumps(modified_data)])
+    return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])
 
 
 def ArRest01EntranceView(request, systemId, servicePointId):
@@ -548,7 +548,36 @@ def ArRest01EntranceView(request, systemId, servicePointId):
         if item.name_en:
             entrance["names"].append({"language": "en", "value": item.name_en})
 
-        modified_data.append(json.dumps(entrance))
-    return HttpResponse([modified_data])
+        modified_data.append(entrance)
+    return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])
 
 
+def ArRest01SentenceView(request, systemId, servicePointId):
+
+    data = ArRest01Sentence.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
+    modified_data = []
+    for item in data:
+        sentence = {
+            "systemId": str(item.system_id),
+            "servicePointId": item.external_servicepoint_id,
+            "entranceId": item.entrance_id,
+            "sentenceGroups": [],
+            "sentences": [],
+            "sentenceOrderText": item.sentence_order_text
+        }
+        if item.sentence_group_fi:
+            sentence["sentenceGroups"].append({"language": "fi", "value": str(item.sentence_group_fi)})
+        if item.sentence_group_sv:
+            sentence["sentenceGroups"].append({"language": "sv", "value": item.sentence_group_sv})
+        if item.sentence_group_en:
+            sentence["sentenceGroups"].append({"language": "en", "value": item.sentence_group_en})
+
+        if item.sentence_fi:
+            sentence["sentences"].append({"language": "fi", "value": item.sentence_fi})
+        if item.sentence_sv:
+            sentence["sentences"].append({"language": "sv", "value": item.sentence_sv})
+        if item.sentence_en:
+            sentence["sentences"].append({"language": "en", "value": item.sentence_en})
+
+        modified_data.append(sentence)
+    return HttpResponse([json.dumps(modified_data, ensure_ascii=False)])

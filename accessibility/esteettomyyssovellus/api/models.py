@@ -368,7 +368,7 @@ class ArRest01Sentence(models.Model):
     sentence_group_fi = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_sv = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_en = models.CharField(max_length=255, blank=True, null=True)
-    sentence_id = models.IntegerField(blank=True, null=True)
+    sentence_id = models.IntegerField(blank=True, null=False, primary_key=True)
     sentence_order_text = models.TextField(blank=True, null=True)
     sentence_fi = models.CharField(max_length=4000, blank=True, null=True)
     sentence_sv = models.CharField(max_length=4000, blank=True, null=True)

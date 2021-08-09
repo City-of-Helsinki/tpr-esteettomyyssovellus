@@ -76,8 +76,11 @@ urlpatterns += [
          views.ArRest01AccessViewpointView.as_view()),
     path('api/v1/accessibility/requirements/',
          views.ArRest01RequirementView.as_view()),
-    path('api/v1/servicepoints/<uuid:systemId>/<int:servicePointId>/',
+         # servicePointId is str because it can be both uuid or int
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/',
          views.ArRest01ServicepointView),
-    path('api/v1/servicepoints/<uuid:systemId>/<int:servicePointId>/entrances/',
-         views.ArRest01EntranceView)
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/',
+         views.ArRest01EntranceView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/',
+         views.ArRest01SentenceView),
 ]
