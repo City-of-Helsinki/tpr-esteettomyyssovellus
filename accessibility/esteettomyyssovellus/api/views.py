@@ -11,6 +11,7 @@ import urllib.parse as urlparse
 from urllib.parse import parse_qs
 from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
+import json
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -492,3 +493,62 @@ class ArRest01RequirementView(APIView):
                 "evaluationZone": item.evaluation_zone
             })
         return HttpResponse([modified_data])
+
+
+def ArRest01ServicepointView(request, systemId, servicePointId):
+
+    # TODO: external_servicepoint_id or servicepoint_id
+    data = ArRest01Servicepoint.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
+    item = data[0]
+    integer_map = map(int, item.entrances.split(','))
+    modified_data = {
+        "systemId": str(item.system_id),
+        "servicePointId": item.external_servicepoint_id,
+        "name": item.servicepoint_name,
+        "addressStreetName": item.address_street_name,
+        "addressNo": item.address_no,
+        "addressCity": item.address_city,
+        "locEasting": item.loc_easting,
+        "locNorthing": item.loc_northing,
+        "accessibilityPhone": item.accessibility_phone,
+        "accessibilityEmail": item.accessibility_email,
+        "accessibilityWww": item.accessibility_www,
+        "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+        "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+        "entrances": list(integer_map)
+    }
+    return HttpResponse([json.dumps(modified_data)])
+
+
+def ArRest01EntranceView(request, systemId, servicePointId):
+
+    data = ArRest01Entrance.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
+    modified_data = []
+    for item in data:
+        entrance = {
+            "systemId": str(item.system_id),
+            "servicePointId": item.external_servicepoint_id,
+            "entranceId": item.entrance_id,
+            "isMainEntrance": item.is_main_entrance == 'Y',
+            "names": [],
+            "locEasting": item.loc_easting,
+            "locNorthing": item.loc_northing,
+            "photoUrl": item.photo_url,
+            "streetviewUrl": item.streetview_url,
+            # 2014-11-14T09:10:58
+            "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+            "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+            "sentencesCreated": item.sentences_created.strftime("%Y-%m-%dT%H:%M:%S"),
+            "sentencesModified": item.sentences_modified.strftime("%Y-%m-%dT%H:%M:%S")
+        }
+        if item.name_fi:
+            entrance["names"].append({"language": "fi", "value": item.name_fi})
+        if item.name_sv:
+            entrance["names"].append({"language": "sv", "value": item.name_sv})
+        if item.name_en:
+            entrance["names"].append({"language": "en", "value": item.name_en})
+
+        modified_data.append(json.dumps(entrance))
+    return HttpResponse([modified_data])
+
+

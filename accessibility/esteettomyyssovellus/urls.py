@@ -76,4 +76,8 @@ urlpatterns += [
          views.ArRest01AccessViewpointView.as_view()),
     path('api/v1/accessibility/requirements/',
          views.ArRest01RequirementView.as_view()),
+    path('api/v1/servicepoints/<uuid:systemId>/<int:servicePointId>/',
+         views.ArRest01ServicepointView),
+    path('api/v1/servicepoints/<uuid:systemId>/<int:servicePointId>/entrances/',
+         views.ArRest01EntranceView)
 ]

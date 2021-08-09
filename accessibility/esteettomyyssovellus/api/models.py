@@ -245,7 +245,7 @@ class ArRest01Entrance(models.Model):
     external_servicepoint_id = models.CharField(
         max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    entrance_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
     is_main_entrance = models.CharField(max_length=1, blank=True, null=True)
     name_fi = models.CharField(max_length=500, blank=True, null=True)
     name_sv = models.CharField(max_length=500, blank=True, null=True)
@@ -383,7 +383,8 @@ class ArRest01Servicepoint(models.Model):
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(
         max_length=100, blank=True, null=True)
-    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=False,
+                                             primary_key=True)
     servicepoint_name = models.CharField(
         max_length=500, blank=True, null=True)
     address_street_name = models.CharField(
