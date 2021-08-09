@@ -435,7 +435,7 @@ class GenerateSentencesView(APIView):
                     return Response("Sentences created",
                                     status=status.HTTP_201_CREATED)
         else:
-            return Response("Entrance_id missing. No function called.",
+            return HttpResponse("Error occured",
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -453,8 +453,8 @@ class ArRest01AccessVariableView(APIView):
                 })
             return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                                 status=status.HTTP_200_OK)
-        except:
-            return Response("Error occured",
+        except Exception as error:
+            return HttpResponse("Error occured: " + str(error),
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -486,10 +486,9 @@ class ArRest01AccessViewpointView(APIView):
                 })
             return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                                 status=status.HTTP_200_OK)
-        except:
-            return Response("Error occured",
+        except Exception as error:
+            return HttpResponse("Error occured: " + str(error),
                             status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class ArRest01RequirementView(APIView):
@@ -507,8 +506,8 @@ class ArRest01RequirementView(APIView):
                 })
             return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                                 status=status.HTTP_200_OK)
-        except:
-            return Response("Error occured",
+        except Exception as error:
+            return HttpResponse("Error occured: " + str(error),
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -537,8 +536,8 @@ def ArRest01ServicepointView(request, systemId, servicePointId):
         }
         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                             status=status.HTTP_200_OK)
-    except:
-        return Response("Error occured",
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -574,8 +573,8 @@ def ArRest01EntranceView(request, systemId, servicePointId):
             modified_data.append(entrance)
         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                             status=status.HTTP_200_OK)
-    except:
-        return Response("Error occured",
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -610,8 +609,8 @@ def ArRest01SentenceView(request, systemId, servicePointId):
             modified_data.append(sentence)
         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                             status=status.HTTP_200_OK)
-    except:
-        return Response("Error occured",
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -647,8 +646,137 @@ def ArRest01EntranceSentenceView(request, systemId, servicePointId, entranceId):
             modified_data.append(sentence)
         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
                             status=status.HTTP_200_OK)
-    except:
-        return Response("Error occured",
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+def ArRest01ShortageView(request, systemId, servicePointId):
+
+    try:
+        data = ArRest01Shortage.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
+        modified_data = []
+        for item in data:
+            shortage = {
+                "systemId": str(item.system_id),
+                "servicePointId": item.external_servicepoint_id,
+                "viewpointId": item.viewpoint_id,
+                "shortages": []
+            }
+            if item.shortage_fi:
+                shortage["shortages"].append({"language": "fi", "value": item.shortage_fi})
+            if item.shortage_sv:
+                shortage["shortages"].append({"language": "sv", "value": item.shortage_sv})
+            if item.shortage_en:
+                shortage["shortages"].append({"language": "en", "value": item.shortage_en})
+
+            modified_data.append(shortage)
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
+                            status=status.HTTP_200_OK)
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+def ArSystemServicepointsView(request, systemId):
+
+    try:
+        # TODO: external_servicepoint_id or servicepoint_id
+        data = ArRest01Servicepoint.objects.filter(system_id=systemId)
+
+        modified_data = []
+        for item in data:
+            integer_map = map(int, item.entrances.split(','))
+            modified_data.append({
+                "systemId": str(item.system_id),
+                "servicePointId": item.external_servicepoint_id,
+                "name": item.servicepoint_name,
+                "addressStreetName": item.address_street_name,
+                "addressNo": item.address_no,
+                "addressCity": item.address_city,
+                "locEasting": item.loc_easting,
+                "locNorthing": item.loc_northing,
+                "accessibilityPhone": item.accessibility_phone,
+                "accessibilityEmail": item.accessibility_email,
+                "accessibilityWww": item.accessibility_www,
+                "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                "entrances": list(integer_map)
+            })
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
+                            status=status.HTTP_200_OK)
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+def ArSystemEntrancesView(request, systemId):
+
+    try:
+        data = ArRest01Entrance.objects.filter(system_id=systemId)
+        modified_data = []
+        for item in data:
+            entrance = {
+                "systemId": str(item.system_id),
+                "servicePointId": item.external_servicepoint_id,
+                "entranceId": item.entrance_id,
+                "isMainEntrance": item.is_main_entrance == 'Y',
+                "names": [],
+                "locEasting": item.loc_easting,
+                "locNorthing": item.loc_northing,
+                "photoUrl": item.photo_url,
+                "streetviewUrl": item.streetview_url,
+                "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                "sentencesCreated": item.sentences_created.strftime("%Y-%m-%dT%H:%M:%S"),
+                "sentencesModified": item.sentences_modified.strftime("%Y-%m-%dT%H:%M:%S")
+            }
+            if item.name_fi:
+                entrance["names"].append({"language": "fi", "value": item.name_fi})
+            if item.name_sv:
+                entrance["names"].append({"language": "sv", "value": item.name_sv})
+            if item.name_en:
+                entrance["names"].append({"language": "en", "value": item.name_en})
+
+            modified_data.append(entrance)
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
+                            status=status.HTTP_200_OK)
+    except Exception as error:
+        return HttpResponse(str(error),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+def ArSystemSentencesView(request, systemId):
+
+    try:
+        data = ArRest01Sentence.objects.filter(system_id=systemId)
+        modified_data = []
+        for item in data:
+            sentence = {
+                "systemId": str(item.system_id),
+                "servicePointId": item.external_servicepoint_id,
+                "entranceId": item.entrance_id,
+                "sentenceGroups": [],
+                "sentences": [],
+                "sentenceOrderText": item.sentence_order_text
+            }
+            if item.sentence_group_fi:
+                sentence["sentenceGroups"].append({"language": "fi", "value": str(item.sentence_group_fi)})
+            if item.sentence_group_sv:
+                sentence["sentenceGroups"].append({"language": "sv", "value": item.sentence_group_sv})
+            if item.sentence_group_en:
+                sentence["sentenceGroups"].append({"language": "en", "value": item.sentence_group_en})
+
+            if item.sentence_fi:
+                sentence["sentences"].append({"language": "fi", "value": item.sentence_fi})
+            if item.sentence_sv:
+                sentence["sentences"].append({"language": "sv", "value": item.sentence_sv})
+            if item.sentence_en:
+                sentence["sentences"].append({"language": "en", "value": item.sentence_en})
+
+            modified_data.append(sentence)
+        return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
+                            status=status.HTTP_200_OK)
+    except Exception as error:
+        return HttpResponse("Error occured: " + str(error),
+                        status=status.HTTP_400_BAD_REQUEST)

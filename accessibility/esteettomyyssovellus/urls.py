@@ -77,6 +77,9 @@ urlpatterns += [
     path('api/v1/accessibility/requirements/',
          views.ArRest01RequirementView.as_view()),
          # servicePointId is str because it can be both uuid or int
+    path('api/v1/servicepoints/<uuid:systemId>/', views.ArSystemServicepointsView),
+    path('api/v1/servicepoints/<uuid:systemId>/entrances/', views.ArSystemEntrancesView),
+    path('api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/', views.ArSystemSentencesView),
     path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/',
          views.ArRest01ServicepointView),
     path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/',
@@ -85,4 +88,7 @@ urlpatterns += [
          views.ArRest01SentenceView),
     path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/',
          views.ArRest01EntranceSentenceView),
+    # TODO: no primary_key doesn't work for now
+    # path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/',
+    #     views.ArRest01ShortageView),
 ]
