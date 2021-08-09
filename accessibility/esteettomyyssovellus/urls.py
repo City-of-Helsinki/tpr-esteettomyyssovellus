@@ -83,4 +83,6 @@ urlpatterns += [
          views.ArRest01EntranceView),
     path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/',
          views.ArRest01SentenceView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/',
+         views.ArRest01EntranceSentenceView),
 ]
