@@ -54,6 +54,9 @@ router.register(r'ArXAnswerLog',
                 views.ArXAnswerLogViewSet)
 router.register(r'ArXQuestionAnswer',
                 views.ArXQuestionAnswerViewSet)
+router.register(r'ArExternalServicepoint',
+                views.ArExternalServicepointViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

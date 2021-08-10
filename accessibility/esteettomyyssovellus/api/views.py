@@ -105,14 +105,22 @@ class ArSystemViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
+class ArExternalServicepointViewSet(viewsets.ModelViewSet):
+    """
+    """
+    queryset = ArExternalServicepoint.objects.all()
+    serializer_class = ArExternalServicepointSerializer
+    filter_fields = ("servicepoint_id", "system_id",)
+    pagination_class = None
+
+
 class ArSystemFormViewSet(viewsets.ModelViewSet):
     """
 
     """
     queryset = ArSystemForm.objects.all()
     serializer_class = ArSystemFormSerializer
-
-    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
 
 
 class ArFormLanguageViewSet(viewsets.ModelViewSet):
@@ -398,9 +406,11 @@ class GenerateSentencesView(APIView):
         # database
 
         entrance_id = -1
+        form_submitted = 'D'
         #
         try:
             entrance_id = request.data["entrance_id"]
+            form_submitted = request.data["form_submitted"]
         except:
             print("Address data missing")
 
@@ -418,8 +428,8 @@ class GenerateSentencesView(APIView):
                         cursor_factory=psycopg2.extras.RealDictCursor)
 
                 # Call the psql function that chops the address
-                cursor.execute("SELECT ar_dev.arp_store_sentences(%s)",
-                               [entrance_id])
+                cursor.execute("SELECT ar_dev.arp_store_sentences(%s, %s)",
+                               (entrance_id, form_submitted))
                 ps_connection.commit()
 
             except (Exception, psycopg2.DatabaseError) as error:

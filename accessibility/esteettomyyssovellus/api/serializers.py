@@ -140,3 +140,9 @@ class ArXQuestionAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionAnswer
         fields = '__all__'
+
+
+class ArExternalServicepointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArExternalServicepoint
+        fields = '__all__'
