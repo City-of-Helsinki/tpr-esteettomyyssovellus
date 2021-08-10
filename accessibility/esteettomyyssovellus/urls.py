@@ -54,6 +54,9 @@ router.register(r'ArXAnswerLog',
                 views.ArXAnswerLogViewSet)
 router.register(r'ArXQuestionAnswer',
                 views.ArXQuestionAnswerViewSet)
+router.register(r'ArExternalServicepoint',
+                views.ArExternalServicepointViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -76,4 +79,19 @@ urlpatterns += [
          views.ArRest01AccessViewpointView.as_view()),
     path('api/v1/accessibility/requirements/',
          views.ArRest01RequirementView.as_view()),
+         # servicePointId is str because it can be both uuid or int
+    path('api/v1/servicepoints/<uuid:systemId>/', views.ArSystemServicepointsView),
+    path('api/v1/servicepoints/<uuid:systemId>/entrances/', views.ArSystemEntrancesView),
+    path('api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/', views.ArSystemSentencesView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/',
+         views.ArRest01ServicepointView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/',
+         views.ArRest01EntranceView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/',
+         views.ArRest01SentenceView),
+    path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/',
+         views.ArRest01EntranceSentenceView),
+    # TODO: no primary_key doesn't work for now
+    # path('api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/',
+    #     views.ArRest01ShortageView),
 ]
