@@ -20,7 +20,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class ArEntranceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArEntrance
-        fields = '__all__'
+        fields = ['entrance_id', 'created', 'created_by', 'modified',
+                  'modified_by', 'is_main_entrance', 'servicepoint', 'form']
 
 
 class ArFormSerializer(serializers.ModelSerializer):
@@ -44,7 +45,10 @@ class ArXQuestionBlockSerializer(serializers.ModelSerializer):
 class ArServicepointSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArServicepoint
-        fields = '__all__'
+        fields = ['servicepoint_id', 'business_id', 'organisation_code', 'system_id_old',
+                  'servicepoint_name', 'ext_servicepoint_id', 'created', 'created_by', 'modified',
+                  'modified_by', 'address_street_name', 'address_no', 'address_city', 'is_searchable',
+                  'organisation_id', 'system', 'loc_easting', 'loc_northing', 'location_id']
 
 
 class ArSystemSerializer(serializers.ModelSerializer):
@@ -145,4 +149,16 @@ class ArXQuestionAnswerSerializer(serializers.ModelSerializer):
 class ArExternalServicepointSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArExternalServicepoint
+        fields = '__all__'
+
+
+class ArBackendEntranceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntrance
+        fields = '__all__'
+
+
+class ArBackendServicepointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendServicepoint
         fields = '__all__'

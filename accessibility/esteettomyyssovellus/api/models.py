@@ -24,6 +24,23 @@ class ArBackendCopyableEntrance(models.Model):
         db_table = 'ar_backend_copyable_entrance'
 
 
+class ArBackendEntrance(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted =models.CharField(max_length=1, blank=False, null=False)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    name_fi = models.CharField(max_length=500, blank=True, null=True)
+    name_sv = models.CharField(max_length=500, blank=True, null=True)
+    name_en = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_entrance'
+
+
 class ArBackendEntranceAnswer(models.Model):
     technical_id = models.TextField(primary_key=True)
     log_id = models.BigIntegerField(blank=True, null=True)
@@ -132,6 +149,26 @@ class ArBackendQuestionChoice(models.Model):
     class Meta:
         managed = False  # Created from a view. Don't remove.
         db_table = 'ar_backend_question_choice'
+
+
+class ArBackendServicepoint(models.Model):
+    technical_id = models.CharField(max_length=40, primary_key=True)
+    log_id = models.BigIntegerField()
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    main_entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(max_length=1, blank=True, null=True)
+    contact_person_fi = models.CharField(max_length=200, blank=True, null=True)
+    contact_person_sv = models.CharField(max_length=200, blank=True, null=True)
+    contact_person_en = models.CharField(max_length=200, blank=True, null=True)
+    accessibility_phone = models.CharField(
+        max_length=200, blank=True, null=True)
+    accessibility_email = models.CharField(
+        max_length=200, blank=True, null=True)
+    new_entrance_possible = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'ar_backend_servicepoint'
 
 
 class ArEntrance(models.Model):
@@ -1271,3 +1308,10 @@ class TpTempStoredShortageHelper(models.Model):
     class Meta:
         managed = False
         db_table = 'tp_temp_stored_shortage_helper'
+
+
+class ArXQuestionBlockAnswerField(models.Model):
+    question_block_answer_id = models.BigIntegerField(primary_key=True)
+    log_id = models.BigIntegerField()
+    question_block_field_id = models.BigIntegerField()
+    entry = models.CharField(max_length=200, blank=True, null=True)

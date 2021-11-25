@@ -89,7 +89,22 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
-            return Response({'status': 'address updated'})
+            return Response({'status': 'address updated'}, status=status.HTTP_200_OK)
+        except:
+            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['POST'], url_path='update_accessibility_contacts')
+    def update_accessibility_contacts(self, request, *args, **kwargs):
+        try:
+            request_data = request.data
+            servicepoint = self.get_object()
+            servicepoint.accessibility_phone = request_data["accessibility_phone"]
+            servicepoint.accessibility_email = request_data["accessibility_email"]
+            servicepoint.accessibility_www = request_data["accessibility_www"]
+            servicepoint.modified_by = request_data["modified_by"]
+            servicepoint.modified = request_data["modified"]
+            servicepoint.save()
+            return Response({'status': 'accessibility information updated'}, status=status.HTTP_200_OK)
         except:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
@@ -427,7 +442,7 @@ class GenerateSentencesView(APIView):
                 cursor = ps_connection.cursor(
                         cursor_factory=psycopg2.extras.RealDictCursor)
 
-                # Call the psql function that chops the address
+                # Call the psql function that creates the sentences
                 cursor.execute("SELECT ar_dev.arp_store_sentences(%s, %s)",
                                (entrance_id, form_submitted))
                 ps_connection.commit()
@@ -477,7 +492,7 @@ class ArRest01AccessViewpointView(APIView):
             modified_data = []
             for item in data:
                 modified_data.append({
-                    "viewpointId": item.viewpoint_id,
+                    "viewpointId": int(item.viewpoint_id),
                     "names": [
                         {
                             "language": "fi",
@@ -790,3 +805,23 @@ def ArSystemSentencesView(request, systemId):
     except Exception as error:
         return HttpResponse("Error occured: " + str(error),
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArBackendEntranceViewset(viewsets.ModelViewSet):
+    """
+    API endpoint for ar backend entrance.
+    """
+    queryset = ArBackendEntrance.objects.all()
+    serializer_class = ArBackendEntranceSerializer
+    pagination_class = None
+    filter_fields = ('entrance_id',)
+
+
+class ArBackendServicepointViewset(viewsets.ModelViewSet):
+    """
+    API endpoint for ar backend entrance.
+    """
+    queryset = ArBackendServicepoint.objects.all()
+    serializer_class = ArBackendServicepointSerializer
+    pagination_class = None
+    filter_fields = ('servicepoint_id',)
