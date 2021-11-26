@@ -60,6 +60,8 @@ router.register(r'ArBackendEntrance',
                 views.ArBackendEntranceViewset)
 router.register(r'ArBackendServicepoint',
                 views.ArBackendServicepointViewset)
+router.register(r'ArBackendQuestionBlockField',
+                views.ArBackendQuestionBlockFieldViewset)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

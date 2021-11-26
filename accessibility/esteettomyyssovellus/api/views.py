@@ -13,6 +13,7 @@ from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -90,7 +91,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
             return Response({'status': 'address updated'}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['POST'], url_path='update_accessibility_contacts')
@@ -105,7 +106,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
             return Response({'status': 'accessibility information updated'}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -825,3 +826,12 @@ class ArBackendServicepointViewset(viewsets.ModelViewSet):
     serializer_class = ArBackendServicepointSerializer
     pagination_class = None
     filter_fields = ('servicepoint_id',)
+
+
+class ArBackendQuestionBlockFieldViewset(viewsets.ModelViewSet):
+    """
+    """
+    queryset = ArBackendQuestionBlockField.objects.all()
+    serializer_class = ArBackendQuestionBlockFieldSerializer
+    pagination_class = None
+    filter_fields = ('question_block_id',)

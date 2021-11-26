@@ -130,10 +130,34 @@ class ArBackendQuestionBlock(models.Model):
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    field_count = models.BigIntegerField()
+    add_location_possible = models.CharField(max_length=1, blank=True, null=True)
+    add_location_title = models.CharField(max_length=200, blank=True, null=True)
+    add_location_description = models.CharField(max_length=2000, blank=True, null=True)
+    add_photo_possible = models.CharField(max_length=1, blank=True, null=True)
+    add_photo_title = models.CharField(max_length=200, blank=True, null=True)
+    add_photo_description = models.CharField(max_length=2000, blank=True, null=True)
+    show_details_in_titlebar = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
         db_table = 'ar_backend_question_block'
+
+
+class ArBackendQuestionBlockField(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.IntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    field_number = models.IntegerField()
+    field_name = models.CharField(max_length=30, blank=True, null=True)
+    field_title = models.CharField(max_length=200, blank=True, null=True)
+    obligatory = models.CharField(max_length=1, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ar_backend_questionblock_field'
 
 
 class ArBackendQuestionChoice(models.Model):
