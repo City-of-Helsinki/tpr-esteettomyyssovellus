@@ -42,9 +42,11 @@ class ArBackendEntrance(models.Model):
 
 
 class ArBackendEntranceAnswer(models.Model):
-    technical_id = models.TextField(primary_key=True)
+    technical_id = models.CharField(max_length=500, null=False,
+                                    primary_key=True)
     log_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(null=True, max_length=1)
     question_block_id = models.IntegerField(blank=True, null=True)
     question_id = models.BigIntegerField(blank=True, null=True)
     question_choice_id = models.BigIntegerField(blank=True, null=True)
@@ -64,8 +66,11 @@ class ArBackendEntranceAnswer(models.Model):
 
 
 class ArBackendEntrancePhoto(models.Model):
+    technical_id = models.CharField(max_length=500, null=False,
+                                    primary_key=True)
     log_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(null=True, max_length=1)
     question_id = models.BigIntegerField(blank=True, null=True)
     photo_number = models.BigIntegerField(blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
