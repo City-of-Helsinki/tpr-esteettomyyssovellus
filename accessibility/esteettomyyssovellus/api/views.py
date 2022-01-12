@@ -899,37 +899,49 @@ class ArRest01EntranceSentenceView(APIView):
 
 
 class ArRest01ShortageView(APIView):
-    def get(self, request, systemId=None, servicePointId=None, format=None):
+    def get(
+        self, request, systemId=None, servicePointId=None, viewPointId=None, format=None
+    ):
         try:
-            data = ArRest01Shortage.objects.filter(
-                system_id=systemId, external_servicepoint_id=servicePointId
-            )
-            modified_data = []
-            for item in data:
-                shortage = {
-                    "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "viewpointId": item.viewpoint_id,
-                    "shortages": [],
-                }
-                if item.shortage_fi:
-                    shortage["shortages"].append(
-                        {"language": "fi", "value": item.shortage_fi}
-                    )
-                if item.shortage_sv:
-                    shortage["shortages"].append(
-                        {"language": "sv", "value": item.shortage_sv}
-                    )
-                if item.shortage_en:
-                    shortage["shortages"].append(
-                        {"language": "en", "value": item.shortage_en}
-                    )
+            if viewPointId != None:
+                data = ArRest01Shortage.objects.filter(
+                    system_id=systemId,
+                    servicepoint_id=servicePointId,
+                    viewpoint_id=viewPointId,
+                )
+            elif servicePointId != None:
+                data = ArRest01Shortage.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01Shortage.objects.filter(system_id=systemId)
+            if len(data) > 0:
+                modified_data = []
+                for item in data:
+                    shortage = {
+                        "systemId": str(item.system_id),
+                        "servicePointId": item.external_servicepoint_id,
+                        "viewpointId": item.viewpoint_id,
+                        "shortages": [],
+                    }
+                    if item.shortage_fi:
+                        shortage["shortages"].append(
+                            {"language": "fi", "value": item.shortage_fi}
+                        )
+                    if item.shortage_sv:
+                        shortage["shortages"].append(
+                            {"language": "sv", "value": item.shortage_sv}
+                        )
+                    if item.shortage_en:
+                        shortage["shortages"].append(
+                            {"language": "en", "value": item.shortage_en}
+                        )
 
-                modified_data.append(shortage)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                status=status.HTTP_200_OK,
-            )
+                    modified_data.append(shortage)
+                return HttpResponse(
+                    [json.dumps(modified_data, ensure_ascii=False)],
+                    status=status.HTTP_200_OK,
+                )
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1055,6 +1067,98 @@ class ArSystemSentencesView(APIView):
                     )
 
                 modified_data.append(sentence)
+            return HttpResponse(
+                [json.dumps(modified_data, ensure_ascii=False)],
+                status=status.HTTP_200_OK,
+            )
+        except Exception as error:
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01ServicepointAccessibilityViewset(APIView):
+    def get(
+        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+    ):
+        try:
+            data = ArRest01ServicepointAccessibility.objects.filter(
+                system_id=systemId, servicepoint_id=servicePointId
+            )
+            modified_data = []
+            for item in data:
+                property = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.servicepoint_id,
+                    "variableId": item.variable_id,
+                    "variableName": item.variable_name,
+                    "value": item.rest_value,
+                }
+                modified_data.append(property)
+            return HttpResponse(
+                [json.dumps(modified_data, ensure_ascii=False)],
+                status=status.HTTP_200_OK,
+            )
+        except Exception as error:
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01EntranceAccessibilityViewset(APIView):
+    def get(
+        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+    ):
+        try:
+            if entranceId != None:
+                data = ArRest01EntranceAccessibility.objects.filter(
+                    system_id=systemId,
+                    servicepoint_id=servicePointId,
+                    entrance_id=entranceId,
+                )
+            else:
+                data = ArRest01EntranceAccessibility.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
+            modified_data = []
+            for item in data:
+                property = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.servicepoint_id,
+                    "entranceId": item.entrance_id,
+                    "variableId": item.variable_id,
+                    "variableName": item.variable_name,
+                    "value": item.rest_value,
+                }
+                modified_data.append(property)
+            return HttpResponse(
+                [json.dumps(modified_data, ensure_ascii=False)],
+                status=status.HTTP_200_OK,
+            )
+        except Exception as error:
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01SummaryViewset(APIView):
+    def get(
+        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+    ):
+        try:
+            data = ArRest01Summary.objects.filter(
+                system_id=systemId, servicepoint_id=servicePointId
+            )
+            modified_data = []
+            for item in data:
+                property = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.servicepoint_id,
+                    "viewpointId": item.viewpoint_id,
+                    "isAccessible": item.is_accessible,
+                    "shortageCount": item.shortage_count,
+                }
+                modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
                 status=status.HTTP_200_OK,

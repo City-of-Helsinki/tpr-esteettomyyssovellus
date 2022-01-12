@@ -103,6 +103,32 @@ urlpatterns += [
         views.ArRest01EntranceView.as_view(),
     ),
     # TODO: no primary_key doesn't work for now
-    # path('api/v2/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/',
-    #     views.ArRest01ShortageView),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",
+        views.ArRest01ServicepointAccessibilityViewset.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",
+        views.ArRest01EntranceAccessibilityViewset.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
+        views.ArRest01EntranceAccessibilityViewset.as_view(),
+    ),
+    path(
+        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
+        views.ArRest01SummaryViewset.as_view(),
+    ),
 ]

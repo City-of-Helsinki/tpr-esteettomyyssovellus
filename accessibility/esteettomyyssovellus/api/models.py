@@ -329,6 +329,7 @@ class ArRest01Entrance(models.Model):
 
 
 class ArRest01EntranceAccessibility(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -449,6 +450,7 @@ class ArRest01Servicepoint(models.Model):
 
 
 class ArRest01ServicepointAccessibility(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -465,6 +467,7 @@ class ArRest01ServicepointAccessibility(models.Model):
 
 
 class ArRest01Shortage(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -488,6 +491,7 @@ class ArRest01Shortage(models.Model):
 
 
 class ArRest01Summary(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
