@@ -67,68 +67,80 @@ urlpatterns += [
     path("api/GenerateSentences/", views.GenerateSentencesView.as_view()),
 ]
 
-# Public APIs
+# Public APIs v1
 urlpatterns += [
     # SYSTEM DATA
-    path("api/v2/accessibility/variables/", views.ArRest01AccessVariableView.as_view()),
+    path("api/v1/accessibility/variables/", views.ArRest01AccessVariableView.as_view()),
     path(
-        "api/v2/accessibility/viewpoints/", views.ArRest01AccessViewpointView.as_view()
+        "api/v1/accessibility/viewpoints/", views.ArRest01AccessViewpointView.as_view()
     ),
-    path("api/v2/accessibility/requirements/", views.ArRest01RequirementView.as_view()),
+    path("api/v1/accessibility/requirements/", views.ArRest01RequirementView.as_view()),
     # CLIENT DATA
     path(
-        "api/v2/servicepoints/<uuid:systemId>/<str:servicePointId>/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
-        "api/v2/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",
         views.ArRest01SentenceView.as_view(),
     ),
     path(
-        "api/v2/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/",
         views.ArRest01EntranceSentenceView.as_view(),
     ),
     # CLIENT DATA, MASSIVE QUERIES
-    path("api/v2/servicepoints/<uuid:systemId>/", views.ArSystemServicepointsView),
+    path("api/v1/servicepoints/<uuid:systemId>/", views.ArSystemServicepointsView),
     path(
-        "api/v2/servicepoints/<uuid:systemId>/entrances/", views.ArSystemEntrancesView
+        "api/v1/servicepoints/<uuid:systemId>/entrances/", views.ArSystemEntrancesView
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/sentences/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/",
         views.ArSystemSentencesView,
     ),
     # servicePointId is str because it can be both uuid or int
     path(
-        "api/v2/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
         views.ArRest01EntranceView.as_view(),
     ),
     # TODO: no primary_key doesn't work for now
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/shortages/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",
         views.ArRest01ServicepointAccessibilityViewset.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",
         views.ArRest01EntranceAccessibilityViewset.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
         views.ArRest01EntranceAccessibilityViewset.as_view(),
     ),
     path(
-        "api/v2/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
         views.ArRest01SummaryViewset.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",
+        views.ArRest01SummaryViewset.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",
+        views.ArRest01ReportshortageViewset.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",
+        views.ArRest01ReportsummaryViewset.as_view(),
     ),
 ]

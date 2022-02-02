@@ -1143,12 +1143,25 @@ class ArRest01EntranceAccessibilityViewset(APIView):
 
 class ArRest01SummaryViewset(APIView):
     def get(
-        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+        self,
+        request,
+        systemId=None,
+        servicePointId=None,
+        entranceId=None,
+        viewPointId=None,
+        format=None,
     ):
         try:
-            data = ArRest01Summary.objects.filter(
-                system_id=systemId, servicepoint_id=servicePointId
-            )
+            if viewPointId != None:
+                data = ArRest01Summary.objects.filter(
+                    system_id=systemId,
+                    servicepoint_id=servicePointId,
+                    viewpoint_id=viewPointId,
+                )
+            else:
+                data = ArRest01Summary.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
             modified_data = []
             for item in data:
                 property = {
@@ -1163,6 +1176,108 @@ class ArRest01SummaryViewset(APIView):
                 [json.dumps(modified_data, ensure_ascii=False)],
                 status=status.HTTP_200_OK,
             )
+        except Exception as error:
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01ReportshortageViewset(APIView):
+    def get(
+        self,
+        request,
+        systemId=None,
+        servicePointId=None,
+        entranceId=None,
+        viewPointId=None,
+        format=None,
+    ):
+        try:
+            data = ArRest01Reportshortage.objects.filter(
+                system_id=systemId, servicepoint_id=servicePointId
+            )
+            modified_data = []
+            for item in data:
+                property = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.servicepoint_id,
+                    "viewpointId": item.viewpoint_id,
+                    "isIndoorServicepoint": item.is_indoor_servicepoint == "Y",
+                    "evaluationZone": item.evaluation_zone,
+                    "easyToFix": item.easy_to_fix,
+                    "requirementId": item.requirement_id,
+                    "requirementText": item.requirement_text,
+                    "explanationWhyNot": item.explanation_why_not,
+                    "shortages": [],
+                }
+                if item.shortage_fi:
+                    property["shortages"].append(
+                        {"language": "fi", "value": item.shortage_fi}
+                    )
+                if item.shortage_sv:
+                    property["shortages"].append(
+                        {"language": "sv", "value": item.shortage_sv}
+                    )
+                if item.shortage_en:
+                    property["shortages"].append(
+                        {"language": "en", "value": item.shortage_en}
+                    )
+
+                modified_data.append(property)
+            return HttpResponse(
+                [json.dumps(modified_data, ensure_ascii=False)],
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as error:
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01ReportsummaryViewset(APIView):
+    def get(
+        self,
+        request,
+        systemId=None,
+        servicePointId=None,
+        entranceId=None,
+        viewPointId=None,
+        format=None,
+    ):
+        try:
+            data = ArRest01Reportsummary.objects.filter(
+                system_id=systemId, servicepoint_id=servicePointId
+            )
+            modified_data = []
+            for item in data:
+                property = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.servicepoint_id,
+                    "isAccessible": item.is_accessible,
+                    "shortageCount": item.shortage_count,
+                    "shortageCountEasyToFix": item.shortage_count_easy_to_fix,
+                    "wheelIsAccessible": item.wheel_is_accessible,
+                    "wheelShortageCount": item.wheel_shortage_count,
+                    "wheelShortageCountOutside": item.wheel_shortage_count_outside,
+                    "wheelShortageCountEntrance": item.wheel_shortage_count_entrance,
+                    "wheelShortageCountInside": item.wheel_shortage_count_inside,
+                    "visualIsAccessible": item.visual_is_accessible,
+                    "visualShortageCount": item.visual_shortage_count,
+                    "visualShortageCountEasyToFix": item.visual_shortage_count_easy_to_fix,
+                    "visualShortageCountOutside": item.visual_shortage_count_outside,
+                    "visualShortageCountEntrance": item.visual_shortage_count_entrance,
+                    "visualShortageCountInside": item.visual_shortage_count_inside,
+                    "hearingIsAccessible": item.hearing_is_accessible,
+                    "toiletIsAccessible": item.toilet_is_accessible,
+                }
+
+                modified_data.append(property)
+            return HttpResponse(
+                [json.dumps(modified_data, ensure_ascii=False)],
+                status=status.HTTP_200_OK,
+            )
+
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST

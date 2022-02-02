@@ -347,6 +347,7 @@ class ArRest01EntranceAccessibility(models.Model):
 
 
 class ArRest01Reportshortage(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -367,6 +368,7 @@ class ArRest01Reportshortage(models.Model):
 
 
 class ArRest01Reportsummary(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
