@@ -1164,9 +1164,13 @@ class ArRest01SummaryViewset(APIView):
                     servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
                 )
-            else:
+            elif servicePointId != None:
                 data = ArRest01Summary.objects.filter(
                     system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01Summary.objects.filter(
+                    system_id=systemId,
                 )
             modified_data = []
             for item in data:
@@ -1199,9 +1203,14 @@ class ArRest01ReportshortageViewset(APIView):
         format=None,
     ):
         try:
-            data = ArRest01Reportshortage.objects.filter(
-                system_id=systemId, servicepoint_id=servicePointId
-            )
+            if servicePointId != None:
+                data = ArRest01Reportshortage.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01Reportshortage.objects.filter(
+                    system_id=systemId,
+                )
             modified_data = []
             for item in data:
                 property = {
@@ -1252,9 +1261,14 @@ class ArRest01ReportsummaryViewset(APIView):
         format=None,
     ):
         try:
-            data = ArRest01Reportsummary.objects.filter(
-                system_id=systemId, servicepoint_id=servicePointId
-            )
+            if servicePointId != None:
+                data = ArRest01Reportsummary.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01Reportsummary.objects.filter(
+                    system_id=systemId,
+                )
             modified_data = []
             for item in data:
                 property = {
