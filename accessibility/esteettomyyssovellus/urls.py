@@ -102,7 +102,6 @@ urlpatterns += [
         "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
         views.ArRest01EntranceView.as_view(),
     ),
-    # TODO: no primary_key doesn't work for now
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",
         views.ArRest01ShortageView.as_view(),
@@ -128,6 +127,10 @@ urlpatterns += [
         views.ArRest01EntranceAccessibilityViewset.as_view(),
     ),
     path(
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
+        views.ArRest01EntranceAccessibilityViewset.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
         views.ArRest01SummaryViewset.as_view(),
     ),
@@ -142,5 +145,9 @@ urlpatterns += [
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",
         views.ArRest01ReportsummaryViewset.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/properties/",
+        views.ArRest01ServicepointAccessibilityViewset.as_view(),
     ),
 ]

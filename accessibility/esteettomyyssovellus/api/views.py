@@ -12,6 +12,7 @@ from urllib.parse import parse_qs
 from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
+from esteettomyyssovellus.settings import DB_HOST, DB_PASSWORD, DB_PORT, DB_USER, DB
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -186,13 +187,12 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
 
     def list(self, request):
         try:
-            # TODO: Move to constants
             ps_connection = psycopg2.connect(
-                user="ar_dev",
-                password="ar_dev",
-                host="10.158.123.184",
-                port="5432",
-                database="hki",
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -397,13 +397,12 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
             print("corrupted data")
         filtered_data = set(data)
         try:
-            # TODO: Move to constants
             ps_connection = psycopg2.connect(
-                user="ar_dev",
-                password="ar_dev",
-                host="10.158.123.184",
-                port="5432",
-                database="hki",
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -461,13 +460,12 @@ class ChopAddressView(APIView):
             print("Address data missing")
 
         try:
-            # TODO: Move to constants
             ps_connection = psycopg2.connect(
-                user="ar_dev",
-                password="ar_dev",
-                host="10.158.123.184",
-                port="5432",
-                database="hki",
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -535,13 +533,12 @@ class GenerateSentencesView(APIView):
 
         if entrance_id > 0:
             try:
-                # TODO: Move to constants
                 ps_connection = psycopg2.connect(
-                    user="ar_dev",
-                    password="ar_dev",
-                    host="10.158.123.184",
-                    port="5432",
-                    database="hki",
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
                 )
 
                 cursor = ps_connection.cursor(
@@ -1082,9 +1079,14 @@ class ArRest01ServicepointAccessibilityViewset(APIView):
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
         try:
-            data = ArRest01ServicepointAccessibility.objects.filter(
-                system_id=systemId, servicepoint_id=servicePointId
-            )
+            if servicePointId != None:
+                data = ArRest01ServicepointAccessibility.objects.filter(
+                    system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01ServicepointAccessibility.objects.filter(
+                    system_id=systemId
+                )
             modified_data = []
             for item in data:
                 property = {
@@ -1116,9 +1118,13 @@ class ArRest01EntranceAccessibilityViewset(APIView):
                     servicepoint_id=servicePointId,
                     entrance_id=entranceId,
                 )
-            else:
+            elif servicePointId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
                     system_id=systemId, servicepoint_id=servicePointId
+                )
+            else:
+                data = ArRest01EntranceAccessibility.objects.filter(
+                    system_id=systemId,
                 )
             modified_data = []
             for item in data:
