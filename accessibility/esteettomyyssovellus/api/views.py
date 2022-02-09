@@ -434,6 +434,17 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 )
 
 
+class ArXQuestionBlockAnswerFieldViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for
+    """
+
+    queryset = ArXQuestionBlockAnswerField.objects.all()
+    serializer_class = ArXQuestionBlockAnswerFieldSerializer
+    pagination_class = None
+    filter_fields = ("log_id",)
+
+
 class ChopAddressView(APIView):
     """
     API endpoint for chopping the address at ptv_chop_address.

@@ -1292,7 +1292,11 @@ class TpTempStoredShortageHelper(models.Model):
 
 
 class ArXQuestionBlockAnswerField(models.Model):
-    question_block_answer_id = models.BigIntegerField(primary_key=True)
+    question_block_answer_field_id = models.BigAutoField(primary_key=True)
     log_id = models.BigIntegerField()
     question_block_field_id = models.BigIntegerField()
     entry = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_question_block_answer_field"

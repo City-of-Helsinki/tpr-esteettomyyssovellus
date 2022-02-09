@@ -195,3 +195,9 @@ class ArBackendQuestionBlockFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendQuestionBlockField
         fields = "__all__"
+
+
+class ArXQuestionBlockAnswerFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionBlockAnswerField
+        fields = "__all__"
