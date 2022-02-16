@@ -1300,3 +1300,17 @@ class ArXQuestionBlockAnswerField(models.Model):
     class Meta:
         managed = False
         db_table = "ar_x_question_block_answer_field"
+
+
+class ArBackendEntranceField(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(max_length=1, blank=False, null=False)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    field_number = models.IntegerField()
+    entry = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_entrance_field"

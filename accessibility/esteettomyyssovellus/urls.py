@@ -27,7 +27,7 @@ router.register(r"ArXQuestionBlocks", views.ArXQuestionBlockViewSet)
 router.register(r"ArServicepoints", views.ArServicepointViewSet)
 router.register(r"ArSystems", views.ArSystemViewSet)
 router.register(r"ArSystemForms", views.ArSystemFormViewSet)
-router.register(r"ArXQuestionAnswerPhotos", views.ArXQuestionAnswerPhotoViewSet)
+# router.register(r"ArXQuestionAnswerPhotos", views.ArXQuestionAnswerPhotoViewSet)
 router.register(r"ArFormLanguages", views.ArFormLanguageViewSet)
 router.register(r"ArXQuestionLanguages", views.ArXQuestionLanguageViewSet)
 router.register(
@@ -42,10 +42,10 @@ router.register(r"ArBackendEntranceAnswer", views.ArBackendEntranceAnswerViewSet
 router.register(
     r"ArXAdditionalinfo", views.ArXAdditionalinfoViewSet, basename="additionalinfo"
 )
-router.register(r"ArXQuestionAnswerComment", views.ArXQuestionAnswerCommentViewSet)
-router.register(r"ArXQuestionAnswerLocation", views.ArXQuestionAnswerLocationViewSet)
-router.register(r"ArXQuestionAnswerPhoto", views.ArXQuestionAnswerPhotoViewSet)
-router.register(r"ArXQuestionAnswerPhotoTxt", views.ArXQuestionAnswerPhotoTxtViewSet)
+# router.register(r"ArXQuestionAnswerComment", views.ArXQuestionAnswerCommentViewSet)
+# router.register(r"ArXQuestionAnswerLocation", views.ArXQuestionAnswerLocationViewSet)
+# router.register(r"ArXQuestionAnswerPhoto", views.ArXQuestionAnswerPhotoViewSet)
+# router.register(r"ArXQuestionAnswerPhotoTxt", views.ArXQuestionAnswerPhotoTxtViewSet)
 router.register(r"ArXAnswerLog", views.ArXAnswerLogViewSet)
 router.register(r"ArXQuestionAnswer", views.ArXQuestionAnswerViewSet)
 router.register(r"ArExternalServicepoint", views.ArExternalServicepointViewSet)
@@ -57,6 +57,7 @@ router.register(
 router.register(
     r"ArXQuestionBlockAnswerField", views.ArXQuestionBlockAnswerFieldViewSet
 )
+router.register(r"ArBackendEntranceField", views.ArBackendEntranceFieldViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

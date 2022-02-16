@@ -201,3 +201,9 @@ class ArXQuestionBlockAnswerFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionBlockAnswerField
         fields = "__all__"
+
+
+class ArBackendEntranceFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntranceField
+        fields = "__all__"
