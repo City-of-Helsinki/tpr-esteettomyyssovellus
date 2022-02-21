@@ -148,6 +148,7 @@ class ArBackendQuestionBlockField(models.Model):
     form_id = models.IntegerField(blank=True, null=True)
     language_id = models.IntegerField(blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
+    question_block_field_id = models.BigIntegerField(blank=True, null=True)
     field_number = models.IntegerField()
     field_name = models.CharField(max_length=30, blank=True, null=True)
     field_title = models.CharField(max_length=200, blank=True, null=True)
@@ -1308,6 +1309,7 @@ class ArBackendEntranceField(models.Model):
     entrance_id = models.BigIntegerField(blank=True, null=True)
     form_submitted = models.CharField(max_length=1, blank=False, null=False)
     question_block_id = models.IntegerField(blank=True, null=True)
+    question_block_field_id = models.BigIntegerField(blank=True, null=True)
     field_number = models.IntegerField()
     entry = models.CharField(max_length=200, blank=True, null=True)
 
