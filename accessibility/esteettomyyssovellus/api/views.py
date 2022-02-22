@@ -13,9 +13,14 @@ from urllib.parse import parse_qs
 from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
-from esteettomyyssovellus.settings import DB_HOST, DB_PASSWORD, DB_PORT, DB_USER, DB
-
-DEBUG = True
+from esteettomyyssovellus.settings import (
+    DB_HOST,
+    DB_PASSWORD,
+    DB_PORT,
+    DB_USER,
+    DB,
+    DEBUG,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -873,13 +878,6 @@ class ArRest01AccessVariableView(APIView):
     """
 
     def get(self, request, format=JSON):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01AccessVariable.objects.all()
             modified_data = []
@@ -907,13 +905,6 @@ class ArRest01AccessViewpointView(APIView):
     """
 
     def get(self, request, format=JSON):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01AccessViewpoint.objects.all()
             modified_data = []
@@ -955,13 +946,6 @@ class ArRest01RequirementView(APIView):
     """
 
     def get(self, request, format=JSON):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Requirement.objects.all()
             modified_data = []
@@ -986,13 +970,6 @@ class ArRest01RequirementView(APIView):
 
 class ArRest01ServicepointView(APIView):
     def get(self, request, systemId=None, servicePointId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             # TODO: external_servicepoint_id or servicepoint_id
             data = ArRest01Servicepoint.objects.filter(
@@ -1028,13 +1005,6 @@ class ArRest01ServicepointView(APIView):
 
 class ArRest01EntranceView(APIView):
     def get(self, request, systemId=None, servicePointId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Entrance.objects.filter(
                 system_id=systemId, external_servicepoint_id=servicePointId
@@ -1119,13 +1089,6 @@ class ArRest01EntranceView(APIView):
 
 class ArRest01SentenceView(APIView):
     def get(self, request, systemId=None, servicePointId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Sentence.objects.filter(
                 system_id=systemId, external_servicepoint_id=servicePointId
@@ -1181,13 +1144,6 @@ class ArRest01EntranceSentenceView(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Sentence.objects.filter(
                 system_id=systemId,
@@ -1245,13 +1201,6 @@ class ArRest01ShortageView(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, viewPointId=None, format=None
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if viewPointId != None:
                 data = ArRest01Shortage.objects.filter(
@@ -1300,13 +1249,6 @@ class ArRest01ShortageView(APIView):
 
 class ArSystemServicepointsView(APIView):
     def get(self, request, systemId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             # TODO: external_servicepoint_id or servicepoint_id
             data = ArRest01Servicepoint.objects.filter(system_id=systemId)
@@ -1344,13 +1286,6 @@ class ArSystemServicepointsView(APIView):
 
 class ArSystemEntrancesView(APIView):
     def get(self, request, systemId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Entrance.objects.filter(system_id=systemId)
             modified_data = []
@@ -1392,13 +1327,6 @@ class ArSystemEntrancesView(APIView):
 
 class ArSystemSentencesView(APIView):
     def get(self, request, systemId=None, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             data = ArRest01Sentence.objects.filter(system_id=systemId)
             modified_data = []
@@ -1452,13 +1380,6 @@ class ArRest01ServicepointAccessibilityViewset(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if servicePointId != None:
                 data = ArRest01ServicepointAccessibility.objects.filter(
@@ -1492,13 +1413,6 @@ class ArRest01EntranceAccessibilityViewset(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if entranceId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
@@ -1545,13 +1459,6 @@ class ArRest01SummaryViewset(APIView):
         viewPointId=None,
         format=None,
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if viewPointId != None:
                 data = ArRest01Summary.objects.filter(
@@ -1597,13 +1504,6 @@ class ArRest01ReportshortageViewset(APIView):
         viewPointId=None,
         format=None,
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if servicePointId != None:
                 data = ArRest01Reportshortage.objects.filter(
@@ -1662,13 +1562,6 @@ class ArRest01ReportsummaryViewset(APIView):
         viewPointId=None,
         format=None,
     ):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"] != API_TOKEN
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             if servicePointId != None:
                 data = ArRest01Reportsummary.objects.filter(
