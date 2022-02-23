@@ -1,3 +1,4 @@
+from aifc import Error
 from django.contrib.auth.models import User, Group
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
@@ -321,7 +322,7 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
     """
     Endpoint for ar_x_stored_sentence_lang table.
     Use with entrance_id parameter.
-    http://localhost:8000/api/ArXStoredSentenceLangs/?entrance_id=1
+    http://localhost:8000/api/ArXStoredSentenceLangs/?entrance_id=1&form_submitted=Y
     """
 
     def list(self, request):
@@ -353,16 +354,22 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
             except:
                 entrance_id = "0"
 
-            cursor.execute(
-                """SELECT * FROM ar_dev.ar_x_stored_sentence_lang
-                            WHERE entrance_id=%s
-                            ORDER BY sentence_order_text""",
-                entrance_id,
-            )
+            form_submitted = parse_qs(parsed.query)["form_submitted"]
+
+            if form_submitted[0] == "Y":
+                cursor.execute(
+                    "SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='Y' ORDER BY sentence_order_text",
+                    entrance_id,
+                )
+            if form_submitted[0] == "D":
+                cursor.execute(
+                    "SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='D' ORDER BY sentence_order_text",
+                    entrance_id,
+                )
+
             result = cursor.fetchall()
             return Response(result)
-
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
 
         finally:
@@ -855,7 +862,7 @@ class GenerateSentencesView(APIView):
                 )
                 ps_connection.commit()
 
-            except (Exception, psycopg2.DatabaseError) as error:
+            except (Exception, psycopg2.Error) as error:
                 print("Error while using database function arp_store_sentences", error)
                 return Response(
                     "Error while using database function",
