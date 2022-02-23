@@ -34,6 +34,11 @@ class ArBackendEntrance(models.Model):
     name_fi = models.CharField(max_length=500, blank=True, null=True)
     name_sv = models.CharField(max_length=500, blank=True, null=True)
     name_en = models.CharField(max_length=500, blank=True, null=True)
+    contact_person_fi = models.CharField(max_length=200, blank=True, null=True)
+    contact_person_sv = models.CharField(max_length=200, blank=True, null=True)
+    contact_person_en = models.CharField(max_length=200, blank=True, null=True)
+    accessibility_phone = models.CharField(max_length=200, blank=True, null=True)
+    accessibility_email = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
