@@ -120,11 +120,11 @@ DATABASES = {
     },
     "ar_db": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "hki",
-        "USER": "ar_dev",
-        "PASSWORD": "ar_dev",
-        "HOST": "10.158.123.184",
-        "PORT": 5432,
+        "NAME": DB,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
     },
 }
 
