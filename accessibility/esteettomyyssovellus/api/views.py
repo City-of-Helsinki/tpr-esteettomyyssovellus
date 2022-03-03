@@ -5,7 +5,6 @@ from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
-from esteettomyyssovellus.settings import API_TOKEN
 from .serializers import *
 import psycopg2
 from rest_framework.response import Response
@@ -21,6 +20,8 @@ from esteettomyyssovellus.settings import (
     DB_USER,
     DB,
     DEBUG,
+    SEARCH_PATH,
+    API_TOKEN,
 )
 
 
@@ -340,6 +341,7 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -664,6 +666,7 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -762,6 +765,7 @@ class ChopAddressView(APIView):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -847,6 +851,7 @@ class GenerateSentencesView(APIView):
                     host=DB_HOST,
                     port=DB_PORT,
                     database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
                 )
 
                 cursor = ps_connection.cursor(

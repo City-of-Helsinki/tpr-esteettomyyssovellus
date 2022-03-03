@@ -33,6 +33,7 @@ DB_HOST = env("DB_HOST")
 DB_PORT = env("DB_PORT")
 DB = env("DB")
 API_TOKEN = env("API_TOKEN")
+SEARCH_PATH = env("SEARCH_PATH")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -125,6 +126,9 @@ DATABASES = {
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
+        "OPTIONS": {
+            "options": "-c search_path=ar_dev,public",
+        },
     },
 }
 
