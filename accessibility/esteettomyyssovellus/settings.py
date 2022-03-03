@@ -127,7 +127,7 @@ DATABASES = {
         "HOST": DB_HOST,
         "PORT": DB_PORT,
         "OPTIONS": {
-            "options": "-c search_path=ar_dev,public",
+            "options": "-c search_path={}".format(SEARCH_PATH),
         },
     },
 }
