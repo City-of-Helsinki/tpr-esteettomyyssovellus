@@ -358,26 +358,26 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
 
             if form_submitted[0] == "Y":
                 cursor.execute(
-                    "SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='Y' ORDER BY sentence_order_text",
+                    "SELECT * FROM ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='Y' ORDER BY sentence_order_text",
                     entrance_id,
                 )
             if form_submitted[0] == "D":
                 cursor.execute(
-                    "SELECT * FROM ar_dev.ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='D' ORDER BY sentence_order_text",
+                    "SELECT * FROM ar_x_stored_sentence_lang WHERE entrance_id=%s AND form_submitted='D' ORDER BY sentence_order_text",
                     entrance_id,
                 )
 
             result = cursor.fetchall()
-            return Response(result)
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
-
+            result = {"error": error}
         finally:
             # closing database connection.
             if ps_connection:
                 cursor.close()
                 ps_connection.close()
                 print("PostgreSQL connection is closed")
+            return Response(result)
 
 
 class ArBackendQuestionViewSet(viewsets.ModelViewSet):
@@ -670,7 +670,7 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
 
             for item in filtered_data:
                 cursor.execute(
-                    "INSERT INTO ar_dev.ar_x_question_answer VALUES (%s, %s)",
+                    "INSERT INTO ar_x_question_answer VALUES (%s, %s)",
                     (log_id, item),
                 )
                 ps_connection.commit()
@@ -767,9 +767,7 @@ class ChopAddressView(APIView):
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
             # Call the psql function that chops the address
-            cursor.execute(
-                "SELECT ar_dev.ptv_chop_address(%s, %s)", (address, post_office)
-            )
+            cursor.execute("SELECT ptv_chop_address(%s, %s)", (address, post_office))
 
             # Get the returned values
             return_cursor = cursor.fetchall()
@@ -857,7 +855,7 @@ class GenerateSentencesView(APIView):
 
                 # Call the psql function that creates the sentences
                 cursor.execute(
-                    "SELECT ar_dev.arp_store_sentences(%s, %s)",
+                    "SELECT arp_store_sentences(%s, %s)",
                     (entrance_id, form_submitted),
                 )
                 ps_connection.commit()
