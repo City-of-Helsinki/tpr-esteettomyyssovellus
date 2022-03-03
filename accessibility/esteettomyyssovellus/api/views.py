@@ -340,6 +340,7 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path=ar_dev,public",
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -664,6 +665,7 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path=ar_dev,public",
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -762,6 +764,7 @@ class ChopAddressView(APIView):
                 host=DB_HOST,
                 port=DB_PORT,
                 database=DB,
+                options="-c search_path=ar_dev,public",
             )
 
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -849,6 +852,7 @@ class GenerateSentencesView(APIView):
                     host=DB_HOST,
                     port=DB_PORT,
                     database=DB,
+                    options="-c search_path=ar_dev,public",
                 )
 
                 cursor = ps_connection.cursor(
