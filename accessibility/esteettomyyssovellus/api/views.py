@@ -24,6 +24,20 @@ from esteettomyyssovellus.settings import (
     API_TOKEN,
 )
 import hashlib
+from rest_framework import permissions
+
+
+class TokenPermission(permissions.BasePermission):
+    edit_methods = "__all__"
+
+    def has_permission(self, request, view):
+        if (
+            "HTTP_AUTHORIZATION" not in request.META
+            or request.META["HTTP_AUTHORIZATION"]
+            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
+        ):
+            return False
+        return True
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -53,17 +67,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArEntranceViewSet(viewsets.ModelViewSet):
@@ -73,22 +79,13 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
 
     queryset = ArEntrance.objects.all()
     serializer_class = ArEntranceSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        TokenPermission,
+    ]
     filter_fields = (
         "servicepoint",
         "form",
     )
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
 
 
 class ArFormViewSet(viewsets.ModelViewSet):
@@ -98,17 +95,9 @@ class ArFormViewSet(viewsets.ModelViewSet):
 
     queryset = ArForm.objects.all()
     serializer_class = ArFormSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArXQuestionViewSet(viewsets.ModelViewSet):
@@ -122,17 +111,9 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("form_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
@@ -142,17 +123,9 @@ class ArXQuestionBlockViewSet(viewsets.ModelViewSet):
 
     queryset = ArXQuestionBlock.objects.all()
     serializer_class = ArXQuestionBlockSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArServicepointViewSet(viewsets.ModelViewSet):
@@ -164,28 +137,12 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     serializer_class = ArServicepointSerializer
     pagination_class = None
     filter_fields = ("ext_servicepoint_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
     @action(detail=True, methods=["POST"], url_path="update_address")
     def update_address(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             request_data = request.data
             servicepoint = self.get_object()
@@ -201,14 +158,6 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
     def update_accessibility_contacts(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             request_data = request.data
             servicepoint = self.get_object()
@@ -235,17 +184,9 @@ class ArSystemViewSet(viewsets.ModelViewSet):
     serializer_class = ArSystemSerializer
     filter_fields = ("system_id",)
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArExternalServicepointViewSet(viewsets.ModelViewSet):
@@ -260,17 +201,9 @@ class ArExternalServicepointViewSet(viewsets.ModelViewSet):
         "system_id",
     )
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArSystemFormViewSet(viewsets.ModelViewSet):
@@ -281,17 +214,9 @@ class ArSystemFormViewSet(viewsets.ModelViewSet):
     queryset = ArSystemForm.objects.all()
     serializer_class = ArSystemFormSerializer
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArFormLanguageViewSet(viewsets.ModelViewSet):
@@ -301,17 +226,9 @@ class ArFormLanguageViewSet(viewsets.ModelViewSet):
 
     queryset = ArFormLanguage.objects.all()
     serializer_class = ArFormLanguageSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArXQuestionLanguageViewSet(viewsets.ModelViewSet):
@@ -321,17 +238,9 @@ class ArXQuestionLanguageViewSet(viewsets.ModelViewSet):
 
     queryset = ArXQuestionLanguage.objects.all()
     serializer_class = ArXQuestionLanguageSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
@@ -341,15 +250,11 @@ class ArXStoredSentenceLangViewSet(viewsets.ViewSet):
     http://localhost:8000/api/ArXStoredSentenceLangs/?entrance_id=1&form_submitted=Y
     """
 
+    permission_classes = [
+        TokenPermission,
+    ]
+
     def list(self, request):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         try:
             ps_connection = psycopg2.connect(
                 user=DB_USER,
@@ -410,17 +315,9 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("form_id", "question_id")
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
@@ -435,17 +332,9 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("form_id",)
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
@@ -460,17 +349,9 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("form_id",)
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendEntranceFieldViewSet(viewsets.ModelViewSet):
@@ -485,17 +366,9 @@ class ArBackendEntranceFieldViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("entrance_id", "log_id")
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
@@ -510,17 +383,9 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
     # http://localhost:8000/api/ArXQuestions/?form_id=1
     filter_fields = ("entrance_id", "log_id")
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
@@ -547,17 +412,9 @@ class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
         },
     ]
     pagination_class = None
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 # class ArXQuestionAnswerPhotoTxtViewSet(viewsets.ModelViewSet):
@@ -617,28 +474,12 @@ class ArXAnswerLogViewSet(viewsets.ModelViewSet):
     serializer_class = ArXAnswerLogSerializer
     pagination_class = None
     filter_fields = ("entrance",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
     # Function for creating a new answer log so that the request returns the log_id
     def create(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         serializer = ArXAnswerLogSerializer(data=request.data)
         if serializer.is_valid():
             log = serializer.save()
@@ -657,27 +498,11 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
     serializer_class = ArXQuestionAnswerSerializer
     pagination_class = None
     filter_fields = ("log",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
     def create(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         data = []
         try:
             log_id = request.data["log"]
@@ -733,17 +558,9 @@ class ArXQuestionBlockAnswerFieldViewSet(viewsets.ModelViewSet):
     serializer_class = ArXQuestionBlockAnswerFieldSerializer
     pagination_class = None
     filter_fields = ("log_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ChopAddressView(APIView):
@@ -751,15 +568,11 @@ class ChopAddressView(APIView):
     API endpoint for chopping the address at ptv_chop_address.
     """
 
+    permission_classes = [
+        TokenPermission,
+    ]
+
     def get(self, request, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         # Placeholder endpoint for get request
         return Response(
             """Get called for a funcion call that requires
@@ -767,14 +580,6 @@ class ChopAddressView(APIView):
         )
 
     def post(self, request, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         # Post request to call the ptv_chop_address function in the psql
         # database
         address = ""
@@ -838,15 +643,11 @@ class GenerateSentencesView(APIView):
     API endpoint for creating sentences at arp_store_sentences.
     """
 
+    permission_classes = [
+        TokenPermission,
+    ]
+
     def get(self, request, format=None):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
         # Placeholder endpoint for get request
         return Response(
             """Get called for a funcion call that requires
@@ -856,15 +657,6 @@ class GenerateSentencesView(APIView):
     def post(self, request, format=None):
         # Post request to call the arp_store_sentences function in the psql
         # database
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-
         entrance_id = -1
         form_submitted = "D"
         #
@@ -1656,17 +1448,9 @@ class ArBackendEntranceViewset(viewsets.ModelViewSet):
     serializer_class = ArBackendEntranceSerializer
     pagination_class = None
     filter_fields = ("entrance_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendServicepointViewset(viewsets.ModelViewSet):
@@ -1678,17 +1462,9 @@ class ArBackendServicepointViewset(viewsets.ModelViewSet):
     serializer_class = ArBackendServicepointSerializer
     pagination_class = None
     filter_fields = ("servicepoint_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class ArBackendQuestionBlockFieldViewset(viewsets.ModelViewSet):
@@ -1698,14 +1474,6 @@ class ArBackendQuestionBlockFieldViewset(viewsets.ModelViewSet):
     serializer_class = ArBackendQuestionBlockFieldSerializer
     pagination_class = None
     filter_fields = ("question_block_id",)
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
