@@ -62,6 +62,8 @@ router.register(r"ArBackendEntranceField", views.ArBackendEntranceFieldViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path("api/", include(router.urls)),
+    # Workaround for proxy
+    path("app/api/", include(router.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
 
@@ -69,6 +71,9 @@ urlpatterns = [
 urlpatterns += [
     path("api/ChopAddress/", views.ChopAddressView.as_view()),
     path("api/GenerateSentences/", views.GenerateSentencesView.as_view()),
+    # Workaround for proxy
+    path("app/api/ChopAddress/", views.ChopAddressView.as_view()),
+    path("app/api/GenerateSentences/", views.GenerateSentencesView.as_view()),
 ]
 
 # Public APIs v1
