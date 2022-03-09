@@ -31,7 +31,7 @@ class TokenPermission(permissions.BasePermission):
     edit_methods = "__all__"
 
     def has_permission(self, request, view):
-        if (
+        if not DEBUG and (
             "HTTP_AUTHORIZATION" not in request.META
             or request.META["HTTP_AUTHORIZATION"]
             != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
@@ -47,17 +47,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
