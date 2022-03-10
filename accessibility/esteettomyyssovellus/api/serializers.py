@@ -89,10 +89,10 @@ class ArSystemFormSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ArXQuestionAnswerPhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArXQuestionAnswerPhoto
-        fields = "__all__"
+# class ArXQuestionAnswerPhotoSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArXQuestionAnswerPhoto
+#         fields = "__all__"
 
 
 class ArFormLanguageSerializer(serializers.ModelSerializer):
@@ -143,22 +143,22 @@ class ArBackendEntranceAnswerSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ArXQuestionAnswerCommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArXQuestionAnswerComment
-        fields = "__all__"
+# class ArXQuestionAnswerCommentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArXQuestionAnswerComment
+#         fields = "__all__"
 
 
-class ArXQuestionAnswerLocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArXQuestionAnswerLocation
-        fields = "__all__"
+# class ArXQuestionAnswerLocationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArXQuestionAnswerLocation
+#         fields = "__all__"
 
 
-class ArXQuestionAnswerPhotoTxtSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArXQuestionAnswerPhotoTxt
-        fields = "__all__"
+# class ArXQuestionAnswerPhotoTxtSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArXQuestionAnswerPhotoTxt
+#         fields = "__all__"
 
 
 class ArXAnswerLogSerializer(serializers.ModelSerializer):
@@ -206,4 +206,58 @@ class ArXQuestionBlockAnswerFieldSerializer(serializers.ModelSerializer):
 class ArBackendEntranceFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendEntranceField
+        fields = "__all__"
+
+
+class ArBackendEntranceChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntranceChoice
+        fields = "__all__"
+
+
+class ArBackendEntrancePlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntrancePlace
+        fields = "__all__"
+
+
+class ArBackendEntranceSentenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntranceSentence
+        fields = "__all__"
+
+
+class ArBackendPlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendPlace
+        fields = "__all__"
+
+
+class ArXPlaceAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXPlaceAnswer
+        fields = "__all__"
+
+
+class ArXPlaceAnswerBoxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXPlaceAnswerBox
+        fields = "__all__"
+
+
+class ArXPlaceAnswerBoxTxtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXPlaceAnswerBoxTxt
+        fields = "__all__"
+
+
+class ArXQuestionBlockAnswerCmtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionBlockAnswerCmt
+        fields = "__all__"
+
+
+class ArXQuestionBlockAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionBlockAnswer
         fields = "__all__"

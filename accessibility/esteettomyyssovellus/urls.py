@@ -49,15 +49,25 @@ router.register(
 router.register(r"ArXAnswerLog", views.ArXAnswerLogViewSet)
 router.register(r"ArXQuestionAnswer", views.ArXQuestionAnswerViewSet)
 router.register(r"ArExternalServicepoint", views.ArExternalServicepointViewSet)
-router.register(r"ArBackendEntrance", views.ArBackendEntranceViewset)
-router.register(r"ArBackendServicepoint", views.ArBackendServicepointViewset)
+router.register(r"ArBackendEntrance", views.ArBackendEntranceViewSet)
+router.register(r"ArBackendServicepoint", views.ArBackendServicepointViewSet)
 router.register(
-    r"ArBackendQuestionBlockField", views.ArBackendQuestionBlockFieldViewset
+    r"ArBackendQuestionBlockField", views.ArBackendQuestionBlockFieldViewSet
 )
 router.register(
     r"ArXQuestionBlockAnswerField", views.ArXQuestionBlockAnswerFieldViewSet
 )
 router.register(r"ArBackendEntranceField", views.ArBackendEntranceFieldViewSet)
+router.register(r"ArBackendEntranceChoice", views.ArBackendEntranceChoiceViewSet)
+router.register(r"ArBackendEntrancePlace", views.ArBackendEntrancePlaceViewSet)
+router.register(r"ArBackendEntranceSentence", views.ArBackendEntranceSentenceViewSet)
+router.register(r"ArBackendPlace", views.ArBackendPlaceViewSet)
+router.register(r"ArXPlaceAnswer", views.ArXPlaceAnswerViewSet)
+router.register(r"ArXPlaceAnswerBox", views.ArXPlaceAnswerBoxViewSet)
+router.register(r"ArXPlaceAnswerBoxTxt", views.ArXPlaceAnswerBoxTxtViewSet)
+router.register(r"ArXQuestionBlockAnswerCmt", views.ArXQuestionBlockAnswerCmtViewSet)
+router.register(r"ArXQuestionBlockAnswer", views.ArXQuestionBlockAnswerViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -125,50 +135,50 @@ urlpatterns += [
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/entrances/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",
-        views.ArRest01ServicepointAccessibilityViewset.as_view(),
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/reportshortages/",
-        views.ArRest01ReportshortageViewset.as_view(),
+        views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",
-        views.ArRest01ReportshortageViewset.as_view(),
+        views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/reportsummary/",
-        views.ArRest01ReportsummaryViewset.as_view(),
+        views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",
-        views.ArRest01ReportsummaryViewset.as_view(),
+        views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/properties/",
-        views.ArRest01ServicepointAccessibilityViewset.as_view(),
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        views.ArRest01SummaryViewSet.as_view(),
     ),
 ]

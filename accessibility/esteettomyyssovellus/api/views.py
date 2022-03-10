@@ -380,33 +380,33 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
-class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
-    """
-    API endpoint for ar_x_additional_info.
-    """
+# class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
+#     """
+#     API endpoint for ar_x_additional_info.
+#     """
 
-    search_fields = ["log", "question"]
-    querylist = [
-        {
-            "queryset": ArXQuestionAnswerComment.objects.all(),
-            "serializer_class": ArXQuestionAnswerCommentSerializer,
-            "label": "comment",
-        },
-        {
-            "queryset": ArXQuestionAnswerLocation.objects.all(),
-            "serializer_class": ArXQuestionAnswerLocationSerializer,
-            "label": "location",
-        },
-        {
-            "queryset": ArXQuestionAnswerPhoto.objects.all(),
-            "serializer_class": ArXQuestionAnswerPhotoSerializer,
-            "label": "photo",
-        },
-    ]
-    pagination_class = None
-    permission_classes = [
-        TokenPermission,
-    ]
+#     search_fields = ["log", "question"]
+#     querylist = [
+#         {
+#             "queryset": ArXQuestionAnswerComment.objects.all(),
+#             "serializer_class": ArXQuestionAnswerCommentSerializer,
+#             "label": "comment",
+#         },
+#         {
+#             "queryset": ArXQuestionAnswerLocation.objects.all(),
+#             "serializer_class": ArXQuestionAnswerLocationSerializer,
+#             "label": "location",
+#         },
+#         {
+#             "queryset": ArXQuestionAnswerPhoto.objects.all(),
+#             "serializer_class": ArXQuestionAnswerPhotoSerializer,
+#             "label": "photo",
+#         },
+#     ]
+#     pagination_class = None
+#     permission_classes = [
+#         TokenPermission,
+#     ]
 
 
 # class ArXQuestionAnswerPhotoTxtViewSet(viewsets.ModelViewSet):
@@ -1201,7 +1201,7 @@ class ArSystemSentencesView(APIView):
             )
 
 
-class ArRest01ServicepointAccessibilityViewset(APIView):
+class ArRest01ServicepointAccessibilityViewSet(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1234,7 +1234,7 @@ class ArRest01ServicepointAccessibilityViewset(APIView):
             )
 
 
-class ArRest01EntranceAccessibilityViewset(APIView):
+class ArRest01EntranceAccessibilityViewSet(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1274,7 +1274,7 @@ class ArRest01EntranceAccessibilityViewset(APIView):
             )
 
 
-class ArRest01SummaryViewset(APIView):
+class ArRest01SummaryViewSet(APIView):
     def get(
         self,
         request,
@@ -1319,7 +1319,7 @@ class ArRest01SummaryViewset(APIView):
             )
 
 
-class ArRest01ReportshortageViewset(APIView):
+class ArRest01ReportshortageViewSet(APIView):
     def get(
         self,
         request,
@@ -1377,7 +1377,7 @@ class ArRest01ReportshortageViewset(APIView):
             )
 
 
-class ArRest01ReportsummaryViewset(APIView):
+class ArRest01ReportsummaryViewSet(APIView):
     def get(
         self,
         request,
@@ -1431,7 +1431,7 @@ class ArRest01ReportsummaryViewset(APIView):
             )
 
 
-class ArBackendEntranceViewset(viewsets.ModelViewSet):
+class ArBackendEntranceViewSet(viewsets.ModelViewSet):
     """
     API endpoint for ar backend entrance.
     """
@@ -1445,7 +1445,7 @@ class ArBackendEntranceViewset(viewsets.ModelViewSet):
     ]
 
 
-class ArBackendServicepointViewset(viewsets.ModelViewSet):
+class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     """
     API endpoint for ar backend entrance.
     """
@@ -1459,13 +1459,94 @@ class ArBackendServicepointViewset(viewsets.ModelViewSet):
     ]
 
 
-class ArBackendQuestionBlockFieldViewset(viewsets.ModelViewSet):
+class ArBackendQuestionBlockFieldViewSet(viewsets.ModelViewSet):
     """ """
 
     queryset = ArBackendQuestionBlockField.objects.all()
     serializer_class = ArBackendQuestionBlockFieldSerializer
     pagination_class = None
     filter_fields = ("question_block_id",)
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntranceChoiceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceChoice.objects.all()
+    serializer_class = ArBackendEntranceChoiceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntrancePlace.objects.all()
+    serializer_class = ArBackendEntrancePlaceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntranceSentenceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceSentence.objects.all()
+    serializer_class = ArBackendEntranceSentenceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendPlaceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendPlace.objects.all()
+    serializer_class = ArBackendPlaceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswer.objects.all()
+    serializer_class = ArXPlaceAnswerSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXPlaceAnswerBoxViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswerBox.objects.all()
+    serializer_class = ArXPlaceAnswerBoxSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXPlaceAnswerBoxTxtViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswerBoxTxt.objects.all()
+    serializer_class = ArXPlaceAnswerBoxTxtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswerCmt.objects.all()
+    serializer_class = ArXQuestionBlockAnswerCmtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswer.objects.all()
+    serializer_class = ArXQuestionBlockAnswerSerializer
+    pagination_class = None
     permission_classes = [
         TokenPermission,
     ]
