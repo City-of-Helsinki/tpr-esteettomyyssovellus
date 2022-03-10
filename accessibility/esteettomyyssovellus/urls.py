@@ -39,9 +39,9 @@ router.register(r"ArBackendQuestions", views.ArBackendQuestionViewSet)
 router.register(r"ArBackendQuestionBlocks", views.ArBackendQuestionBlockViewSet)
 router.register(r"ArBackendQuestionChoice", views.ArBackendQuestionChoiceViewSet)
 router.register(r"ArBackendEntranceAnswer", views.ArBackendEntranceAnswerViewSet)
-router.register(
-    r"ArXAdditionalinfo", views.ArXAdditionalinfoViewSet, basename="additionalinfo"
-)
+# router.register(
+#     r"ArXAdditionalinfo", views.ArXAdditionalinfoViewSet, basename="additionalinfo"
+# )
 # router.register(r"ArXQuestionAnswerComment", views.ArXQuestionAnswerCommentViewSet)
 # router.register(r"ArXQuestionAnswerLocation", views.ArXQuestionAnswerLocationViewSet)
 # router.register(r"ArXQuestionAnswerPhoto", views.ArXQuestionAnswerPhotoViewSet)
