@@ -1493,6 +1493,10 @@ class ArBackendEntranceSentenceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceSentence.objects.all()
     serializer_class = ArBackendEntranceSentenceSerializer
     pagination_class = None
+    filter_fields = (
+        "entrance_id",
+        "form_submitted",
+    )
     permission_classes = [
         TokenPermission,
     ]
