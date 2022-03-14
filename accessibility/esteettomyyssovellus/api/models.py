@@ -119,9 +119,9 @@ class ArBackendQuestion(models.Model):
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
     yes_no_question = models.CharField(max_length=1, blank=True, null=True)
-    can_add_location = models.CharField(max_length=1, blank=True, null=True)
-    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
-    can_add_comment = models.CharField(max_length=1, blank=True, null=True)
+#    can_add_location = models.CharField(max_length=1, blank=True, null=True)
+#    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
+#    can_add_comment = models.CharField(max_length=1, blank=True, null=True)
     place_visible_if_question_choice = models.CharField(
         max_length=100, blank=True, null=True
     )
