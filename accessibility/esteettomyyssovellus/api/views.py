@@ -1509,6 +1509,7 @@ class ArBackendPlaceViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
+    filter_fields = ("place_id",)
 
 
 class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
