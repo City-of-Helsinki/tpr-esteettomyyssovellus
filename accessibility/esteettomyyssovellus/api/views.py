@@ -5,6 +5,12 @@ from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
+from esteettomyyssovellus.settings import (
+    PUBLIC_AZURE_CONTAINER,
+    PUBLIC_AZURE_CONNECTION_STRING,
+)
+import uuid
+from azure.storage.blob import BlobClient, ContentSettings
 from .serializers import *
 import psycopg2
 from rest_framework.response import Response
@@ -1555,3 +1561,42 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
+
+
+def create_blob_client(servicepoint_id, file_name):
+    return BlobClient.from_connection_string(
+        conn_str=PUBLIC_AZURE_CONNECTION_STRING,
+        container_name=PUBLIC_AZURE_CONTAINER,
+        blob_name=servicepoint_id + "/" + file_name,
+    )
+
+
+class AzureUploader(APIView):
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def post(self, request, servicepoint_id=None):
+        try:
+            file = request.FILES["file"]
+            file_upload_name = str(uuid.uuid4()) + ".jpg"
+            blob_service_client = create_blob_client(servicepoint_id, file_upload_name)
+            my_content_settings = ContentSettings(
+                content_type="image/jpg",
+                content_encoding=None,
+                content_language=None,
+                content_disposition=None,
+                cache_control=None,
+                content_md5=None,
+            )
+            blob_service_client.upload_blob(file, content_settings=my_content_settings)
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {"status": "success", "uploaded_file_name": file_upload_name}
+                    )
+                ],
+                status=201,
+            )
+        except Exception as e:
+            return HttpResponse(e)
