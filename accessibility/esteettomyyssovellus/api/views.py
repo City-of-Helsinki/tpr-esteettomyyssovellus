@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from esteettomyyssovellus.settings import (
     PUBLIC_AZURE_CONTAINER,
     PUBLIC_AZURE_CONNECTION_STRING,
+    AZURE_URL,
 )
 import uuid
 from azure.storage.blob import BlobClient, ContentSettings
@@ -1590,10 +1591,22 @@ class AzureUploader(APIView):
                 content_md5=None,
             )
             blob_service_client.upload_blob(file, content_settings=my_content_settings)
+            url = (
+                AZURE_URL
+                + PUBLIC_AZURE_CONTAINER
+                + "/"
+                + servicepoint_id
+                + "/"
+                + file_upload_name
+            )
             return HttpResponse(
                 [
                     json.dumps(
-                        {"status": "success", "uploaded_file_name": file_upload_name}
+                        {
+                            "status": "success",
+                            "uploaded_file_name": file_upload_name,
+                            "url": url,
+                        }
                     )
                 ],
                 status=201,
