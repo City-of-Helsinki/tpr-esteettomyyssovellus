@@ -44,6 +44,7 @@ class ArBackendEntrance(models.Model):
     contact_person_en = models.CharField(max_length=200, blank=True, null=True)
     accessibility_phone = models.CharField(max_length=200, blank=True, null=True)
     accessibility_email = models.CharField(max_length=200, blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -208,6 +209,9 @@ class ArBackendServicepoint(models.Model):
     accessibility_phone = models.CharField(max_length=200, blank=True, null=True)
     accessibility_email = models.CharField(max_length=200, blank=True, null=True)
     new_entrance_possible = models.CharField(max_length=1, blank=True, null=True)
+    entrance_count = models.BigIntegerField(blank=True, null=True)
+    finished_entrance_count = models.BigIntegerField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -1345,6 +1349,8 @@ class ArBackendEntranceChoice(models.Model):
     entrance_id = models.BigIntegerField(blank=True, null=True)
     form_submitted = models.CharField(max_length=1, blank=False, null=False)
     language_id = models.BigIntegerField(blank=True, null=True)
+    sentence_group_id = models.IntegerField(blank=True, null=True)
+    sentence_group_name = models.CharField(max_length=255, blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
     question_block_code = models.CharField(max_length=2000, blank=True, null=True)
     question_block_text = models.CharField(max_length=2000, blank=True, null=True)
