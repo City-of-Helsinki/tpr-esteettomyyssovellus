@@ -1475,6 +1475,7 @@ class ArBackendEntranceChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceChoice.objects.all()
     serializer_class = ArBackendEntranceChoiceSerializer
     pagination_class = None
+    filter_fields = ("entrance_id",)
     permission_classes = [
         TokenPermission,
     ]
