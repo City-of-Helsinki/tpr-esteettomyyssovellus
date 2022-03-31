@@ -305,7 +305,12 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id", "question_id")
+    filter_fields = (
+        "form_id",
+        "question_id",
+        "language_id",
+        "question_block_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -322,7 +327,11 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id",)
+    filter_fields = (
+        "form_id",
+        "language_id",
+        "question_block_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -339,7 +348,13 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id",)
+    filter_fields = (
+        "form_id",
+        "language_id",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -356,7 +371,13 @@ class ArBackendEntranceFieldViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("entrance_id", "log_id")
+    filter_fields = (
+        "log_id",
+        "entrance_id",
+        "question_block_id",
+        "question_block_field_id",
+        "form_submitted",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -373,7 +394,14 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("entrance_id", "log_id")
+    filter_fields = (
+        "entrance_id",
+        "log_id",
+        "form_submitted",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -1439,7 +1467,7 @@ class ArBackendEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntrance.objects.all()
     serializer_class = ArBackendEntranceSerializer
     pagination_class = None
-    filter_fields = ("entrance_id",)
+    filter_fields = ("entrance_id", "log_id", "servicepoint_id", "form_submitted")
     permission_classes = [
         TokenPermission,
     ]
@@ -1453,7 +1481,12 @@ class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArBackendServicepoint.objects.all()
     serializer_class = ArBackendServicepointSerializer
     pagination_class = None
-    filter_fields = ("servicepoint_id",)
+    filter_fields = (
+        "servicepoint_id",
+        "log_id",
+        "main_entrance_id",
+        "form_submitted",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -1465,7 +1498,12 @@ class ArBackendQuestionBlockFieldViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionBlockField.objects.all()
     serializer_class = ArBackendQuestionBlockFieldSerializer
     pagination_class = None
-    filter_fields = ("question_block_id",)
+    filter_fields = (
+        "question_block_id",
+        "form_id",
+        "language_id",
+        "question_block_field_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -1475,7 +1513,16 @@ class ArBackendEntranceChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceChoice.objects.all()
     serializer_class = ArBackendEntranceChoiceSerializer
     pagination_class = None
-    filter_fields = ("entrance_id",)
+    filter_fields = (
+        "entrance_id",
+        "log_id",
+        "language_id",
+        "sentence_group_id",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+        "form_submitted",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -1485,6 +1532,13 @@ class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntrancePlace.objects.all()
     serializer_class = ArBackendEntrancePlaceSerializer
     pagination_class = None
+    filter_fields = (
+        "log_id",
+        "entrance_id",
+        "place_id",
+        "box_id",
+        "form_submitted",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -1497,6 +1551,11 @@ class ArBackendEntranceSentenceViewSet(viewsets.ModelViewSet):
     filter_fields = (
         "entrance_id",
         "form_submitted",
+        "log_id",
+        "language_id",
+        "sentence_group_id",
+        "sentence_id",
+        "parent_sentence_id",
     )
     permission_classes = [
         TokenPermission,
@@ -1510,7 +1569,10 @@ class ArBackendPlaceViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
-    filter_fields = ("place_id",)
+    filter_fields = (
+        "place_id",
+        "language_id",
+    )
 
 
 class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
