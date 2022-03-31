@@ -153,6 +153,7 @@ class ArBackendQuestionBlock(models.Model):
     add_photo_description = models.CharField(max_length=2000, blank=True, null=True)
     show_details_in_titlebar = models.CharField(max_length=1, blank=True, null=True)
     add_comment_possible = models.TextField(blank=True, null=True)
+    put_fields_before_questions = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -1360,6 +1361,9 @@ class ArBackendEntranceChoice(models.Model):
     question_order_text = models.CharField(max_length=99, blank=True, null=True)
     question_choice_id = models.BigIntegerField(blank=True, null=True)
     question_choice_text = models.CharField(max_length=2000, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         managed = False
