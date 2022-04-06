@@ -1,4 +1,3 @@
-from aifc import Error
 from django.contrib.auth.models import User, Group
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
@@ -17,7 +16,6 @@ import psycopg2
 from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
 from esteettomyyssovellus.settings import (
@@ -32,6 +30,7 @@ from esteettomyyssovellus.settings import (
 )
 import hashlib
 from rest_framework import permissions
+from .storage import create_blob_client
 
 
 class TokenPermission(permissions.BasePermission):
@@ -1564,14 +1563,6 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
-def create_blob_client(servicepoint_id, file_name):
-    return BlobClient.from_connection_string(
-        conn_str=PUBLIC_AZURE_CONNECTION_STRING,
-        container_name=PUBLIC_AZURE_CONTAINER,
-        blob_name=servicepoint_id + "/" + file_name,
-    )
-
-
 class AzureUploader(APIView):
     permission_classes = [
         TokenPermission,
@@ -1611,5 +1602,14 @@ class AzureUploader(APIView):
                 ],
                 status=201,
             )
+        except Exception as e:
+            return HttpResponse(e)
+
+    def delete(self, request, servicepoint_id=None, format=None):
+        try:
+            file_name = request.data["image_name"]
+            blob_service_client = create_blob_client(servicepoint_id, file_name)
+            blob_service_client.delete_blob()
+            return HttpResponse("Blob successfully deleted.")
         except Exception as e:
             return HttpResponse(e)
