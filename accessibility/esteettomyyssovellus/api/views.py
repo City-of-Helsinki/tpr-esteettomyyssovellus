@@ -6,11 +6,10 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from esteettomyyssovellus.settings import (
     PUBLIC_AZURE_CONTAINER,
-    PUBLIC_AZURE_CONNECTION_STRING,
     AZURE_URL,
 )
 import uuid
-from azure.storage.blob import BlobClient, ContentSettings
+from azure.storage.blob import ContentSettings
 from .serializers import *
 import psycopg2
 from rest_framework.response import Response
