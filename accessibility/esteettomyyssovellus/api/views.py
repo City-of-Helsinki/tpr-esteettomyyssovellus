@@ -1609,6 +1609,16 @@ class AzureUploader(APIView):
             file_name = request.data["image_name"]
             blob_service_client = create_blob_client(servicepoint_id, file_name)
             blob_service_client.delete_blob()
-            return HttpResponse("Blob successfully deleted.")
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "deleted_file_name": file_name,
+                        }
+                    )
+                ],
+                status=201,
+            )
         except Exception as e:
             return HttpResponse(e)
