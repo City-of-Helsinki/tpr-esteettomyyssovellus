@@ -3,8 +3,6 @@ from django.db.models import fields
 from .models import *
 from rest_framework import serializers
 
-# from . models import Form
-
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

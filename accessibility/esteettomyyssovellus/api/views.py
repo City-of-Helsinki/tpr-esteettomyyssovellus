@@ -1,16 +1,20 @@
-from aifc import Error
 from django.contrib.auth.models import User, Group
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
+from esteettomyyssovellus.settings import (
+    PUBLIC_AZURE_CONTAINER,
+    AZURE_URL,
+)
+import uuid
+from azure.storage.blob import ContentSettings
 from .serializers import *
 import psycopg2
 from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
 from esteettomyyssovellus.settings import (
@@ -25,6 +29,7 @@ from esteettomyyssovellus.settings import (
 )
 import hashlib
 from rest_framework import permissions
+from .storage import create_blob_client
 
 
 class TokenPermission(permissions.BasePermission):
@@ -1618,3 +1623,65 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
+
+
+class AzureUploader(APIView):
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def post(self, request, servicepoint_id=None):
+        try:
+            file = request.FILES["file"]
+            file_upload_name = str(uuid.uuid4()) + ".jpg"
+            blob_service_client = create_blob_client(servicepoint_id, file_upload_name)
+            my_content_settings = ContentSettings(
+                content_type="image/jpg",
+                content_encoding=None,
+                content_language=None,
+                content_disposition=None,
+                cache_control=None,
+                content_md5=None,
+            )
+            blob_service_client.upload_blob(file, content_settings=my_content_settings)
+            url = (
+                AZURE_URL
+                + PUBLIC_AZURE_CONTAINER
+                + "/"
+                + servicepoint_id
+                + "/"
+                + file_upload_name
+            )
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "uploaded_file_name": file_upload_name,
+                            "url": url,
+                        }
+                    )
+                ],
+                status=201,
+            )
+        except Exception as e:
+            return HttpResponse(e)
+
+    def delete(self, request, servicepoint_id=None, format=None):
+        try:
+            file_name = request.data["image_name"]
+            blob_service_client = create_blob_client(servicepoint_id, file_name)
+            blob_service_client.delete_blob()
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "deleted_file_name": file_name,
+                        }
+                    )
+                ],
+                status=201,
+            )
+        except Exception as e:
+            return HttpResponse(e)

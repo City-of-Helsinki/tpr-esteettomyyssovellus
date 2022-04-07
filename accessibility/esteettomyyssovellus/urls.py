@@ -182,3 +182,7 @@ urlpatterns += [
         views.ArRest01SummaryViewSet.as_view(),
     ),
 ]
+
+urlpatterns += [
+    path("api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
+]

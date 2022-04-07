@@ -35,6 +35,18 @@ DB = env("DB")
 API_TOKEN = env("API_TOKEN")
 SEARCH_PATH = env("SEARCH_PATH")
 
+# Azure storage
+# AZURE_STORAGE = env("AZURE_STORAGE")
+AZURE_URL = env("AZURE_URL")
+# PRIVATE_AZURE_CONTAINER = env("PRIVATE_AZURE_CONTAINER")
+# PRIVATE_AZURE_CONNECTION_STRING = env("PRIVATE_AZURE_CONNECTION_STRING")
+# PRIVATE_AZURE_READ_KEY = env("PRIVATE_AZURE_READ_KEY")
+PUBLIC_AZURE_CONTAINER = env("PUBLIC_AZURE_CONTAINER")
+PUBLIC_AZURE_CONNECTION_STRING = env("PUBLIC_AZURE_CONNECTION_STRING")
+# PUBLIC_AZURE_READ_KEY = env("PUBLIC_AZURE_READ_KEY")
+
+# JWT_IMAGE_SECRET = env("JWT_IMAGE_SECRET")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -42,7 +54,7 @@ SEARCH_PATH = env("SEARCH_PATH")
 SECRET_KEY = "django-insecure-616n+sxdkwqu0qc(sk=pdg$mmc00ch3z^6_6mz#74q8iy#hop5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
