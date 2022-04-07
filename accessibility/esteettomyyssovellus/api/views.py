@@ -1690,3 +1690,84 @@ class AzureUploader(APIView):
             )
         except Exception as e:
             return HttpResponse(e)
+
+
+class ArpDeletePlaceFromAnswer(APIView):
+    """
+    API endpoint for arp_delete_place_from_answer(v_log_id_in integer, v_place_id_in integer)
+    """
+
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response(
+            """Get called for a funcion call that requires
+                        parameters and a post"""
+        )
+
+    def delete(self, request, format=None):
+        # Post request to call the arp_delete_place_from_answer function in the psql
+        # database
+        log_id = ""
+        place_id = ""
+
+        #
+        try:
+            log_id = int(request.data["log_id"])
+            place_id = int(request.data["place_id"])
+        except:
+            print("Required data missing")
+            return Response(
+                "Error while using database function",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute(
+                "SELECT arp_delete_place_from_answer(%s, %s)", (log_id, place_id)
+            )
+
+            # Get the returned values
+            # result = cursor.fetchall()
+            ps_connection.commit()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while using database function", error)
+            return Response(
+                "Error while using database function %s",
+                error,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "deleted_place_id": place_id,
+                            "deleted_log_id": log_id,
+                        }
+                    )
+                ],
+                status=201,
+            )

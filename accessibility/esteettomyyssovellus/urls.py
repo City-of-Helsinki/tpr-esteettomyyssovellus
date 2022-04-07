@@ -81,9 +81,11 @@ urlpatterns = [
 urlpatterns += [
     path("api/ChopAddress/", views.ChopAddressView.as_view()),
     path("api/GenerateSentences/", views.GenerateSentencesView.as_view()),
+    path("api/DeletePlaceFromAnswer/", views.ArpDeletePlaceFromAnswer.as_view()),
     # Workaround for proxy
     path("app/api/ChopAddress/", views.ChopAddressView.as_view()),
     path("app/api/GenerateSentences/", views.GenerateSentencesView.as_view()),
+    path("app/api/DeletePlaceFromAnswer/", views.ArpDeletePlaceFromAnswer.as_view()),
 ]
 
 # Public APIs v1
