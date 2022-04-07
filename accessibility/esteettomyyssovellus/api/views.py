@@ -1625,6 +1625,9 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
+import base64
+
+
 class AzureUploader(APIView):
     permission_classes = [
         TokenPermission,
@@ -1632,7 +1635,9 @@ class AzureUploader(APIView):
 
     def post(self, request, servicepoint_id=None):
         try:
-            file = request.FILES["file"]
+            # file = request.FILES["file"]
+            encoded_file = request.data["file"].split(",")[1]
+            file = base64.b64decode(encoded_file)
             file_upload_name = str(uuid.uuid4()) + ".jpg"
             blob_service_client = create_blob_client(servicepoint_id, file_upload_name)
             my_content_settings = ContentSettings(
