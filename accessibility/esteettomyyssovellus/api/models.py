@@ -1363,7 +1363,7 @@ class ArBackendEntranceChoice(models.Model):
     question_choice_text = models.CharField(max_length=2000, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
-    description = models.CharField(max_length=500, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         managed = False
