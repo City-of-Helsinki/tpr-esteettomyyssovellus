@@ -13,6 +13,7 @@ from django.db import models
 
 
 class ArBackendCopyableEntrance(models.Model):
+    technical_id = models.TextField(primary_key=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
     copyable_entrance_id = models.BigIntegerField(blank=True, null=True)
