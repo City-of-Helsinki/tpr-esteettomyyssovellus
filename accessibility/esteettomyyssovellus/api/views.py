@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from django.http import QueryDict
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
@@ -1607,6 +1608,26 @@ class ArXPlaceAnswerBoxViewSet(viewsets.ModelViewSet):
         TokenPermission,
     ]
 
+    @action(detail=True, methods=["DELETE"], url_path="delete_box_txts")
+    def delete_box_txts(self, request, *args, **kwargs):
+        try:
+            answer_box = self.get_object()
+            box_id = getattr(answer_box, "box_id")
+            if box_id == None:
+                return Response(
+                    "adadad",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            instances = ArXPlaceAnswerBoxTxt.objects.filter(box_id=box_id)
+            instances.delete()
+            return Response(
+                "ArXPlaceAnswerBoxTxt with box_id=" + str(box_id) + " deleted.",
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        except Exception as e:
+            return Response("Deletion failed.", status=status.HTTP_400_BAD_REQUEST)
+
 
 class ArXPlaceAnswerBoxTxtViewSet(viewsets.ModelViewSet):
     queryset = ArXPlaceAnswerBoxTxt.objects.all()
@@ -1615,6 +1636,23 @@ class ArXPlaceAnswerBoxTxtViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
+
+    def delete(self, request, *args, **kwargs):
+        if request.method == "DELETE":
+            params = QueryDict(request.params)
+            box_id = request.POST.get("box_id", None)
+            if box_id == None:
+                return Response(
+                    params,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            instances = ArXPlaceAnswerBoxTxt.objects.filter(box_id=box_id)
+            instances.delete()
+            return Response(
+                "ArXPlaceAnswerBoxTxt with box_id=" + box_id + " deleted.",
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
 
 class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
