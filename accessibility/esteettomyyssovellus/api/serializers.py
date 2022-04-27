@@ -259,3 +259,15 @@ class ArXQuestionBlockAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionBlockAnswer
         fields = "__all__"
+
+
+class ArBackendCopyableEntranceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendCopyableEntrance
+        fields = "__all__"
+
+
+class ArBackendDeadPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendDeadPhoto
+        fields = "__all__"

@@ -30,6 +30,7 @@ from esteettomyyssovellus.settings import (
 import hashlib
 from rest_framework import permissions
 from .storage import create_blob_client
+import base64
 
 
 class TokenPermission(permissions.BasePermission):
@@ -1580,6 +1581,15 @@ class ArBackendPlaceViewSet(viewsets.ModelViewSet):
     )
 
 
+class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendCopyableEntrance.objects.all()
+    serializer_class = ArBackendCopyableEntranceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
 class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
     queryset = ArXPlaceAnswer.objects.all()
     serializer_class = ArXPlaceAnswerSerializer
@@ -1623,9 +1633,6 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
-
-
-import base64
 
 
 class AzureUploader(APIView):
@@ -1743,7 +1750,7 @@ class ArpDeletePlaceFromAnswer(APIView):
             )
 
             # Get the returned values
-            # result = cursor.fetchall()
+            result = cursor.fetchall()
             ps_connection.commit()
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -1763,7 +1770,7 @@ class ArpDeletePlaceFromAnswer(APIView):
                 [
                     json.dumps(
                         {
-                            "status": "success",
+                            "status": result,
                             "deleted_place_id": place_id,
                             "deleted_log_id": log_id,
                         }

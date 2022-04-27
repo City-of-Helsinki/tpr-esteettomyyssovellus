@@ -62,6 +62,7 @@ router.register(r"ArBackendEntranceChoice", views.ArBackendEntranceChoiceViewSet
 router.register(r"ArBackendEntrancePlace", views.ArBackendEntrancePlaceViewSet)
 router.register(r"ArBackendEntranceSentence", views.ArBackendEntranceSentenceViewSet)
 router.register(r"ArBackendPlace", views.ArBackendPlaceViewSet)
+router.register(r"ArBackendCopyableEntrance", views.ArBackendCopyableEntranceViewSet)
 router.register(r"ArXPlaceAnswer", views.ArXPlaceAnswerViewSet)
 router.register(r"ArXPlaceAnswerBox", views.ArXPlaceAnswerBoxViewSet)
 router.register(r"ArXPlaceAnswerBoxTxt", views.ArXPlaceAnswerBoxTxtViewSet)

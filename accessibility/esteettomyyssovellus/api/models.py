@@ -1427,6 +1427,14 @@ class ArBackendPlace(models.Model):
         db_table = "ar_backend_place"
 
 
+class ArBackendDeadPhoto(models.Model):
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_dead_photo"
+
+
 class ArXPlaceAnswer(models.Model):
     place_answer_id = models.BigAutoField(primary_key=True)
     log_id = models.BigIntegerField(blank=True, null=True)
