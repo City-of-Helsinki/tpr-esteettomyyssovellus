@@ -1376,6 +1376,7 @@ class ArBackendEntrancePlace(models.Model):
     log_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     form_submitted = models.CharField(max_length=1, blank=False, null=False)
+    question_block_id = models.IntegerField(blank=True, null=True)
     place_id = models.BigIntegerField(blank=True, null=True)
     box_id = models.BigIntegerField(blank=True, null=True)
     order_number = models.IntegerField(blank=True, null=True)
