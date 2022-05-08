@@ -120,6 +120,8 @@ class ArBackendQuestion(models.Model):
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    guide_title = models.CharField(max_length=200, blank=True, null=True)
+    guide_url = models.CharField(max_length=200, blank=True, null=True)
     yes_no_question = models.CharField(max_length=1, blank=True, null=True)
     #    can_add_location = models.CharField(max_length=1, blank=True, null=True)
     #    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
