@@ -86,6 +86,67 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
         "form",
     )
 
+    @action(detail=True, methods=["POST"], url_path="delete_entrance")
+    def delete_entrance(self, request, *args, **kwargs):
+        # Post request to call the arp_delete_place_from_answer function in the psql
+        # database
+        entrance_id = ""
+
+        #
+        try:
+            entrance = self.get_object()
+            entrance_id = entrance.entrance_id
+        except:
+            print("Required data missing")
+            return Response(
+                "Error while getting entrance. Entrance_id not in database.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute("SELECT arp_delete_entrance(%s)", [entrance_id])
+
+            # Get the returned values
+            result = cursor.fetchall()
+            ps_connection.commit()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while using database function", error)
+            return Response(
+                "Error while using database function %s",
+                error,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": result,
+                            "deleted_entrance_id": entrance_id,
+                        }
+                    )
+                ],
+                status=201,
+            )
+
 
 class ArFormViewSet(viewsets.ModelViewSet):
     """
