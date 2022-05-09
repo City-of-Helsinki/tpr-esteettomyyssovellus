@@ -87,7 +87,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
     )
 
     @action(detail=True, methods=["POST"], url_path="delete_entrance")
-    def delete_entrance(self, request, *args, **kwargs):
+    def delete_entrance_data(self, request, *args, **kwargs):
         # Post request to call the arp_delete_place_from_answer function in the psql
         # database
         entrance_id = ""
@@ -116,7 +116,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
             cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
             # Call the psql function that chops the address
-            cursor.execute("SELECT arp_delete_entrance(%s)", [entrance_id])
+            cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance_id])
 
             # Get the returned values
             result = cursor.fetchall()
@@ -124,6 +124,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while using database function", error)
+            result = str(error)
             return Response(
                 "Error while using database function %s",
                 error,
