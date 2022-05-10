@@ -103,6 +103,10 @@ urlpatterns += [
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",
+        views.ArRest01AddExternalReferenceView.as_view(),
+    ),
+    path(
         "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",
         views.ArRest01SentenceView.as_view(),
     ),
@@ -124,6 +128,7 @@ urlpatterns += [
         "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
         views.ArRest01EntranceView.as_view(),
     ),
+    # POST /api/v1/servicepoints/{systemId}/{servicePointId} /externalservicepoint/
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",
         views.ArRest01ShortageView.as_view(),

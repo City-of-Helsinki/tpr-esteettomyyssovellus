@@ -33,6 +33,8 @@ from rest_framework import permissions
 from .storage import create_blob_client
 import base64
 from urllib.parse import urlparse, parse_qs
+from dateutil import parser
+from datetime import datetime
 
 
 class TokenPermission(permissions.BasePermission):
@@ -981,34 +983,46 @@ class ArRest01ServicepointView(APIView):
             data = ArRest01Servicepoint.objects.filter(
                 system_id=systemId, external_servicepoint_id=servicePointId
             )
-            item = data[0]
-            integer_map = map(int, item.entrances.split(","))
-            modified_data = {
-                "systemId": str(item.system_id),
-                "servicePointId": item.external_servicepoint_id,
-                "name": item.servicepoint_name,
-                "addressStreetName": item.address_street_name,
-                "addressNo": item.address_no,
-                "addressCity": item.address_city,
-                "locEasting": item.loc_easting,
-                "locNorthing": item.loc_northing,
-                "accessibilityPhone": item.accessibility_phone,
-                "accessibilityEmail": item.accessibility_email,
-                "accessibilityWww": item.accessibility_www,
-                "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
-                "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
-                "entrances": list(integer_map),
-            }
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                status=status.HTTP_200_OK,
-            )
+            if len(data) > 0:
+                item = data[0]
+                integer_map = map(int, item.entrances.split(","))
+                modified_data = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.external_servicepoint_id,
+                    "name": item.servicepoint_name,
+                    "addressStreetName": item.address_street_name,
+                    "addressNo": item.address_no,
+                    "addressCity": item.address_city,
+                    "locEasting": item.loc_easting,
+                    "locNorthing": item.loc_northing,
+                    "accessibilityPhone": item.accessibility_phone,
+                    "accessibilityEmail": item.accessibility_email,
+                    "accessibilityWww": item.accessibility_www,
+                    "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "entrances": list(integer_map),
+                }
+                return HttpResponse(
+                    [json.dumps(modified_data, ensure_ascii=False)],
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return HttpResponse([])
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
-    def delete(self, request, systemId=None, servicePointId=None, format=None):
+    def delete(self, request, systemId, servicePointId, format=None):
+        systems = ArSystem.objects.all()
+        is_in_systems = False
+        for system in systems:
+            if system.system_id == systemId:
+                is_in_systems = True
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in ar.", status=status.HTTP_401_UNAUTHORIZED
+            )
         URL = request.build_absolute_uri()
         parsed_url = urlparse(URL)
         query = parse_qs(parsed_url.query)
@@ -1021,7 +1035,17 @@ class ArRest01ServicepointView(APIView):
                 )
 
         user = str(query["user"][0])
-        validUntil = str(query["validUntil"][0])
+        validUntil = query["validUntil"][0]
+        valid_until = parser.parse(validUntil)
+        now = datetime.now()
+        if valid_until < now:
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # TODO: Check the user??
+
+        validUntil = str(validUntil)
         checksum = str(query["checksum"][0])
         system = ArSystem.objects.get(system_id=systemId)
         checksum_secret = getattr(system, "checksum_secret")
@@ -1036,7 +1060,9 @@ class ArRest01ServicepointView(APIView):
 
         # TODO: If used often create function for checking checksum
         if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
-            return HttpResponse("Checksums did not match. ", status=status.HTTP_200_OK)
+            return HttpResponse(
+                "Checksums did not match. ", status=status.HTTP_401_UNAUTHORIZED
+            )
 
         # Call arp_delete_entrance_data to all entrances of the servicepoint
         entrances = ArEntrance.objects.filter(servicepoint_id=servicePointId)
@@ -1138,42 +1164,64 @@ class ArRest01EntranceView(APIView):
             )
 
 
-# def ArRest01EntranceView(request, systemId, servicePointId):
+class ArRest01AddExternalReferenceView(APIView):
+    def post(self, request, systemId, servicePointId):
+        # {
+        # "ServicePointId":"338de29b-a5e5-47a9-a79f-80cb6c3a303b",
+        # "SystemId":"ab6e2755-19a2-45b4-b5cd-484098b6c511",
+        # "User":"user@tpr.fi",
+        # "ValidUntil":"2018-01-30T18:08:01",
+        # "Checksum":"C6FC721604E5F093B19071DD8903C5643B6BDE0EF1C8D62CBE869A7416BF9551"
+        #  }
+        systems = ArSystem.objects.all()
+        is_in_systems = False
+        for system in systems:
+            if system.system_id == systemId:
+                is_in_systems = True
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
+            )
+        data = request.data
+        keys = ["ServicePointId", "SystemId", "User", "ValidUntil", "Checksum"]
+        for key in keys:
+            if key not in data:
+                return HttpResponse(
+                    "Data does not contain required keys.",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        external_servicepoint_id = data["ServicePointId"]
+        external_system_id = data["SystemId"]
+        user = data["User"]
+        checksum = data["Checksum"]
+        validUntil = data["ValidUntil"]
+        valid_until = parser.parse(validUntil)
+        now = datetime.now()
+        if valid_until < now:
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil + external systemId + external servicepointId
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + str(user)
+            + str(valid_until)
+            + str(external_system_id)
+            + str(external_servicepoint_id)
+        )
 
-
-#     try:
-#         data = ArRest01Entrance.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
-#         modified_data = []
-#         for item in data:
-#             entrance = {
-#                 "systemId": str(item.system_id),
-#                 "servicePointId": item.external_servicepoint_id,
-#                 "entranceId": item.entrance_id,
-#                 "isMainEntrance": item.is_main_entrance == 'Y',
-#                 "names": [],
-#                 "locEasting": item.loc_easting,
-#                 "locNorthing": item.loc_northing,
-#                 "photoUrl": item.photo_url,
-#                 "streetviewUrl": item.streetview_url,
-#                 # 2014-11-14T09:10:58
-#                 "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "sentencesCreated": item.sentences_created.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "sentencesModified": item.sentences_modified.strftime("%Y-%m-%dT%H:%M:%S")
-#             }
-#             if item.name_fi:
-#                 entrance["names"].append({"language": "fi", "value": item.name_fi})
-#             if item.name_sv:
-#                 entrance["names"].append({"language": "sv", "value": item.name_sv})
-#             if item.name_en:
-#                 entrance["names"].append({"language": "en", "value": item.name_en})
-
-#             modified_data.append(entrance)
-#         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
-#                             status=status.HTTP_200_OK)
-#     except Exception as error:
-#         return HttpResponse("Error occured: " + str(error),
-#                         status=status.HTTP_400_BAD_REQUEST)
+        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+            return HttpResponse(
+                "Checksums did not match. "
+                + hashlib.sha256(checksum_string.encode("ascii")).hexdigest(),
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        # TODO: Figure out where to update the external stuff.
+        return HttpResponse("WIP.", status=status.HTTP_200_OK)
 
 
 class ArRest01SentenceView(APIView):
