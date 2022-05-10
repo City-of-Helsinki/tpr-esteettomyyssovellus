@@ -32,6 +32,7 @@ import hashlib
 from rest_framework import permissions
 from .storage import create_blob_client
 import base64
+from urllib.parse import urlparse, parse_qs
 
 
 class TokenPermission(permissions.BasePermission):
@@ -282,19 +283,32 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
-    def update_accessibility_contacts(self, request, *args, **kwargs):
+    # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
+    # def update_accessibility_contacts(self, request, *args, **kwargs):
+    #     try:
+    #         request_data = request.data
+    #         servicepoint = self.get_object()
+    #         servicepoint.accessibility_phone = request_data["accessibility_phone"]
+    #         servicepoint.accessibility_email = request_data["accessibility_email"]
+    #         servicepoint.accessibility_www = request_data["accessibility_www"]
+    #         servicepoint.modified_by = request_data["modified_by"]
+    #         servicepoint.modified = request_data["modified"]
+    #         servicepoint.save()
+    #         return Response(
+    #             {"status": "accessibility information updated"},
+    #             status=status.HTTP_200_OK,
+    #         )
+    #     except Exception as e:
+    #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["POST"], url_path="set_searchable")
+    def set_searchable(self, request, *args, **kwargs):
         try:
-            request_data = request.data
             servicepoint = self.get_object()
-            servicepoint.accessibility_phone = request_data["accessibility_phone"]
-            servicepoint.accessibility_email = request_data["accessibility_email"]
-            servicepoint.accessibility_www = request_data["accessibility_www"]
-            servicepoint.modified_by = request_data["modified_by"]
-            servicepoint.modified = request_data["modified"]
+            servicepoint.is_searchable = "Y"
             servicepoint.save()
             return Response(
-                {"status": "accessibility information updated"},
+                {"status": "servicepoint set searchable."},
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
@@ -956,6 +970,11 @@ class ArRest01RequirementView(APIView):
 
 
 class ArRest01ServicepointView(APIView):
+    http_method_names = [
+        "delete",
+        "get",
+    ]
+
     def get(self, request, systemId=None, servicePointId=None, format=None):
         try:
             # TODO: external_servicepoint_id or servicepoint_id
@@ -988,6 +1007,89 @@ class ArRest01ServicepointView(APIView):
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
+
+    def delete(self, request, systemId=None, servicePointId=None, format=None):
+        URL = request.build_absolute_uri()
+        parsed_url = urlparse(URL)
+        query = parse_qs(parsed_url.query)
+        keys = ["user", "validUntil", "checksum"]
+        for key in keys:
+            if key not in query:
+                return HttpResponse(
+                    "Required query parameter missing.",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        user = str(query["user"][0])
+        validUntil = str(query["validUntil"][0])
+        checksum = str(query["checksum"][0])
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + user
+            + validUntil
+        )
+
+        # TODO: If used often create function for checking checksum
+        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+            return HttpResponse("Checksums did not match. ", status=status.HTTP_200_OK)
+
+        # Call arp_delete_entrance_data to all entrances of the servicepoint
+        entrances = ArEntrance.objects.filter(servicepoint_id=servicePointId)
+        for entrance in entrances:
+            # Call arp_delete_entrance_data
+            entrance_id = entrance.entrance_id
+            try:
+                ps_connection = psycopg2.connect(
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
+                )
+
+                cursor = ps_connection.cursor(
+                    cursor_factory=psycopg2.extras.RealDictCursor
+                )
+
+                # Call the psql function that chops the address
+                cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance_id])
+
+                # Get the returned values
+                result = cursor.fetchall()
+                ps_connection.commit()
+
+            except (Exception, psycopg2.DatabaseError) as error:
+                print("Error while using database function", error)
+                result = str(error)
+                return HttpResponse(
+                    "Error deleting data using arp_delete_entrance_data" + str(error),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                print("PostgreSQL connection is closed")
+            # If the entrance is not main entrance, delete entrance from the database.
+            if entrance.is_main_entrance == "N":
+                # delete entrance
+                entrance.delete()
+
+        # TODO: Set is_searchable = "N"
+        servicepoint = ArServicepoint.objects.get(servicepoint_id=servicePointId)
+        servicepoint.is_searchable = "N"
+        servicepoint.save()
+
+        return HttpResponse(
+            "Servicepoint deleted successfully.", status=status.HTTP_200_OK
+        )
 
 
 class ArRest01EntranceView(APIView):
