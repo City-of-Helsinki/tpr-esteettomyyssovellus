@@ -1493,7 +1493,19 @@ class ArXQuestionBlockAnswer(models.Model):
     loc_easting = models.IntegerField(blank=True, null=True)
     loc_northing = models.IntegerField(blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = "ar_x_question_block_answer"
+
+
+class ArXQuestionBlockAnswerTxt(models.Model):
+    question_block_answer_txt_id = models.BigAutoField(primary_key=True)
+    question_block_answer_id = models.BigIntegerField(blank=True, null=False)
+    language_id = models.BigIntegerField(blank=True, null=False)
+    photo_text = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_question_block_answer_txt"

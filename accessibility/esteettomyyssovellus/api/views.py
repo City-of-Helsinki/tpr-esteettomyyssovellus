@@ -1950,6 +1950,15 @@ class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
+class ArXQuestionBlockAnswerTxtViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswerTxt.objects.all()
+    serializer_class = ArXQuestionBlockAnswerTxtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
 class AzureUploader(APIView):
     permission_classes = [
         TokenPermission,

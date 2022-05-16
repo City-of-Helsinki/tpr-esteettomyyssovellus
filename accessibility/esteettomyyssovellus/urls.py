@@ -68,6 +68,7 @@ router.register(r"ArXPlaceAnswerBox", views.ArXPlaceAnswerBoxViewSet)
 router.register(r"ArXPlaceAnswerBoxTxt", views.ArXPlaceAnswerBoxTxtViewSet)
 router.register(r"ArXQuestionBlockAnswerCmt", views.ArXQuestionBlockAnswerCmtViewSet)
 router.register(r"ArXQuestionBlockAnswer", views.ArXQuestionBlockAnswerViewSet)
+router.register(r"ArXQuestionBlockAnswerTxt", views.ArXQuestionBlockAnswerTxtViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

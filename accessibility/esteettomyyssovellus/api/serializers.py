@@ -271,3 +271,9 @@ class ArBackendDeadPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendDeadPhoto
         fields = "__all__"
+
+
+class ArXQuestionBlockAnswerTxtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArXQuestionBlockAnswerTxt
+        fields = "__all__"
