@@ -1118,7 +1118,11 @@ class ArRest01ServicepointView(APIView):
             )
 
         # Call arp_delete_entrance_data to all entrances of the servicepoint
-        entrances = ArEntrance.objects.filter(servicepoint_id=servicePointId)
+
+        servicepoint = ArServicepoint.objects.get(ext_servicepoint_id=servicePointId)
+        entrances = ArEntrance.objects.filter(
+            servicepoint_id=servicepoint.servicepoint_id
+        )
         for entrance in entrances:
             # Call arp_delete_entrance_data
             entrance_id = entrance.entrance_id
@@ -1162,7 +1166,6 @@ class ArRest01ServicepointView(APIView):
                 entrance.delete()
 
         # TODO: Set is_searchable = "N"
-        servicepoint = ArServicepoint.objects.get(servicepoint_id=servicePointId)
         servicepoint.is_searchable = "N"
         servicepoint.save()
 
@@ -1398,12 +1401,12 @@ class ArRest01ShortageView(APIView):
             if viewPointId != None:
                 data = ArRest01Shortage.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
                 )
             elif servicePointId != None:
                 data = ArRest01Shortage.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Shortage.objects.filter(system_id=systemId)
@@ -1582,7 +1585,7 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
         try:
             if servicePointId != None:
                 data = ArRest01ServicepointAccessibility.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01ServicepointAccessibility.objects.filter(
@@ -1617,12 +1620,12 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
             if entranceId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
                 )
             elif servicePointId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01EntranceAccessibility.objects.filter(
@@ -1664,12 +1667,12 @@ class ArRest01SummaryViewSet(APIView):
             if viewPointId != None:
                 data = ArRest01Summary.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
                 )
             elif servicePointId != None:
                 data = ArRest01Summary.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Summary.objects.filter(
@@ -1709,7 +1712,7 @@ class ArRest01ReportshortageViewSet(APIView):
         try:
             if servicePointId != None:
                 data = ArRest01Reportshortage.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Reportshortage.objects.filter(
@@ -1768,7 +1771,7 @@ class ArRest01ReportsummaryViewSet(APIView):
         try:
             if servicePointId != None:
                 data = ArRest01Reportsummary.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Reportsummary.objects.filter(

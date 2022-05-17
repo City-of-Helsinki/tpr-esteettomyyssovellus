@@ -143,15 +143,15 @@ urlpatterns += [
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/shortages/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/shortages/
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/viewpoints/28/shortages/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/shortages/
         views.ArRest01ShortageView.as_view(),  # TODO: ADD EXCEPTION
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/entrances/2214/properties/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/properties/
         views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
@@ -159,19 +159,19 @@ urlpatterns += [
         views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/entrances/properties/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/properties/
         views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/properties/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/properties/
         views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/summary/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/summary/
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/viewpoints/23/summary/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/summary/
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
@@ -179,7 +179,7 @@ urlpatterns += [
         views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/reportshortages/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/reportshortages/
         views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
@@ -187,7 +187,7 @@ urlpatterns += [
         views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/reportsummary/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/reportsummary/
         views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
