@@ -1432,6 +1432,7 @@ class ArRest01ShortageView(APIView):
                     modified_data.append(shortage)
                 return HttpResponse(
                     [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
                     status=status.HTTP_200_OK,
                 )
         except Exception as error:

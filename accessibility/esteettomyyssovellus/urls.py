@@ -148,7 +148,7 @@ urlpatterns += [
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/viewpoints/28/shortages/
-        views.ArRest01ShortageView.as_view(),
+        views.ArRest01ShortageView.as_view(),  # TODO: ADD EXCEPTION
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/entrances/2214/properties/
@@ -171,7 +171,7 @@ urlpatterns += [
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/viewpoints/28/summary/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/628/viewpoints/23/summary/
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(

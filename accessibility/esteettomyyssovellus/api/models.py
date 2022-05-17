@@ -332,10 +332,11 @@ class ArRest01AccessViewpoint(models.Model):
 
 
 class ArRest01Entrance(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    entrance_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
+    entrance_id = models.BigIntegerField(blank=True, null=False)
     is_main_entrance = models.CharField(max_length=1, blank=True, null=True)
     name_fi = models.CharField(max_length=500, blank=True, null=True)
     name_sv = models.CharField(max_length=500, blank=True, null=True)
@@ -437,6 +438,7 @@ class ArRest01Requirement(models.Model):
 
 
 class ArRest01Sentence(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -446,7 +448,7 @@ class ArRest01Sentence(models.Model):
     sentence_group_fi = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_sv = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_en = models.CharField(max_length=255, blank=True, null=True)
-    sentence_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    sentence_id = models.IntegerField(blank=True, null=False)
     sentence_order_text = models.TextField(blank=True, null=True)
     sentence_fi = models.CharField(max_length=4000, blank=True, null=True)
     sentence_sv = models.CharField(max_length=4000, blank=True, null=True)
@@ -458,9 +460,10 @@ class ArRest01Sentence(models.Model):
 
 
 class ArRest01Servicepoint(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
-    servicepoint_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=False)
     servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
     address_street_name = models.CharField(max_length=100, blank=True, null=True)
     address_no = models.CharField(max_length=100, blank=True, null=True)
