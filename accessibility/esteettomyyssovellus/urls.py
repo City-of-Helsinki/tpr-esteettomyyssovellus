@@ -39,9 +39,9 @@ router.register(r"ArBackendQuestions", views.ArBackendQuestionViewSet)
 router.register(r"ArBackendQuestionBlocks", views.ArBackendQuestionBlockViewSet)
 router.register(r"ArBackendQuestionChoice", views.ArBackendQuestionChoiceViewSet)
 router.register(r"ArBackendEntranceAnswer", views.ArBackendEntranceAnswerViewSet)
-router.register(
-    r"ArXAdditionalinfo", views.ArXAdditionalinfoViewSet, basename="additionalinfo"
-)
+# router.register(
+#     r"ArXAdditionalinfo", views.ArXAdditionalinfoViewSet, basename="additionalinfo"
+# )
 # router.register(r"ArXQuestionAnswerComment", views.ArXQuestionAnswerCommentViewSet)
 # router.register(r"ArXQuestionAnswerLocation", views.ArXQuestionAnswerLocationViewSet)
 # router.register(r"ArXQuestionAnswerPhoto", views.ArXQuestionAnswerPhotoViewSet)
@@ -49,15 +49,27 @@ router.register(
 router.register(r"ArXAnswerLog", views.ArXAnswerLogViewSet)
 router.register(r"ArXQuestionAnswer", views.ArXQuestionAnswerViewSet)
 router.register(r"ArExternalServicepoint", views.ArExternalServicepointViewSet)
-router.register(r"ArBackendEntrance", views.ArBackendEntranceViewset)
-router.register(r"ArBackendServicepoint", views.ArBackendServicepointViewset)
+router.register(r"ArBackendEntrance", views.ArBackendEntranceViewSet)
+router.register(r"ArBackendServicepoint", views.ArBackendServicepointViewSet)
 router.register(
-    r"ArBackendQuestionBlockField", views.ArBackendQuestionBlockFieldViewset
+    r"ArBackendQuestionBlockField", views.ArBackendQuestionBlockFieldViewSet
 )
 router.register(
     r"ArXQuestionBlockAnswerField", views.ArXQuestionBlockAnswerFieldViewSet
 )
 router.register(r"ArBackendEntranceField", views.ArBackendEntranceFieldViewSet)
+router.register(r"ArBackendEntranceChoice", views.ArBackendEntranceChoiceViewSet)
+router.register(r"ArBackendEntrancePlace", views.ArBackendEntrancePlaceViewSet)
+router.register(r"ArBackendEntranceSentence", views.ArBackendEntranceSentenceViewSet)
+router.register(r"ArBackendPlace", views.ArBackendPlaceViewSet)
+router.register(r"ArBackendCopyableEntrance", views.ArBackendCopyableEntranceViewSet)
+router.register(r"ArXPlaceAnswer", views.ArXPlaceAnswerViewSet)
+router.register(r"ArXPlaceAnswerBox", views.ArXPlaceAnswerBoxViewSet)
+router.register(r"ArXPlaceAnswerBoxTxt", views.ArXPlaceAnswerBoxTxtViewSet)
+router.register(r"ArXQuestionBlockAnswerCmt", views.ArXQuestionBlockAnswerCmtViewSet)
+router.register(r"ArXQuestionBlockAnswer", views.ArXQuestionBlockAnswerViewSet)
+router.register(r"ArXQuestionBlockAnswerTxt", views.ArXQuestionBlockAnswerTxtViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
@@ -71,104 +83,123 @@ urlpatterns = [
 urlpatterns += [
     path("api/ChopAddress/", views.ChopAddressView.as_view()),
     path("api/GenerateSentences/", views.GenerateSentencesView.as_view()),
+    path("api/DeletePlaceFromAnswer/", views.ArpDeletePlaceFromAnswer.as_view()),
     # Workaround for proxy
     path("app/api/ChopAddress/", views.ChopAddressView.as_view()),
     path("app/api/GenerateSentences/", views.GenerateSentencesView.as_view()),
+    path("app/api/DeletePlaceFromAnswer/", views.ArpDeletePlaceFromAnswer.as_view()),
 ]
 
 # Public APIs v1
 urlpatterns += [
     # SYSTEM DATA
-    path("api/v1/accessibility/variables/", views.ArRest01AccessVariableView.as_view()),
     path(
-        "api/v1/accessibility/viewpoints/", views.ArRest01AccessViewpointView.as_view()
+        "api/v1/accessibility/variables/", views.ArRest01AccessVariableView.as_view()
+    ),  # Works
+    path(
+        "api/v1/accessibility/viewpoints/",
+        views.ArRest01AccessViewpointView.as_view(),  # Works
     ),
-    path("api/v1/accessibility/requirements/", views.ArRest01RequirementView.as_view()),
+    path(
+        "api/v1/accessibility/requirements/", views.ArRest01RequirementView.as_view()
+    ),  # Works
     # CLIENT DATA
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",  # Works
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",  # WIP
+        views.ArRest01AddExternalReferenceView.as_view(),
+    ),
+    path(
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
         views.ArRest01SentenceView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/",  # Works # http://localhost:8000/api/v1/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/sentences/
         views.ArRest01EntranceSentenceView.as_view(),
     ),
     # CLIENT DATA, MASSIVE QUERIES
-    path("api/v1/servicepoints/<uuid:systemId>/", views.ArSystemServicepointsView),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/entrances/", views.ArSystemEntrancesView
-    ),
+        "api/v1/servicepoints/<uuid:systemId>/",
+        views.ArSystemServicepointsView.as_view(),
+    ),  # Works
+    # path(
+    #     "api/v1/servicepoints/<uuid:systemId>/entrances/", views.ArSystemEntrancesView.as_view(), name="system-entrance" # http://localhost:8000/api/v1/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/entrances/
+    # ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/",
-        views.ArSystemSentencesView,
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/",  # Works
+        views.ArSystemSentencesView.as_view(),
     ),
     # servicePointId is str because it can be both uuid or int
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",  # Works
         views.ArRest01EntranceView.as_view(),
     ),
+    # TODO: ****************************************************************************************
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/shortages/
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/shortages/
         views.ArRest01ShortageView.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",
-        views.ArRest01ShortageView.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/shortages/
+        views.ArRest01ShortageView.as_view(),  # TODO: ADD EXCEPTION
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/properties/
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/entrances/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/entrances/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/entrances/properties/
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",
-        views.ArRest01EntranceAccessibilityViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/properties/
+        views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",
-        views.ArRest01ServicepointAccessibilityViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/properties/
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/summary/
+        views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/summary/
+        views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/reportshortages/",
-        views.ArRest01ReportshortageViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/reportshortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/reportshortages/
+        views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",
-        views.ArRest01ReportshortageViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportshortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/reportshortages/
+        views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/reportsummary/",
-        views.ArRest01ReportsummaryViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/reportsummary/
+        views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",
-        views.ArRest01ReportsummaryViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/reportsummary/
+        views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/properties/",
-        views.ArRest01ServicepointAccessibilityViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/properties/
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/summary/",
-        views.ArRest01SummaryViewset.as_view(),
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/summary/
+        views.ArRest01SummaryViewSet.as_view(),
     ),
+]
+
+urlpatterns += [
+    path("api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
 ]

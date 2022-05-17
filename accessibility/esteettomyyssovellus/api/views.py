@@ -1,16 +1,21 @@
-from aifc import Error
 from django.contrib.auth.models import User, Group
+from django.http import QueryDict
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
 from rest_framework import status, viewsets
 from rest_framework import permissions
 from rest_framework.views import APIView
+from esteettomyyssovellus.settings import (
+    PUBLIC_AZURE_CONTAINER,
+    AZURE_URL,
+)
+import uuid
+from azure.storage.blob import ContentSettings
 from .serializers import *
 import psycopg2
 from rest_framework.response import Response
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from rest_framework.decorators import action
 import json
 from esteettomyyssovellus.settings import (
@@ -25,13 +30,19 @@ from esteettomyyssovellus.settings import (
 )
 import hashlib
 from rest_framework import permissions
+from .storage import create_blob_client
+import base64
+from urllib.parse import urlparse, parse_qs
+from dateutil import parser
+from datetime import datetime
+from django.shortcuts import redirect
 
 
 class TokenPermission(permissions.BasePermission):
     edit_methods = "__all__"
 
     def has_permission(self, request, view):
-        if (
+        if not DEBUG and (
             "HTTP_AUTHORIZATION" not in request.META
             or request.META["HTTP_AUTHORIZATION"]
             != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
@@ -47,17 +58,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
-
-    def list(self, request, *args, **kwargs):
-        if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
-            != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
-        ):
-            return HttpResponse(
-                "Token authentication failed.", status=status.HTTP_403_FORBIDDEN
-            )
-        return super().list(request, *args, **kwargs)
+    permission_classes = [
+        TokenPermission,
+    ]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -86,6 +89,133 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
         "servicepoint",
         "form",
     )
+
+    @action(detail=True, methods=["POST"], url_path="delete_entrance_data")
+    def delete_entrance_data(self, request, *args, **kwargs):
+        # Post request to call the arp_delete_place_from_answer function in the psql
+        # database
+        entrance_id = ""
+
+        #
+        try:
+            entrance = self.get_object()
+            entrance_id = entrance.entrance_id
+        except:
+            print("Required data missing")
+            return Response(
+                "Error while getting entrance. Entrance_id not in database.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance_id])
+
+            # Get the returned values
+            result = cursor.fetchall()
+            ps_connection.commit()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while using database function", error)
+            result = str(error)
+            return Response(
+                "Error while using database function %s",
+                error,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": result,
+                            "deleted_entrance_id": entrance_id,
+                        }
+                    )
+                ],
+                status=201,
+            )
+
+    @action(detail=True, methods=["POST"], url_path="delete_entrance")
+    def delete_entrance(self, request, *args, **kwargs):
+        # Post request to call the arp_delete_place_from_answer function in the psql
+        # database
+        entrance_id = ""
+
+        #
+        try:
+            entrance = self.get_object()
+            entrance_id = entrance.entrance_id
+        except:
+            print("Required data missing")
+            return Response(
+                "Error while getting entrance. Entrance_id not in database.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance_id])
+
+            # Get the returned values
+            result = cursor.fetchall()
+            ps_connection.commit()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while using database function", error)
+            result = str(error)
+            return Response(
+                "Error while using database function %s",
+                error,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+            # Delete the entrance entry from the database.
+            entrance.delete()
+            # Return response
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": result,
+                            "deleted_entrance_id": entrance_id,
+                        }
+                    )
+                ],
+                status=201,
+            )
 
 
 class ArFormViewSet(viewsets.ModelViewSet):
@@ -156,19 +286,32 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
-    def update_accessibility_contacts(self, request, *args, **kwargs):
+    # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
+    # def update_accessibility_contacts(self, request, *args, **kwargs):
+    #     try:
+    #         request_data = request.data
+    #         servicepoint = self.get_object()
+    #         servicepoint.accessibility_phone = request_data["accessibility_phone"]
+    #         servicepoint.accessibility_email = request_data["accessibility_email"]
+    #         servicepoint.accessibility_www = request_data["accessibility_www"]
+    #         servicepoint.modified_by = request_data["modified_by"]
+    #         servicepoint.modified = request_data["modified"]
+    #         servicepoint.save()
+    #         return Response(
+    #             {"status": "accessibility information updated"},
+    #             status=status.HTTP_200_OK,
+    #         )
+    #     except Exception as e:
+    #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["POST"], url_path="set_searchable")
+    def set_searchable(self, request, *args, **kwargs):
         try:
-            request_data = request.data
             servicepoint = self.get_object()
-            servicepoint.accessibility_phone = request_data["accessibility_phone"]
-            servicepoint.accessibility_email = request_data["accessibility_email"]
-            servicepoint.accessibility_www = request_data["accessibility_www"]
-            servicepoint.modified_by = request_data["modified_by"]
-            servicepoint.modified = request_data["modified"]
+            servicepoint.is_searchable = "Y"
             servicepoint.save()
             return Response(
-                {"status": "accessibility information updated"},
+                {"status": "servicepoint set searchable."},
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
@@ -313,7 +456,12 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id", "question_id")
+    filter_fields = (
+        "form_id",
+        "question_id",
+        "language_id",
+        "question_block_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -330,7 +478,11 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id",)
+    filter_fields = (
+        "form_id",
+        "language_id",
+        "question_block_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -347,7 +499,13 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id",)
+    filter_fields = (
+        "form_id",
+        "language_id",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -364,7 +522,13 @@ class ArBackendEntranceFieldViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("entrance_id", "log_id")
+    filter_fields = (
+        "log_id",
+        "entrance_id",
+        "question_block_id",
+        "question_block_field_id",
+        "form_submitted",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -381,40 +545,47 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("entrance_id", "log_id")
+    filter_fields = (
+        "entrance_id",
+        "log_id",
+        "form_submitted",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
     ]
 
 
-class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
-    """
-    API endpoint for ar_x_additional_info.
-    """
+# class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
+#     """
+#     API endpoint for ar_x_additional_info.
+#     """
 
-    search_fields = ["log", "question"]
-    querylist = [
-        {
-            "queryset": ArXQuestionAnswerComment.objects.all(),
-            "serializer_class": ArXQuestionAnswerCommentSerializer,
-            "label": "comment",
-        },
-        {
-            "queryset": ArXQuestionAnswerLocation.objects.all(),
-            "serializer_class": ArXQuestionAnswerLocationSerializer,
-            "label": "location",
-        },
-        {
-            "queryset": ArXQuestionAnswerPhoto.objects.all(),
-            "serializer_class": ArXQuestionAnswerPhotoSerializer,
-            "label": "photo",
-        },
-    ]
-    pagination_class = None
-    permission_classes = [
-        TokenPermission,
-    ]
+#     search_fields = ["log", "question"]
+#     querylist = [
+#         {
+#             "queryset": ArXQuestionAnswerComment.objects.all(),
+#             "serializer_class": ArXQuestionAnswerCommentSerializer,
+#             "label": "comment",
+#         },
+#         {
+#             "queryset": ArXQuestionAnswerLocation.objects.all(),
+#             "serializer_class": ArXQuestionAnswerLocationSerializer,
+#             "label": "location",
+#         },
+#         {
+#             "queryset": ArXQuestionAnswerPhoto.objects.all(),
+#             "serializer_class": ArXQuestionAnswerPhotoSerializer,
+#             "label": "photo",
+#         },
+#     ]
+#     pagination_class = None
+#     permission_classes = [
+#         TokenPermission,
+#     ]
 
 
 # class ArXQuestionAnswerPhotoTxtViewSet(viewsets.ModelViewSet):
@@ -724,8 +895,10 @@ class ArRest01AccessVariableView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
+            # HttpResponse(json_string, content_type='application/json; charset=utf-8')
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -765,6 +938,7 @@ class ArRest01AccessViewpointView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -793,6 +967,7 @@ class ArRest01RequirementView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -802,38 +977,201 @@ class ArRest01RequirementView(APIView):
 
 
 class ArRest01ServicepointView(APIView):
+    http_method_names = [
+        "delete",
+        "get",
+    ]
+
     def get(self, request, systemId=None, servicePointId=None, format=None):
+        if servicePointId == "entrances":
+            try:
+                data = ArRest01Entrance.objects.filter(system_id=systemId)
+                modified_data = []
+                for item in data:
+                    entrance = {
+                        "systemId": str(item.system_id),
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                        "isMainEntrance": item.is_main_entrance == "Y",
+                        "names": [],
+                        "locEasting": item.loc_easting,
+                        "locNorthing": item.loc_northing,
+                        "photoUrl": item.photo_url,
+                        "streetviewUrl": item.streetview_url,
+                        "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "sentencesCreated": item.sentences_created.strftime(
+                            "%Y-%m-%dT%H:%M:%S"
+                        ),
+                        "sentencesModified": item.sentences_modified.strftime(
+                            "%Y-%m-%dT%H:%M:%S"
+                        ),
+                    }
+                    if item.name_fi:
+                        entrance["names"].append(
+                            {"language": "fi", "value": item.name_fi}
+                        )
+                    if item.name_sv:
+                        entrance["names"].append(
+                            {"language": "sv", "value": item.name_sv}
+                        )
+                    if item.name_en:
+                        entrance["names"].append(
+                            {"language": "en", "value": item.name_en}
+                        )
+
+                    modified_data.append(entrance)
+                return HttpResponse(
+                    [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as error:
+                return HttpResponse(
+                    "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                )
         try:
             # TODO: external_servicepoint_id or servicepoint_id
             data = ArRest01Servicepoint.objects.filter(
                 system_id=systemId, external_servicepoint_id=servicePointId
             )
-            item = data[0]
-            integer_map = map(int, item.entrances.split(","))
-            modified_data = {
-                "systemId": str(item.system_id),
-                "servicePointId": item.external_servicepoint_id,
-                "name": item.servicepoint_name,
-                "addressStreetName": item.address_street_name,
-                "addressNo": item.address_no,
-                "addressCity": item.address_city,
-                "locEasting": item.loc_easting,
-                "locNorthing": item.loc_northing,
-                "accessibilityPhone": item.accessibility_phone,
-                "accessibilityEmail": item.accessibility_email,
-                "accessibilityWww": item.accessibility_www,
-                "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
-                "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
-                "entrances": list(integer_map),
-            }
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                status=status.HTTP_200_OK,
-            )
+            if len(data) > 0:
+                item = data[0]
+                integer_map = map(int, item.entrances.split(","))
+                modified_data = {
+                    "systemId": str(item.system_id),
+                    "servicePointId": item.external_servicepoint_id,
+                    "name": item.servicepoint_name,
+                    "addressStreetName": item.address_street_name,
+                    "addressNo": item.address_no,
+                    "addressCity": item.address_city,
+                    "locEasting": item.loc_easting,
+                    "locNorthing": item.loc_northing,
+                    "accessibilityPhone": item.accessibility_phone,
+                    "accessibilityEmail": item.accessibility_email,
+                    "accessibilityWww": item.accessibility_www,
+                    "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "entrances": list(integer_map),
+                }
+                return HttpResponse(
+                    [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return HttpResponse([])
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
+
+    def delete(self, request, systemId, servicePointId, format=None):
+        systems = ArSystem.objects.all()
+        is_in_systems = False
+        for system in systems:
+            if system.system_id == systemId:
+                is_in_systems = True
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in ar.", status=status.HTTP_401_UNAUTHORIZED
+            )
+        URL = request.build_absolute_uri()
+        parsed_url = urlparse(URL)
+        query = parse_qs(parsed_url.query)
+        keys = ["user", "validUntil", "checksum"]
+        for key in keys:
+            if key not in query:
+                return HttpResponse(
+                    "Required query parameter missing.",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        user = str(query["user"][0])
+        validUntil = query["validUntil"][0]
+        valid_until = parser.parse(validUntil)
+        now = datetime.now()
+        if valid_until < now:
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # TODO: Check the user??
+
+        validUntil = str(validUntil)
+        checksum = str(query["checksum"][0])
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + user
+            + validUntil
+        )
+
+        # TODO: If used often create function for checking checksum
+        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+            return HttpResponse(
+                "Checksums did not match. ", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Call arp_delete_entrance_data to all entrances of the servicepoint
+
+        servicepoint = ArServicepoint.objects.get(ext_servicepoint_id=servicePointId)
+        entrances = ArEntrance.objects.filter(
+            servicepoint_id=servicepoint.servicepoint_id
+        )
+        for entrance in entrances:
+            # Call arp_delete_entrance_data
+            entrance_id = entrance.entrance_id
+            try:
+                ps_connection = psycopg2.connect(
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
+                )
+
+                cursor = ps_connection.cursor(
+                    cursor_factory=psycopg2.extras.RealDictCursor
+                )
+
+                # Call the psql function that chops the address
+                cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance_id])
+
+                # Get the returned values
+                result = cursor.fetchall()
+                ps_connection.commit()
+
+            except (Exception, psycopg2.DatabaseError) as error:
+                print("Error while using database function", error)
+                result = str(error)
+                return HttpResponse(
+                    "Error deleting data using arp_delete_entrance_data" + str(error),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                print("PostgreSQL connection is closed")
+            # If the entrance is not main entrance, delete entrance from the database.
+            if entrance.is_main_entrance == "N":
+                # delete entrance
+                entrance.delete()
+
+        # TODO: Set is_searchable = "N"
+        servicepoint.is_searchable = "N"
+        servicepoint.save()
+
+        return HttpResponse(
+            "Servicepoint deleted successfully.", status=status.HTTP_200_OK
+        )
 
 
 class ArRest01EntranceView(APIView):
@@ -874,6 +1212,7 @@ class ArRest01EntranceView(APIView):
                 modified_data.append(entrance)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -882,42 +1221,64 @@ class ArRest01EntranceView(APIView):
             )
 
 
-# def ArRest01EntranceView(request, systemId, servicePointId):
+class ArRest01AddExternalReferenceView(APIView):
+    def post(self, request, systemId, servicePointId):
+        # {
+        # "ServicePointId":"338de29b-a5e5-47a9-a79f-80cb6c3a303b",
+        # "SystemId":"ab6e2755-19a2-45b4-b5cd-484098b6c511",
+        # "User":"user@tpr.fi",
+        # "ValidUntil":"2018-01-30T18:08:01",
+        # "Checksum":"C6FC721604E5F093B19071DD8903C5643B6BDE0EF1C8D62CBE869A7416BF9551"
+        #  }
+        systems = ArSystem.objects.all()
+        is_in_systems = False
+        for system in systems:
+            if system.system_id == systemId:
+                is_in_systems = True
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
+            )
+        data = request.data
+        keys = ["ServicePointId", "SystemId", "User", "ValidUntil", "Checksum"]
+        for key in keys:
+            if key not in data:
+                return HttpResponse(
+                    "Data does not contain required keys.",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        external_servicepoint_id = data["ServicePointId"]
+        external_system_id = data["SystemId"]
+        user = data["User"]
+        checksum = data["Checksum"]
+        validUntil = data["ValidUntil"]
+        valid_until = parser.parse(validUntil)
+        now = datetime.now()
+        if valid_until < now:
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil + external systemId + external servicepointId
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + str(user)
+            + str(valid_until)
+            + str(external_system_id)
+            + str(external_servicepoint_id)
+        )
 
-
-#     try:
-#         data = ArRest01Entrance.objects.filter(system_id=systemId, external_servicepoint_id=servicePointId)
-#         modified_data = []
-#         for item in data:
-#             entrance = {
-#                 "systemId": str(item.system_id),
-#                 "servicePointId": item.external_servicepoint_id,
-#                 "entranceId": item.entrance_id,
-#                 "isMainEntrance": item.is_main_entrance == 'Y',
-#                 "names": [],
-#                 "locEasting": item.loc_easting,
-#                 "locNorthing": item.loc_northing,
-#                 "photoUrl": item.photo_url,
-#                 "streetviewUrl": item.streetview_url,
-#                 # 2014-11-14T09:10:58
-#                 "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "sentencesCreated": item.sentences_created.strftime("%Y-%m-%dT%H:%M:%S"),
-#                 "sentencesModified": item.sentences_modified.strftime("%Y-%m-%dT%H:%M:%S")
-#             }
-#             if item.name_fi:
-#                 entrance["names"].append({"language": "fi", "value": item.name_fi})
-#             if item.name_sv:
-#                 entrance["names"].append({"language": "sv", "value": item.name_sv})
-#             if item.name_en:
-#                 entrance["names"].append({"language": "en", "value": item.name_en})
-
-#             modified_data.append(entrance)
-#         return HttpResponse([json.dumps(modified_data, ensure_ascii=False)],
-#                             status=status.HTTP_200_OK)
-#     except Exception as error:
-#         return HttpResponse("Error occured: " + str(error),
-#                         status=status.HTTP_400_BAD_REQUEST)
+        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+            return HttpResponse(
+                "Checksums did not match. "
+                + hashlib.sha256(checksum_string.encode("ascii")).hexdigest(),
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        # TODO: Figure out where to update the external stuff.
+        return HttpResponse("WIP.", status=status.HTTP_200_OK)
 
 
 class ArRest01SentenceView(APIView):
@@ -965,6 +1326,7 @@ class ArRest01SentenceView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1022,6 +1384,7 @@ class ArRest01EntranceSentenceView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1038,12 +1401,12 @@ class ArRest01ShortageView(APIView):
             if viewPointId != None:
                 data = ArRest01Shortage.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
                 )
             elif servicePointId != None:
                 data = ArRest01Shortage.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Shortage.objects.filter(system_id=systemId)
@@ -1072,6 +1435,7 @@ class ArRest01ShortageView(APIView):
                     modified_data.append(shortage)
                 return HttpResponse(
                     [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
                     status=status.HTTP_200_OK,
                 )
         except Exception as error:
@@ -1109,6 +1473,7 @@ class ArSystemServicepointsView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1152,10 +1517,13 @@ class ArSystemEntrancesView(APIView):
                 modified_data.append(entrance)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
-            return HttpResponse(str(error), status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ArSystemSentencesView(APIView):
@@ -1201,6 +1569,7 @@ class ArSystemSentencesView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1209,14 +1578,14 @@ class ArSystemSentencesView(APIView):
             )
 
 
-class ArRest01ServicepointAccessibilityViewset(APIView):
+class ArRest01ServicepointAccessibilityViewSet(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
         try:
             if servicePointId != None:
                 data = ArRest01ServicepointAccessibility.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01ServicepointAccessibility.objects.filter(
@@ -1234,6 +1603,7 @@ class ArRest01ServicepointAccessibilityViewset(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1242,7 +1612,7 @@ class ArRest01ServicepointAccessibilityViewset(APIView):
             )
 
 
-class ArRest01EntranceAccessibilityViewset(APIView):
+class ArRest01EntranceAccessibilityViewSet(APIView):
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1250,12 +1620,12 @@ class ArRest01EntranceAccessibilityViewset(APIView):
             if entranceId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
                 )
             elif servicePointId != None:
                 data = ArRest01EntranceAccessibility.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01EntranceAccessibility.objects.filter(
@@ -1274,6 +1644,7 @@ class ArRest01EntranceAccessibilityViewset(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1282,7 +1653,7 @@ class ArRest01EntranceAccessibilityViewset(APIView):
             )
 
 
-class ArRest01SummaryViewset(APIView):
+class ArRest01SummaryViewSet(APIView):
     def get(
         self,
         request,
@@ -1296,12 +1667,12 @@ class ArRest01SummaryViewset(APIView):
             if viewPointId != None:
                 data = ArRest01Summary.objects.filter(
                     system_id=systemId,
-                    servicepoint_id=servicePointId,
+                    external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
                 )
             elif servicePointId != None:
                 data = ArRest01Summary.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Summary.objects.filter(
@@ -1319,6 +1690,7 @@ class ArRest01SummaryViewset(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1327,7 +1699,7 @@ class ArRest01SummaryViewset(APIView):
             )
 
 
-class ArRest01ReportshortageViewset(APIView):
+class ArRest01ReportshortageViewSet(APIView):
     def get(
         self,
         request,
@@ -1340,7 +1712,7 @@ class ArRest01ReportshortageViewset(APIView):
         try:
             if servicePointId != None:
                 data = ArRest01Reportshortage.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Reportshortage.objects.filter(
@@ -1376,6 +1748,7 @@ class ArRest01ReportshortageViewset(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
 
@@ -1385,7 +1758,7 @@ class ArRest01ReportshortageViewset(APIView):
             )
 
 
-class ArRest01ReportsummaryViewset(APIView):
+class ArRest01ReportsummaryViewSet(APIView):
     def get(
         self,
         request,
@@ -1398,7 +1771,7 @@ class ArRest01ReportsummaryViewset(APIView):
         try:
             if servicePointId != None:
                 data = ArRest01Reportsummary.objects.filter(
-                    system_id=systemId, servicepoint_id=servicePointId
+                    system_id=systemId, external_servicepoint_id=servicePointId
                 )
             else:
                 data = ArRest01Reportsummary.objects.filter(
@@ -1430,6 +1803,7 @@ class ArRest01ReportsummaryViewset(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
 
@@ -1439,7 +1813,7 @@ class ArRest01ReportsummaryViewset(APIView):
             )
 
 
-class ArBackendEntranceViewset(viewsets.ModelViewSet):
+class ArBackendEntranceViewSet(viewsets.ModelViewSet):
     """
     API endpoint for ar backend entrance.
     """
@@ -1447,13 +1821,13 @@ class ArBackendEntranceViewset(viewsets.ModelViewSet):
     queryset = ArBackendEntrance.objects.all()
     serializer_class = ArBackendEntranceSerializer
     pagination_class = None
-    filter_fields = ("entrance_id",)
+    filter_fields = ("entrance_id", "log_id", "servicepoint_id", "form_submitted")
     permission_classes = [
         TokenPermission,
     ]
 
 
-class ArBackendServicepointViewset(viewsets.ModelViewSet):
+class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     """
     API endpoint for ar backend entrance.
     """
@@ -1461,19 +1835,340 @@ class ArBackendServicepointViewset(viewsets.ModelViewSet):
     queryset = ArBackendServicepoint.objects.all()
     serializer_class = ArBackendServicepointSerializer
     pagination_class = None
-    filter_fields = ("servicepoint_id",)
+    filter_fields = (
+        "servicepoint_id",
+        "log_id",
+        "main_entrance_id",
+        "form_submitted",
+    )
     permission_classes = [
         TokenPermission,
     ]
 
 
-class ArBackendQuestionBlockFieldViewset(viewsets.ModelViewSet):
+class ArBackendQuestionBlockFieldViewSet(viewsets.ModelViewSet):
     """ """
 
     queryset = ArBackendQuestionBlockField.objects.all()
     serializer_class = ArBackendQuestionBlockFieldSerializer
     pagination_class = None
-    filter_fields = ("question_block_id",)
+    filter_fields = (
+        "question_block_id",
+        "form_id",
+        "language_id",
+        "question_block_field_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
+
+
+class ArBackendEntranceChoiceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceChoice.objects.all()
+    serializer_class = ArBackendEntranceChoiceSerializer
+    pagination_class = None
+    filter_fields = (
+        "entrance_id",
+        "log_id",
+        "language_id",
+        "sentence_group_id",
+        "question_block_id",
+        "question_id",
+        "question_choice_id",
+        "form_submitted",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntrancePlace.objects.all()
+    serializer_class = ArBackendEntrancePlaceSerializer
+    pagination_class = None
+    filter_fields = (
+        "log_id",
+        "entrance_id",
+        "place_id",
+        "box_id",
+        "form_submitted",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntranceSentenceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceSentence.objects.all()
+    serializer_class = ArBackendEntranceSentenceSerializer
+    pagination_class = None
+    filter_fields = (
+        "entrance_id",
+        "form_submitted",
+        "log_id",
+        "language_id",
+        "sentence_group_id",
+        "sentence_id",
+        "parent_sentence_id",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendPlaceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendPlace.objects.all()
+    serializer_class = ArBackendPlaceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+    filter_fields = (
+        "place_id",
+        "language_id",
+    )
+
+
+class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendCopyableEntrance.objects.all()
+    serializer_class = ArBackendCopyableEntranceSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswer.objects.all()
+    serializer_class = ArXPlaceAnswerSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXPlaceAnswerBoxViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswerBox.objects.all()
+    serializer_class = ArXPlaceAnswerBoxSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    @action(detail=True, methods=["DELETE"], url_path="delete_box_txts")
+    def delete_box_txts(self, request, *args, **kwargs):
+        try:
+            answer_box = self.get_object()
+            box_id = getattr(answer_box, "box_id")
+            if box_id == None:
+                return Response(
+                    "adadad",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            instances = ArXPlaceAnswerBoxTxt.objects.filter(box_id=box_id)
+            instances.delete()
+            return Response(
+                "ArXPlaceAnswerBoxTxt with box_id=" + str(box_id) + " deleted.",
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        except Exception as e:
+            return Response("Deletion failed.", status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArXPlaceAnswerBoxTxtViewSet(viewsets.ModelViewSet):
+    queryset = ArXPlaceAnswerBoxTxt.objects.all()
+    serializer_class = ArXPlaceAnswerBoxTxtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def delete(self, request, *args, **kwargs):
+        if request.method == "DELETE":
+            params = QueryDict(request.params)
+            box_id = request.POST.get("box_id", None)
+            if box_id == None:
+                return Response(
+                    params,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            instances = ArXPlaceAnswerBoxTxt.objects.filter(box_id=box_id)
+            instances.delete()
+            return Response(
+                "ArXPlaceAnswerBoxTxt with box_id=" + box_id + " deleted.",
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+
+class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswerCmt.objects.all()
+    serializer_class = ArXQuestionBlockAnswerCmtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswer.objects.all()
+    serializer_class = ArXQuestionBlockAnswerSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArXQuestionBlockAnswerTxtViewSet(viewsets.ModelViewSet):
+    queryset = ArXQuestionBlockAnswerTxt.objects.all()
+    serializer_class = ArXQuestionBlockAnswerTxtSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class AzureUploader(APIView):
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def post(self, request, servicepoint_id=None):
+        try:
+            # file = request.FILES["file"]
+            encoded_file = request.data["file"].split(",")[1]
+            file = base64.b64decode(encoded_file)
+            file_upload_name = str(uuid.uuid4()) + ".jpg"
+            blob_service_client = create_blob_client(servicepoint_id, file_upload_name)
+            my_content_settings = ContentSettings(
+                content_type="image/jpg",
+                content_encoding=None,
+                content_language=None,
+                content_disposition=None,
+                cache_control=None,
+                content_md5=None,
+            )
+            blob_service_client.upload_blob(file, content_settings=my_content_settings)
+            url = (
+                AZURE_URL
+                + PUBLIC_AZURE_CONTAINER
+                + "/"
+                + servicepoint_id
+                + "/"
+                + file_upload_name
+            )
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "uploaded_file_name": file_upload_name,
+                            "url": url,
+                        }
+                    )
+                ],
+                status=201,
+            )
+        except Exception as e:
+            return HttpResponse(e)
+
+    def delete(self, request, servicepoint_id=None, format=None):
+        try:
+            file_name = request.data["image_name"]
+            blob_service_client = create_blob_client(servicepoint_id, file_name)
+            blob_service_client.delete_blob()
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": "success",
+                            "deleted_file_name": file_name,
+                        }
+                    )
+                ],
+                status=201,
+            )
+        except Exception as e:
+            return HttpResponse(e)
+
+
+class ArpDeletePlaceFromAnswer(APIView):
+    """
+    API endpoint for arp_delete_place_from_answer(v_log_id_in integer, v_place_id_in integer)
+    """
+
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response(
+            """Get called for a funcion call that requires
+                        parameters and a post"""
+        )
+
+    def delete(self, request, format=None):
+        # Post request to call the arp_delete_place_from_answer function in the psql
+        # database
+        log_id = ""
+        place_id = ""
+
+        #
+        try:
+            log_id = int(request.data["log_id"])
+            place_id = int(request.data["place_id"])
+        except:
+            print("Required data missing")
+            return Response(
+                "Error while using database function",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Call the psql function that chops the address
+            cursor.execute(
+                "SELECT arp_delete_place_from_answer(%s, %s)", (log_id, place_id)
+            )
+
+            # Get the returned values
+            result = cursor.fetchall()
+            ps_connection.commit()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while using database function", error)
+            return Response(
+                "Error while using database function %s",
+                error,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            # closing database connection.
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+                print("PostgreSQL connection is closed")
+            return HttpResponse(
+                [
+                    json.dumps(
+                        {
+                            "status": result,
+                            "deleted_place_id": place_id,
+                            "deleted_log_id": log_id,
+                        }
+                    )
+                ],
+                status=201,
+            )

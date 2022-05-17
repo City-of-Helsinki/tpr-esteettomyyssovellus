@@ -13,6 +13,7 @@ from django.db import models
 
 
 class ArBackendCopyableEntrance(models.Model):
+    technical_id = models.TextField(primary_key=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
     question_block_id = models.IntegerField(blank=True, null=True)
     copyable_entrance_id = models.BigIntegerField(blank=True, null=True)
@@ -27,18 +28,24 @@ class ArBackendEntrance(models.Model):
     technical_id = models.TextField(primary_key=True)
     log_id = models.BigIntegerField(blank=True, null=True)
     entrance_id = models.BigIntegerField(blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
     form_submitted = models.CharField(max_length=1, blank=False, null=False)
     loc_easting = models.IntegerField(blank=True, null=True)
     loc_northing = models.IntegerField(blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
-    name_fi = models.CharField(max_length=500, blank=True, null=True)
-    name_sv = models.CharField(max_length=500, blank=True, null=True)
-    name_en = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+    name_fi = models.CharField(max_length=200, blank=True, null=True)
+    name_sv = models.CharField(max_length=200, blank=True, null=True)
+    name_en = models.CharField(max_length=200, blank=True, null=True)
     contact_person_fi = models.CharField(max_length=200, blank=True, null=True)
     contact_person_sv = models.CharField(max_length=200, blank=True, null=True)
     contact_person_en = models.CharField(max_length=200, blank=True, null=True)
     accessibility_phone = models.CharField(max_length=200, blank=True, null=True)
     accessibility_email = models.CharField(max_length=200, blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -59,6 +66,7 @@ class ArBackendEntranceAnswer(models.Model):
     comment_sv = models.CharField(max_length=500, blank=True, null=True)
     comment_en = models.CharField(max_length=500, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
     photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
     photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
     photo_text_en = models.CharField(max_length=500, blank=True, null=True)
@@ -68,21 +76,21 @@ class ArBackendEntranceAnswer(models.Model):
         db_table = "ar_backend_entrance_answer"
 
 
-class ArBackendEntrancePhoto(models.Model):
-    technical_id = models.CharField(max_length=500, null=False, primary_key=True)
-    log_id = models.BigIntegerField(blank=True, null=True)
-    entrance_id = models.BigIntegerField(blank=True, null=True)
-    form_submitted = models.CharField(null=True, max_length=1)
-    question_id = models.BigIntegerField(blank=True, null=True)
-    photo_number = models.BigIntegerField(blank=True, null=True)
-    photo_url = models.CharField(max_length=500, blank=True, null=True)
-    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
-    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
-    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+# class ArBackendEntrancePhoto(models.Model):
+#     technical_id = models.CharField(max_length=500, null=False, primary_key=True)
+#     log_id = models.BigIntegerField(blank=True, null=True)
+#     entrance_id = models.BigIntegerField(blank=True, null=True)
+#     form_submitted = models.CharField(null=True, max_length=1)
+#     question_id = models.BigIntegerField(blank=True, null=True)
+#     photo_number = models.BigIntegerField(blank=True, null=True)
+#     photo_url = models.CharField(max_length=500, blank=True, null=True)
+#     photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+#     photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+#     photo_text_en = models.CharField(max_length=500, blank=True, null=True)
 
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = "ar_backend_entrance_photo"
+#     class Meta:
+#         managed = False  # Created from a view. Don't remove.
+#         db_table = "ar_backend_entrance_photo"
 
 
 class ArBackendForm(models.Model):
@@ -112,10 +120,15 @@ class ArBackendQuestion(models.Model):
     description = models.CharField(max_length=2000, blank=True, null=True)
     photo_url = models.CharField(max_length=500, blank=True, null=True)
     photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    guide_title = models.CharField(max_length=200, blank=True, null=True)
+    guide_url = models.CharField(max_length=200, blank=True, null=True)
     yes_no_question = models.CharField(max_length=1, blank=True, null=True)
-    can_add_location = models.CharField(max_length=1, blank=True, null=True)
-    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
-    can_add_comment = models.CharField(max_length=1, blank=True, null=True)
+    #    can_add_location = models.CharField(max_length=1, blank=True, null=True)
+    #    can_add_photo_max_count = models.IntegerField(blank=True, null=True)
+    #    can_add_comment = models.CharField(max_length=1, blank=True, null=True)
+    place_visible_if_question_choice = models.CharField(
+        max_length=100, blank=True, null=True
+    )
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -142,6 +155,8 @@ class ArBackendQuestionBlock(models.Model):
     add_photo_title = models.CharField(max_length=200, blank=True, null=True)
     add_photo_description = models.CharField(max_length=2000, blank=True, null=True)
     show_details_in_titlebar = models.CharField(max_length=1, blank=True, null=True)
+    add_comment_possible = models.TextField(blank=True, null=True)
+    put_fields_before_questions = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -184,6 +199,12 @@ class ArBackendServicepoint(models.Model):
     technical_id = models.CharField(max_length=40, primary_key=True)
     log_id = models.BigIntegerField()
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
+    address_street_name = models.CharField(max_length=100, blank=True, null=True)
+    address_no = models.CharField(max_length=100, blank=True, null=True)
+    address_city = models.CharField(max_length=100, blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
     main_entrance_id = models.BigIntegerField(blank=True, null=True)
     form_submitted = models.CharField(max_length=1, blank=True, null=True)
     contact_person_fi = models.CharField(max_length=200, blank=True, null=True)
@@ -192,6 +213,9 @@ class ArBackendServicepoint(models.Model):
     accessibility_phone = models.CharField(max_length=200, blank=True, null=True)
     accessibility_email = models.CharField(max_length=200, blank=True, null=True)
     new_entrance_possible = models.CharField(max_length=1, blank=True, null=True)
+    entrance_count = models.BigIntegerField(blank=True, null=True)
+    finished_entrance_count = models.BigIntegerField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -308,10 +332,11 @@ class ArRest01AccessViewpoint(models.Model):
 
 
 class ArRest01Entrance(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
-    entrance_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
+    entrance_id = models.BigIntegerField(blank=True, null=False)
     is_main_entrance = models.CharField(max_length=1, blank=True, null=True)
     name_fi = models.CharField(max_length=500, blank=True, null=True)
     name_sv = models.CharField(max_length=500, blank=True, null=True)
@@ -413,6 +438,7 @@ class ArRest01Requirement(models.Model):
 
 
 class ArRest01Sentence(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
     servicepoint_id = models.BigIntegerField(blank=True, null=True)
@@ -422,7 +448,7 @@ class ArRest01Sentence(models.Model):
     sentence_group_fi = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_sv = models.CharField(max_length=255, blank=True, null=True)
     sentence_group_en = models.CharField(max_length=255, blank=True, null=True)
-    sentence_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    sentence_id = models.IntegerField(blank=True, null=False)
     sentence_order_text = models.TextField(blank=True, null=True)
     sentence_fi = models.CharField(max_length=4000, blank=True, null=True)
     sentence_sv = models.CharField(max_length=4000, blank=True, null=True)
@@ -434,9 +460,10 @@ class ArRest01Sentence(models.Model):
 
 
 class ArRest01Servicepoint(models.Model):
+    technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
     external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
-    servicepoint_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=False)
     servicepoint_name = models.CharField(max_length=500, blank=True, null=True)
     address_street_name = models.CharField(max_length=100, blank=True, null=True)
     address_no = models.CharField(max_length=100, blank=True, null=True)
@@ -662,50 +689,50 @@ class ArXQuestionAnswer(models.Model):
         unique_together = (("log", "question_choice"),)
 
 
-class ArXQuestionAnswerComment(models.Model):
-    answer_comment_id = models.BigAutoField(primary_key=True)
-    log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
-    question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
-    language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
-    comment = models.CharField(max_length=500, blank=True, null=True)
+# class ArXQuestionAnswerComment(models.Model):
+#     answer_comment_id = models.BigAutoField(primary_key=True)
+#     log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
+#     question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
+#     language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
+#     comment = models.CharField(max_length=500, blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = "ar_x_question_answer_comment"
-
-
-class ArXQuestionAnswerLocation(models.Model):
-    answer_location_id = models.BigAutoField(primary_key=True)
-    log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
-    question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
-    loc_easting = models.IntegerField(blank=True, null=True)
-    loc_northing = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = "ar_x_question_answer_location"
+#     class Meta:
+#         managed = False
+#         db_table = "ar_x_question_answer_comment"
 
 
-class ArXQuestionAnswerPhoto(models.Model):
-    answer_photo_id = models.BigAutoField(primary_key=True)
-    log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
-    question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
-    photo_url = models.CharField(max_length=500, blank=True, null=True)
+# class ArXQuestionAnswerLocation(models.Model):
+#     answer_location_id = models.BigAutoField(primary_key=True)
+#     log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
+#     question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
+#     loc_easting = models.IntegerField(blank=True, null=True)
+#     loc_northing = models.IntegerField(blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = "ar_x_question_answer_photo"
+#     class Meta:
+#         managed = False
+#         db_table = "ar_x_question_answer_location"
 
 
-class ArXQuestionAnswerPhotoTxt(models.Model):
-    answer_photo_txt_id = models.BigAutoField(primary_key=True)
-    answer_photo = models.ForeignKey(ArXQuestionAnswerPhoto, models.DO_NOTHING)
-    language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
-    photo_text = models.CharField(max_length=500, blank=True, null=True)
+# class ArXQuestionAnswerPhoto(models.Model):
+#     answer_photo_id = models.BigAutoField(primary_key=True)
+#     log = models.ForeignKey(ArXAnswerLog, models.DO_NOTHING)
+#     question = models.ForeignKey(ArXQuestion, models.DO_NOTHING)
+#     photo_url = models.CharField(max_length=500, blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = "ar_x_question_answer_photo_txt"
+#     class Meta:
+#         managed = False
+#         db_table = "ar_x_question_answer_photo"
+
+
+# class ArXQuestionAnswerPhotoTxt(models.Model):
+#     answer_photo_txt_id = models.BigAutoField(primary_key=True)
+#     answer_photo = models.ForeignKey(ArXQuestionAnswerPhoto, models.DO_NOTHING)
+#     language = models.ForeignKey(ArLanguage, models.DO_NOTHING)
+#     photo_text = models.CharField(max_length=500, blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = "ar_x_question_answer_photo_txt"
 
 
 class ArXQuestionBlock(models.Model):
@@ -1321,3 +1348,167 @@ class ArBackendEntranceField(models.Model):
     class Meta:
         managed = False
         db_table = "ar_backend_entrance_field"
+
+
+class ArBackendEntranceChoice(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(max_length=1, blank=False, null=False)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    sentence_group_id = models.IntegerField(blank=True, null=True)
+    sentence_group_name = models.CharField(max_length=255, blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_block_code = models.CharField(max_length=2000, blank=True, null=True)
+    question_block_text = models.CharField(max_length=2000, blank=True, null=True)
+    question_id = models.BigIntegerField(blank=True, null=True)
+    question_code = models.CharField(max_length=20, blank=True, null=True)
+    question_text = models.CharField(max_length=2000, blank=True, null=True)
+    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    question_choice_id = models.BigIntegerField(blank=True, null=True)
+    question_choice_text = models.CharField(max_length=2000, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_entrance_choice"
+
+
+class ArBackendEntrancePlace(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(max_length=1, blank=False, null=False)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    place_id = models.BigIntegerField(blank=True, null=True)
+    box_id = models.BigIntegerField(blank=True, null=True)
+    order_number = models.IntegerField(blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    location_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    location_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    location_text_en = models.CharField(max_length=500, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_entrance_place"
+
+
+class ArBackendEntranceSentence(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    form_submitted = models.CharField(max_length=1, blank=False, null=False)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    sentence_group_id = models.SmallIntegerField(blank=True, null=True)
+    sentence_group_name = models.CharField(max_length=255, blank=True, null=True)
+    sentence_type = models.CharField(max_length=20, blank=True, null=True)
+    sentence_id = models.IntegerField(blank=True, null=True)
+    parent_sentence_id = models.IntegerField(blank=True, null=True)
+    sentence_order_text = models.CharField(max_length=20, blank=True, null=True)
+    sentence = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_entrance_sentence"
+
+
+class ArBackendPlace(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    place_id = models.BigIntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    can_add_location = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_place"
+
+
+class ArBackendDeadPhoto(models.Model):
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_dead_photo"
+
+
+class ArXPlaceAnswer(models.Model):
+    place_answer_id = models.BigAutoField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    place_id = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_place_answer"
+
+
+class ArXPlaceAnswerBox(models.Model):
+    box_id = models.BigAutoField(primary_key=True)
+    place_answer_id = models.BigIntegerField(blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+    order_number = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_place_answer_box"
+
+
+class ArXPlaceAnswerBoxTxt(models.Model):
+    box_txt_id = models.BigAutoField(primary_key=True)
+    box_id = models.BigIntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    box_text_type = models.CharField(max_length=20, blank=True, null=True)
+    box_text = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_place_answer_box_txt"
+
+
+class ArXQuestionBlockAnswerCmt(models.Model):
+    question_block_answer_cmt_id = models.BigAutoField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.BigIntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    comment = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_question_block_answer_cmt"
+
+
+class ArXQuestionBlockAnswer(models.Model):
+    question_block_answer_id = models.BigAutoField(primary_key=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.BigIntegerField(blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_question_block_answer"
+
+
+class ArXQuestionBlockAnswerTxt(models.Model):
+    question_block_answer_txt_id = models.BigAutoField(primary_key=True)
+    question_block_answer_id = models.BigIntegerField(blank=True, null=False)
+    language_id = models.BigIntegerField(blank=True, null=False)
+    photo_text = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_x_question_block_answer_txt"
