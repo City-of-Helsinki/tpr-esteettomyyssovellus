@@ -35,6 +35,7 @@ import base64
 from urllib.parse import urlparse, parse_qs
 from dateutil import parser
 from datetime import datetime
+from django.shortcuts import redirect
 
 
 class TokenPermission(permissions.BasePermission):
@@ -894,8 +895,10 @@ class ArRest01AccessVariableView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
+            # HttpResponse(json_string, content_type='application/json; charset=utf-8')
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -935,6 +938,7 @@ class ArRest01AccessViewpointView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -963,6 +967,7 @@ class ArRest01RequirementView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -978,6 +983,53 @@ class ArRest01ServicepointView(APIView):
     ]
 
     def get(self, request, systemId=None, servicePointId=None, format=None):
+        if servicePointId == "entrances":
+            try:
+                data = ArRest01Entrance.objects.filter(system_id=systemId)
+                modified_data = []
+                for item in data:
+                    entrance = {
+                        "systemId": str(item.system_id),
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                        "isMainEntrance": item.is_main_entrance == "Y",
+                        "names": [],
+                        "locEasting": item.loc_easting,
+                        "locNorthing": item.loc_northing,
+                        "photoUrl": item.photo_url,
+                        "streetviewUrl": item.streetview_url,
+                        "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "sentencesCreated": item.sentences_created.strftime(
+                            "%Y-%m-%dT%H:%M:%S"
+                        ),
+                        "sentencesModified": item.sentences_modified.strftime(
+                            "%Y-%m-%dT%H:%M:%S"
+                        ),
+                    }
+                    if item.name_fi:
+                        entrance["names"].append(
+                            {"language": "fi", "value": item.name_fi}
+                        )
+                    if item.name_sv:
+                        entrance["names"].append(
+                            {"language": "sv", "value": item.name_sv}
+                        )
+                    if item.name_en:
+                        entrance["names"].append(
+                            {"language": "en", "value": item.name_en}
+                        )
+
+                    modified_data.append(entrance)
+                return HttpResponse(
+                    [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as error:
+                return HttpResponse(
+                    "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                )
         try:
             # TODO: external_servicepoint_id or servicepoint_id
             data = ArRest01Servicepoint.objects.filter(
@@ -1004,6 +1056,7 @@ class ArRest01ServicepointView(APIView):
                 }
                 return HttpResponse(
                     [json.dumps(modified_data, ensure_ascii=False)],
+                    content_type="application/json; charset=utf-8",
                     status=status.HTTP_200_OK,
                 )
             else:
@@ -1156,6 +1209,7 @@ class ArRest01EntranceView(APIView):
                 modified_data.append(entrance)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1269,6 +1323,7 @@ class ArRest01SentenceView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1326,6 +1381,7 @@ class ArRest01EntranceSentenceView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1413,6 +1469,7 @@ class ArSystemServicepointsView(APIView):
                 )
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1456,10 +1513,13 @@ class ArSystemEntrancesView(APIView):
                 modified_data.append(entrance)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
-            return HttpResponse(str(error), status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(
+                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ArSystemSentencesView(APIView):
@@ -1505,6 +1565,7 @@ class ArSystemSentencesView(APIView):
                 modified_data.append(sentence)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1538,6 +1599,7 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1578,6 +1640,7 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1623,6 +1686,7 @@ class ArRest01SummaryViewSet(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
         except Exception as error:
@@ -1680,6 +1744,7 @@ class ArRest01ReportshortageViewSet(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
 
@@ -1734,6 +1799,7 @@ class ArRest01ReportsummaryViewSet(APIView):
                 modified_data.append(property)
             return HttpResponse(
                 [json.dumps(modified_data, ensure_ascii=False)],
+                content_type="application/json; charset=utf-8",
                 status=status.HTTP_200_OK,
             )
 
