@@ -202,4 +202,5 @@ urlpatterns += [
 
 urlpatterns += [
     path("api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
+    path("app/api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
 ]
