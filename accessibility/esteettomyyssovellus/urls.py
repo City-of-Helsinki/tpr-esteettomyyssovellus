@@ -113,7 +113,7 @@ urlpatterns += [
         views.ArRest01AddExternalReferenceView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
         views.ArRest01SentenceView.as_view(),
     ),
     path(
@@ -151,7 +151,7 @@ urlpatterns += [
         views.ArRest01ShortageView.as_view(),  # TODO: ADD EXCEPTION
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/properties/
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/402/entrances/22233/properties/
         views.ArRest01EntranceAccessibilityViewSet.as_view(),
     ),
     path(

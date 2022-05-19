@@ -119,7 +119,6 @@ WSGI_APPLICATION = "esteettomyyssovellus.wsgi.application"
 #     }
 # }
 
-# TODO: ADD CORRECT DATABASE HERE
 DATABASES = {
     # 'auth_db': {
     #     'ENGINE': 'django.db.backends.sqlite3',
@@ -199,4 +198,4 @@ DATABASE_ROUTERS = ["routers.db_routers.AuthRouter", "routers.db_routers.Api"]
 
 
 # For now. Change later for production
-CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
+# CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
