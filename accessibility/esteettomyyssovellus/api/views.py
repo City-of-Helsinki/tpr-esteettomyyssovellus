@@ -559,6 +559,19 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
+class ArBackendFormGuideViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for ar_backend_entrance.
+    """
+
+    queryset = ArBackendFormGuide.objects.all()
+    serializer_class = ArBackendFormGuideSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
 # class ArXAdditionalinfoViewSet(ObjectMultipleModelAPIViewSet):
 #     """
 #     API endpoint for ar_x_additional_info.
@@ -1962,7 +1975,7 @@ class ArXPlaceAnswerBoxViewSet(viewsets.ModelViewSet):
             box_id = getattr(answer_box, "box_id")
             if box_id == None:
                 return Response(
-                    "adadad",
+                    "Deletion failed.",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -2009,6 +2022,16 @@ class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
+
+    def get_queryset(self):
+        if self.request.method == "GET":
+            queryset = ArXQuestionBlockAnswerCmt.objects.all()
+            entrance_id = self.request.GET.get("entrance_id", None)
+            if entrance_id is not None:
+                logs = ArXAnswerLog.objects.all().filter(entrance_id=entrance_id)
+                log_ids = [log.log_id for log in logs]
+                queryset = queryset.filter(log_id__in=log_ids)
+            return queryset
 
 
 class ArXQuestionBlockAnswerViewSet(viewsets.ModelViewSet):

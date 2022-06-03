@@ -277,3 +277,9 @@ class ArXQuestionBlockAnswerTxtSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArXQuestionBlockAnswerTxt
         fields = "__all__"
+
+
+class ArBackendFormGuideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendFormGuide
+        fields = "__all__"

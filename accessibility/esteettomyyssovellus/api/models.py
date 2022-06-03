@@ -157,6 +157,8 @@ class ArBackendQuestionBlock(models.Model):
     show_details_in_titlebar = models.CharField(max_length=1, blank=True, null=True)
     add_comment_possible = models.TextField(blank=True, null=True)
     put_fields_before_questions = models.CharField(max_length=1, blank=True, null=True)
+    guide_title = models.CharField(max_length=1, blank=True, null=True)
+    guide_url = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -1512,3 +1514,18 @@ class ArXQuestionBlockAnswerTxt(models.Model):
     class Meta:
         managed = False
         db_table = "ar_x_question_block_answer_txt"
+
+
+class ArBackendFormGuide(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    form_id = models.IntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    guide_id = models.BigIntegerField(blank=True, null=True)
+    guide_icon = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    guide_title = models.CharField(max_length=200, blank=True, null=True)
+    guide_url = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_form_guide"
