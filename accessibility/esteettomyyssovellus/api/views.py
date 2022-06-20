@@ -567,6 +567,7 @@ class ArBackendFormGuideViewSet(viewsets.ModelViewSet):
     queryset = ArBackendFormGuide.objects.all()
     serializer_class = ArBackendFormGuideSerializer
     pagination_class = None
+    filter_fields = ("form_id",)
     permission_classes = [
         TokenPermission,
     ]
