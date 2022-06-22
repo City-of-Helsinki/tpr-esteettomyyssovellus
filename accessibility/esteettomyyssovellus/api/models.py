@@ -9,6 +9,7 @@
 # Feel free to rename the models, but don't rename db_table values
 #   or field names.
 from enum import unique
+from pyexpat import model
 from django.db import models
 
 
@@ -1397,6 +1398,7 @@ class ArBackendEntrancePlace(models.Model):
     photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
     photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
     photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+    sentence_group_id = models.SmallIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -1529,3 +1531,15 @@ class ArBackendFormGuide(models.Model):
     class Meta:
         managed = False
         db_table = "ar_backend_form_guide"
+
+
+class ArBackendEntranceSentenceGroup(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    sentence_group_id = models.IntegerField(blank=True, null=True)
+    order_text = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_entrance_sentence_group"

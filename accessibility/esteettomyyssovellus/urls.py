@@ -70,6 +70,10 @@ router.register(r"ArXQuestionBlockAnswerCmt", views.ArXQuestionBlockAnswerCmtVie
 router.register(r"ArXQuestionBlockAnswer", views.ArXQuestionBlockAnswerViewSet)
 router.register(r"ArXQuestionBlockAnswerTxt", views.ArXQuestionBlockAnswerTxtViewSet)
 router.register(r"ArBackendFormGuide", views.ArBackendFormGuideViewSet)
+router.register(
+    r"ArBackendEntranceSentenceGroup", views.ArBackendEntranceSentenceGroupViewSet
+)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

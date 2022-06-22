@@ -1952,6 +1952,15 @@ class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
     ]
 
 
+class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceSentenceGroup.objects.all()
+    serializer_class = ArBackendEntranceSentenceGroupSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
 class ArXPlaceAnswerViewSet(viewsets.ModelViewSet):
     queryset = ArXPlaceAnswer.objects.all()
     serializer_class = ArXPlaceAnswerSerializer
