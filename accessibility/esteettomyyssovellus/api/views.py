@@ -1903,6 +1903,7 @@ class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
     filter_fields = (
         "log_id",
         "entrance_id",
+        "question_block_id",
         "place_id",
         "box_id",
         "form_submitted",
