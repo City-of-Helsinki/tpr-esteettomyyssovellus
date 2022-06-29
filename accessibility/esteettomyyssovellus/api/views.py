@@ -1947,6 +1947,9 @@ class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendCopyableEntrance.objects.all()
     serializer_class = ArBackendCopyableEntranceSerializer
     pagination_class = None
+    filter_fields = (
+        "entrance_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
