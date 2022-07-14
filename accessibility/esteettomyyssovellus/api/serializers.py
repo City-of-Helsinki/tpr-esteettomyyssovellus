@@ -283,3 +283,9 @@ class ArBackendFormGuideSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendFormGuide
         fields = "__all__"
+
+
+class ArBackendEntranceSentenceGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendEntranceSentenceGroup
+        fields = "__all__"

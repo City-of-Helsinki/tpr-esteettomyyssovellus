@@ -567,6 +567,7 @@ class ArBackendFormGuideViewSet(viewsets.ModelViewSet):
     queryset = ArBackendFormGuide.objects.all()
     serializer_class = ArBackendFormGuideSerializer
     pagination_class = None
+    filter_fields = ("form_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -1902,6 +1903,7 @@ class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
     filter_fields = (
         "log_id",
         "entrance_id",
+        "question_block_id",
         "place_id",
         "box_id",
         "form_submitted",
@@ -1945,6 +1947,18 @@ class ArBackendPlaceViewSet(viewsets.ModelViewSet):
 class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendCopyableEntrance.objects.all()
     serializer_class = ArBackendCopyableEntranceSerializer
+    pagination_class = None
+    filter_fields = (
+        "entrance_id",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
+    queryset = ArBackendEntranceSentenceGroup.objects.all()
+    serializer_class = ArBackendEntranceSentenceGroupSerializer
     pagination_class = None
     permission_classes = [
         TokenPermission,
