@@ -1960,6 +1960,9 @@ class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceSentenceGroup.objects.all()
     serializer_class = ArBackendEntranceSentenceGroupSerializer
     pagination_class = None
+    filter_fields = (
+        "servicepoint_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -2033,6 +2036,9 @@ class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionBlockAnswerCmt.objects.all()
     serializer_class = ArXQuestionBlockAnswerCmtSerializer
     pagination_class = None
+    filter_fields = (
+        "question_block_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
@@ -2041,8 +2047,12 @@ class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
         if self.request.method == "GET":
             queryset = ArXQuestionBlockAnswerCmt.objects.all()
             entrance_id = self.request.GET.get("entrance_id", None)
+            form_submitted = self.request.GET.get("form_submitted", None)
             if entrance_id is not None:
-                logs = ArXAnswerLog.objects.all().filter(entrance_id=entrance_id)
+                if form_submitted is not None:
+                    logs = ArXAnswerLog.objects.all().filter(entrance_id=entrance_id, form_submitted=form_submitted)
+                else:
+                    logs = ArXAnswerLog.objects.all().filter(entrance_id=entrance_id)
                 log_ids = [log.log_id for log in logs]
                 queryset = queryset.filter(log_id__in=log_ids)
             return queryset
