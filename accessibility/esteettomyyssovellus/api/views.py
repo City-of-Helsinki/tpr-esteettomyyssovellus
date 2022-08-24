@@ -1960,6 +1960,9 @@ class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceSentenceGroup.objects.all()
     serializer_class = ArBackendEntranceSentenceGroupSerializer
     pagination_class = None
+    filter_fields = (
+        "servicepoint_id",
+    )
     permission_classes = [
         TokenPermission,
     ]
