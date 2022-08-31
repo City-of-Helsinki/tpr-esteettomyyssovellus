@@ -1962,6 +1962,7 @@ class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
     pagination_class = None
     filter_fields = (
         "servicepoint_id",
+        "entrance_id",
     )
     permission_classes = [
         TokenPermission,
