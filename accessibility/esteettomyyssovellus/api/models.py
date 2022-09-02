@@ -1539,6 +1539,9 @@ class ArBackendEntranceSentenceGroup(models.Model):
     entrance_id = models.BigIntegerField(blank=True, null=True)
     sentence_group_id = models.IntegerField(blank=True, null=True)
     order_text = models.CharField(max_length=200, blank=True, null=True)
+    subheading_fi = models.CharField(max_length=255, blank=True, null=True)
+    subheading_sv = models.CharField(max_length=255, blank=True, null=True)
+    subheading_en = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
