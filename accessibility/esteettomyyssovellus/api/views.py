@@ -266,7 +266,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
     pagination_class = None
-    filter_fields = ("ext_servicepoint_id",)
+    filter_fields = ("servicepoint_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -279,6 +279,8 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.address_street_name = request_data["address_street_name"]
             servicepoint.address_no = request_data["address_no"]
             servicepoint.address_city = request_data["address_city"]
+            servicepoint.loc_easting = request_data["loc_easting"]
+            servicepoint.loc_northing = request_data["loc_northing"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
@@ -325,7 +327,10 @@ class ArSystemViewSet(viewsets.ModelViewSet):
 
     queryset = ArSystem.objects.all()
     serializer_class = ArSystemSerializer
-    filter_fields = ("system_id",)
+    filter_fields = (
+        "system_id",
+        "name",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -342,6 +347,7 @@ class ArExternalServicepointViewSet(viewsets.ModelViewSet):
     filter_fields = (
         "servicepoint_id",
         "system_id",
+        "external_servicepoint_id",
     )
     pagination_class = None
     permission_classes = [
