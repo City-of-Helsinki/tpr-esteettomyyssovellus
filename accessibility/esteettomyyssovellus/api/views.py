@@ -1843,7 +1843,7 @@ class ArBackendEntranceViewSet(viewsets.ModelViewSet):
 
 class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     """
-    API endpoint for ar backend entrance.
+    API endpoint for ar backend servicepoint.
     """
 
     queryset = ArBackendServicepoint.objects.all()
@@ -1854,6 +1854,22 @@ class ArBackendServicepointViewSet(viewsets.ModelViewSet):
         "log_id",
         "main_entrance_id",
         "form_submitted",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendExternalServicepointViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for ar backend external servicepoint.
+    """
+
+    queryset = ArBackendExternalServicepoint.objects.all()
+    serializer_class = ArBackendExternalServicepointSerializer
+    pagination_class = None
+    filter_fields = (
+        "external_servicepoint_id",
     )
     permission_classes = [
         TokenPermission,
