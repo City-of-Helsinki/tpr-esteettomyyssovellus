@@ -306,6 +306,21 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #     except Exception as e:
     #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=["POST"], url_path="update_external")
+    def update_external(self, request, *args, **kwargs):
+        try:
+            request_data = request.data
+            servicepoint = self.get_object()
+            servicepoint.servicepoint_name = request_data["servicepoint_name"]
+            servicepoint.ext_servicepoint_id = request_data["ext_servicepoint_id"]
+            servicepoint.modified_by = request_data["modified_by"]
+            servicepoint.modified = request_data["modified"]
+            # servicepoint.is_searchable = "Y"
+            servicepoint.save()
+            return Response({"status": "external servicepoint id updated"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=True, methods=["POST"], url_path="set_searchable")
     def set_searchable(self, request, *args, **kwargs):
         try:
