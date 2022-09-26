@@ -189,6 +189,12 @@ class ArBackendServicepointSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ArBackendExternalServicepointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendExternalServicepoint
+        fields = "__all__"
+
+
 class ArBackendQuestionBlockFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendQuestionBlockField

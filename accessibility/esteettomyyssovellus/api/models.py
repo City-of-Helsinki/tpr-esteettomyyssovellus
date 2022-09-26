@@ -225,6 +225,15 @@ class ArBackendServicepoint(models.Model):
         db_table = "ar_backend_servicepoint"
 
 
+class ArBackendExternalServicepoint(models.Model):
+    servicepoint_id = models.BigIntegerField(primary_key=True)
+    external_servicepoint_id = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_backend_external_servicepoint"
+
+
 class ArEntrance(models.Model):
     entrance_id = models.BigAutoField(primary_key=True)
     name_fi = models.CharField(max_length=500, blank=True, null=True)

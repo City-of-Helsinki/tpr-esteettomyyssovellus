@@ -266,7 +266,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
     pagination_class = None
-    filter_fields = ("ext_servicepoint_id",)
+    filter_fields = ("servicepoint_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -279,6 +279,8 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.address_street_name = request_data["address_street_name"]
             servicepoint.address_no = request_data["address_no"]
             servicepoint.address_city = request_data["address_city"]
+            servicepoint.loc_easting = request_data["loc_easting"]
+            servicepoint.loc_northing = request_data["loc_northing"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
@@ -304,6 +306,21 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #     except Exception as e:
     #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=["POST"], url_path="update_external")
+    def update_external(self, request, *args, **kwargs):
+        try:
+            request_data = request.data
+            servicepoint = self.get_object()
+            servicepoint.servicepoint_name = request_data["servicepoint_name"]
+            servicepoint.ext_servicepoint_id = request_data["ext_servicepoint_id"]
+            servicepoint.modified_by = request_data["modified_by"]
+            servicepoint.modified = request_data["modified"]
+            # servicepoint.is_searchable = "Y"
+            servicepoint.save()
+            return Response({"status": "external servicepoint id updated"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=True, methods=["POST"], url_path="set_searchable")
     def set_searchable(self, request, *args, **kwargs):
         try:
@@ -325,7 +342,10 @@ class ArSystemViewSet(viewsets.ModelViewSet):
 
     queryset = ArSystem.objects.all()
     serializer_class = ArSystemSerializer
-    filter_fields = ("system_id",)
+    filter_fields = (
+        "system_id",
+        "name",
+    )
     pagination_class = None
     permission_classes = [
         TokenPermission,
@@ -342,6 +362,7 @@ class ArExternalServicepointViewSet(viewsets.ModelViewSet):
     filter_fields = (
         "servicepoint_id",
         "system_id",
+        "external_servicepoint_id",
     )
     pagination_class = None
     permission_classes = [
@@ -1843,7 +1864,7 @@ class ArBackendEntranceViewSet(viewsets.ModelViewSet):
 
 class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     """
-    API endpoint for ar backend entrance.
+    API endpoint for ar backend servicepoint.
     """
 
     queryset = ArBackendServicepoint.objects.all()
@@ -1854,6 +1875,22 @@ class ArBackendServicepointViewSet(viewsets.ModelViewSet):
         "log_id",
         "main_entrance_id",
         "form_submitted",
+    )
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
+class ArBackendExternalServicepointViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for ar backend external servicepoint.
+    """
+
+    queryset = ArBackendExternalServicepoint.objects.all()
+    serializer_class = ArBackendExternalServicepointSerializer
+    pagination_class = None
+    filter_fields = (
+        "external_servicepoint_id",
     )
     permission_classes = [
         TokenPermission,

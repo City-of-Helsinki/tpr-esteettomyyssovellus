@@ -51,6 +51,7 @@ router.register(r"ArXQuestionAnswer", views.ArXQuestionAnswerViewSet)
 router.register(r"ArExternalServicepoint", views.ArExternalServicepointViewSet)
 router.register(r"ArBackendEntrance", views.ArBackendEntranceViewSet)
 router.register(r"ArBackendServicepoint", views.ArBackendServicepointViewSet)
+router.register(r"ArBackendExternalServicepoint", views.ArBackendExternalServicepointViewSet)
 router.register(
     r"ArBackendQuestionBlockField", views.ArBackendQuestionBlockFieldViewSet
 )
