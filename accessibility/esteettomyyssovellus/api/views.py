@@ -36,6 +36,8 @@ from urllib.parse import urlparse, parse_qs
 from dateutil import parser
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework.renderers import JSONRenderer
+from esteettomyyssovellus.api.renderers import CustomXmlRenderer
 
 
 class TokenPermission(permissions.BasePermission):
@@ -916,6 +918,8 @@ class ArRest01AccessVariableView(APIView):
     API endpoint for ar_rest01_access_variable.
     """
 
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, format=JSON):
         try:
             data = ArRest01AccessVariable.objects.all()
@@ -928,12 +932,13 @@ class ArRest01AccessVariableView(APIView):
                         "values": item.values_data.split(","),
                     }
                 )
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
             # HttpResponse(json_string, content_type='application/json; charset=utf-8')
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -944,6 +949,8 @@ class ArRest01AccessViewpointView(APIView):
     """
     API endpoint for ar_rest01_access_viewpoint.
     """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(self, request, format=JSON):
         try:
@@ -971,11 +978,12 @@ class ArRest01AccessViewpointView(APIView):
                         "viewPointOrderText": item.viewpoint_order,
                     }
                 )
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -986,6 +994,8 @@ class ArRest01RequirementView(APIView):
     """
     API endpoint for ar_rest01_requirement.
     """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(self, request, format=JSON):
         try:
@@ -1000,11 +1010,12 @@ class ArRest01RequirementView(APIView):
                         "evaluationZone": item.evaluation_zone,
                     }
                 )
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1012,6 +1023,8 @@ class ArRest01RequirementView(APIView):
 
 
 class ArRest01ServicepointView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     http_method_names = [
         "delete",
         "get",
@@ -1056,11 +1069,12 @@ class ArRest01ServicepointView(APIView):
                         )
 
                     modified_data.append(entrance)
-                return HttpResponse(
-                    [json.dumps(modified_data, ensure_ascii=False)],
-                    content_type="application/json; charset=utf-8",
-                    status=status.HTTP_200_OK,
-                )
+                # return HttpResponse(
+                #     [json.dumps(modified_data, ensure_ascii=False)],
+                #     content_type="application/json; charset=utf-8",
+                #     status=status.HTTP_200_OK,
+                # )
+                return Response(modified_data)
             except Exception as error:
                 return HttpResponse(
                     "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1089,11 +1103,12 @@ class ArRest01ServicepointView(APIView):
                     "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
                     "entrances": list(integer_map),
                 }
-                return HttpResponse(
-                    [json.dumps(modified_data, ensure_ascii=False)],
-                    content_type="application/json; charset=utf-8",
-                    status=status.HTTP_200_OK,
-                )
+                # return HttpResponse(
+                #     [json.dumps(modified_data, ensure_ascii=False)],
+                #     content_type="application/json; charset=utf-8",
+                #     status=status.HTTP_200_OK,
+                # )
+                return Response(modified_data)
             else:
                 return HttpResponse([])
         except Exception as error:
@@ -1210,6 +1225,8 @@ class ArRest01ServicepointView(APIView):
 
 
 class ArRest01EntranceView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, systemId=None, servicePointId=None, format=None):
         try:
             data = ArRest01Entrance.objects.filter(
@@ -1245,11 +1262,12 @@ class ArRest01EntranceView(APIView):
                     entrance["names"].append({"language": "en", "value": item.name_en})
 
                 modified_data.append(entrance)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1317,6 +1335,8 @@ class ArRest01AddExternalReferenceView(APIView):
 
 
 class ArRest01SentenceView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, systemId=None, servicePointId=None, format=None):
         try:
             data = ArRest01Sentence.objects.filter(
@@ -1359,11 +1379,12 @@ class ArRest01SentenceView(APIView):
                     )
 
                 modified_data.append(sentence)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1371,6 +1392,8 @@ class ArRest01SentenceView(APIView):
 
 
 class ArRest01EntranceSentenceView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1417,11 +1440,12 @@ class ArRest01EntranceSentenceView(APIView):
                     )
 
                 modified_data.append(sentence)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1429,6 +1453,8 @@ class ArRest01EntranceSentenceView(APIView):
 
 
 class ArRest01ShortageView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self, request, systemId=None, servicePointId=None, viewPointId=None, format=None
     ):
@@ -1468,11 +1494,12 @@ class ArRest01ShortageView(APIView):
                         )
 
                     modified_data.append(shortage)
-                return HttpResponse(
-                    [json.dumps(modified_data, ensure_ascii=False)],
-                    content_type="application/json; charset=utf-8",
-                    status=status.HTTP_200_OK,
-                )
+                # return HttpResponse(
+                #     [json.dumps(modified_data, ensure_ascii=False)],
+                #     content_type="application/json; charset=utf-8",
+                #     status=status.HTTP_200_OK,
+                # )
+                return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1480,6 +1507,8 @@ class ArRest01ShortageView(APIView):
 
 
 class ArSystemServicepointsView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, systemId=None, format=None):
         try:
             # TODO: external_servicepoint_id or servicepoint_id
@@ -1506,11 +1535,12 @@ class ArSystemServicepointsView(APIView):
                         "entrances": list(integer_map),
                     }
                 )
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1518,6 +1548,8 @@ class ArSystemServicepointsView(APIView):
 
 
 class ArSystemEntrancesView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, systemId=None, format=None):
         try:
             data = ArRest01Entrance.objects.filter(system_id=systemId)
@@ -1550,11 +1582,12 @@ class ArSystemEntrancesView(APIView):
                     entrance["names"].append({"language": "en", "value": item.name_en})
 
                 modified_data.append(entrance)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1562,6 +1595,8 @@ class ArSystemEntrancesView(APIView):
 
 
 class ArSystemSentencesView(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(self, request, systemId=None, format=None):
         try:
             data = ArRest01Sentence.objects.filter(system_id=systemId)
@@ -1602,11 +1637,12 @@ class ArSystemSentencesView(APIView):
                     )
 
                 modified_data.append(sentence)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1614,6 +1650,8 @@ class ArSystemSentencesView(APIView):
 
 
 class ArRest01ServicepointAccessibilityViewSet(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1636,11 +1674,12 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
                     "value": item.rest_value,
                 }
                 modified_data.append(property)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1648,6 +1687,8 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
 
 
 class ArRest01EntranceAccessibilityViewSet(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self, request, systemId=None, servicePointId=None, entranceId=None, format=None
     ):
@@ -1677,11 +1718,12 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
                     "value": item.rest_value,
                 }
                 modified_data.append(property)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1689,6 +1731,8 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
 
 
 class ArRest01SummaryViewSet(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self,
         request,
@@ -1723,11 +1767,12 @@ class ArRest01SummaryViewSet(APIView):
                     "shortageCount": item.shortage_count,
                 }
                 modified_data.append(property)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
         except Exception as error:
             return HttpResponse(
                 "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
@@ -1735,6 +1780,8 @@ class ArRest01SummaryViewSet(APIView):
 
 
 class ArRest01ReportshortageViewSet(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self,
         request,
@@ -1781,11 +1828,12 @@ class ArRest01ReportshortageViewSet(APIView):
                     )
 
                 modified_data.append(property)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
 
         except Exception as error:
             return HttpResponse(
@@ -1794,6 +1842,8 @@ class ArRest01ReportshortageViewSet(APIView):
 
 
 class ArRest01ReportsummaryViewSet(APIView):
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
     def get(
         self,
         request,
@@ -1836,11 +1886,12 @@ class ArRest01ReportsummaryViewSet(APIView):
                 }
 
                 modified_data.append(property)
-            return HttpResponse(
-                [json.dumps(modified_data, ensure_ascii=False)],
-                content_type="application/json; charset=utf-8",
-                status=status.HTTP_200_OK,
-            )
+            # return HttpResponse(
+            #     [json.dumps(modified_data, ensure_ascii=False)],
+            #     content_type="application/json; charset=utf-8",
+            #     status=status.HTTP_200_OK,
+            # )
+            return Response(modified_data)
 
         except Exception as error:
             return HttpResponse(

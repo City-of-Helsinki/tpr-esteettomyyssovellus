@@ -1,6 +1,7 @@
 Django==3.2.3
 flake8==3.8.4
 djangorestframework
+djangorestframework-xml
 django-filter
 django-cors-headers==3.7.0
 psycopg2-binary==2.9.3
