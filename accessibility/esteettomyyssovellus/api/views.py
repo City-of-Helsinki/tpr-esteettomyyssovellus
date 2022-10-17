@@ -1478,6 +1478,7 @@ class ArRest01ShortageView(APIView):
                         "systemId": str(item.system_id),
                         "servicePointId": item.external_servicepoint_id,
                         "viewpointId": item.viewpoint_id,
+                        "requirementId": item.requirement_id,
                         "shortages": [],
                     }
                     if item.shortage_fi:
