@@ -317,24 +317,24 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.ext_servicepoint_id = request_data["ext_servicepoint_id"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
-            # servicepoint.is_searchable = "Y"
+            servicepoint.is_searchable = "Y"
             servicepoint.save()
             return Response({"status": "external servicepoint id updated"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["POST"], url_path="set_searchable")
-    def set_searchable(self, request, *args, **kwargs):
-        try:
-            servicepoint = self.get_object()
-            servicepoint.is_searchable = "Y"
-            servicepoint.save()
-            return Response(
-                {"status": "servicepoint set searchable."},
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+    # @action(detail=True, methods=["POST"], url_path="set_searchable")
+    # def set_searchable(self, request, *args, **kwargs):
+    #     try:
+    #         servicepoint = self.get_object()
+    #         servicepoint.is_searchable = "Y"
+    #         servicepoint.save()
+    #         return Response(
+    #             {"status": "servicepoint set searchable."},
+    #             status=status.HTTP_200_OK,
+    #         )
+    #     except Exception as e:
+    #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArSystemViewSet(viewsets.ModelViewSet):
@@ -1215,7 +1215,6 @@ class ArRest01ServicepointView(APIView):
                 # delete entrance
                 entrance.delete()
 
-        # TODO: Set is_searchable = "N"
         servicepoint.is_searchable = "N"
         servicepoint.save()
 
