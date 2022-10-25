@@ -37,5 +37,8 @@ class CustomXmlRenderer(XMLRenderer):
             # Don't output any value
             pass
 
+        elif isinstance(data, bool):
+            xml.characters(force_str('true' if data == True else 'false'))
+
         else:
             xml.characters(force_str(data))
