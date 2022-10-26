@@ -1668,7 +1668,7 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.servicepoint_id,
+                    "servicePointId": item.external_servicepoint_id,
                     "variableId": item.variable_id,
                     "variableName": item.variable_name,
                     "value": item.rest_value,
@@ -1711,7 +1711,7 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.servicepoint_id,
+                    "servicePointId": item.external_servicepoint_id,
                     "entranceId": item.entrance_id,
                     "variableId": item.variable_id,
                     "variableName": item.variable_name,
@@ -1761,7 +1761,7 @@ class ArRest01SummaryViewSet(APIView):
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.servicepoint_id,
+                    "servicePointId": item.external_servicepoint_id,
                     "viewpointId": item.viewpoint_id,
                     "isAccessible": item.is_accessible,
                     "shortageCount": item.shortage_count,
@@ -1804,7 +1804,7 @@ class ArRest01ReportshortageViewSet(APIView):
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.servicepoint_id,
+                    "servicePointId": item.external_servicepoint_id,
                     "viewpointId": item.viewpoint_id,
                     "isIndoorServicepoint": item.is_indoor_servicepoint == "Y",
                     "evaluationZone": item.evaluation_zone,
@@ -1866,12 +1866,13 @@ class ArRest01ReportsummaryViewSet(APIView):
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.servicepoint_id,
+                    "servicePointId": item.external_servicepoint_id,
                     "isAccessible": item.is_accessible,
                     "shortageCount": item.shortage_count,
                     "shortageCountEasyToFix": item.shortage_count_easy_to_fix,
                     "wheelIsAccessible": item.wheel_is_accessible,
                     "wheelShortageCount": item.wheel_shortage_count,
+                    "wheelShortageCountEasyToFix": item.wheel_shortage_count_easy_to_fix,
                     "wheelShortageCountOutside": item.wheel_shortage_count_outside,
                     "wheelShortageCountEntrance": item.wheel_shortage_count_entrance,
                     "wheelShortageCountInside": item.wheel_shortage_count_inside,
