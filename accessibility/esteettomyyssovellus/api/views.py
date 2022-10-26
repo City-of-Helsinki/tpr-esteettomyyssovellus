@@ -1872,6 +1872,7 @@ class ArRest01ReportsummaryViewSet(APIView):
                     "shortageCountEasyToFix": item.shortage_count_easy_to_fix,
                     "wheelIsAccessible": item.wheel_is_accessible,
                     "wheelShortageCount": item.wheel_shortage_count,
+                    "wheelShortageCountEasyToFix": item.wheel_shortage_count_easy_to_fix,
                     "wheelShortageCountOutside": item.wheel_shortage_count_outside,
                     "wheelShortageCountEntrance": item.wheel_shortage_count_entrance,
                     "wheelShortageCountInside": item.wheel_shortage_count_inside,
