@@ -1808,7 +1808,7 @@ class ArRest01ReportshortageViewSet(APIView):
                     "viewpointId": item.viewpoint_id,
                     "isIndoorServicepoint": item.is_indoor_servicepoint == "Y",
                     "evaluationZone": item.evaluation_zone,
-                    "easyToFix": item.easy_to_fix,
+                    "easyToFix": item.easy_to_fix == "Y",
                     "requirementId": item.requirement_id,
                     "requirementText": item.requirement_text,
                     "explanationWhyNot": item.explanation_why_not,
