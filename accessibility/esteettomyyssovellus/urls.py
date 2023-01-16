@@ -114,7 +114,7 @@ urlpatterns += [
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",  # WIP
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",  # Works
         views.ArRest01AddExternalReferenceView.as_view(),
     ),
     path(
