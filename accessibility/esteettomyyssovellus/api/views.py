@@ -1327,7 +1327,7 @@ class ArRest01AddExternalReferenceView(APIView):
                 + str(systemId)
                 + str(servicePointId)
                 + str(user)
-                + str(valid_until)
+                + str(validUntil)
                 + str(external_system_id)
                 + str(external_servicepoint_id)
             )
