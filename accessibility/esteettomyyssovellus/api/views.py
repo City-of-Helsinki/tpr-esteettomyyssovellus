@@ -1080,7 +1080,6 @@ class ArRest01ServicepointView(APIView):
                     "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
                 )
         try:
-            # TODO: external_servicepoint_id or servicepoint_id
             data = ArRest01Servicepoint.objects.filter(
                 system_id=systemId, external_servicepoint_id=servicePointId
             )
@@ -1124,8 +1123,9 @@ class ArRest01ServicepointView(APIView):
                 is_in_systems = True
         if not is_in_systems:
             return HttpResponse(
-                "System not in ar.", status=status.HTTP_401_UNAUTHORIZED
+                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
             )
+
         URL = request.build_absolute_uri()
         parsed_url = urlparse(URL)
         query = parse_qs(parsed_url.query)
@@ -1282,55 +1282,84 @@ class ArRest01AddExternalReferenceView(APIView):
         # "ValidUntil":"2018-01-30T18:08:01",
         # "Checksum":"C6FC721604E5F093B19071DD8903C5643B6BDE0EF1C8D62CBE869A7416BF9551"
         #  }
-        systems = ArSystem.objects.all()
-        is_in_systems = False
-        for system in systems:
-            if system.system_id == systemId:
-                is_in_systems = True
-        if not is_in_systems:
-            return HttpResponse(
-                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
-            )
-        data = request.data
-        keys = ["ServicePointId", "SystemId", "User", "ValidUntil", "Checksum"]
-        for key in keys:
-            if key not in data:
+        try:
+            systems = ArSystem.objects.all()
+            is_in_systems = False
+            for system in systems:
+                if system.system_id == systemId:
+                    is_in_systems = True
+            if not is_in_systems:
                 return HttpResponse(
-                    "Data does not contain required keys.",
-                    status=status.HTTP_400_BAD_REQUEST,
+                    "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
                 )
-        external_servicepoint_id = data["ServicePointId"]
-        external_system_id = data["SystemId"]
-        user = data["User"]
-        checksum = data["Checksum"]
-        validUntil = data["ValidUntil"]
-        valid_until = parser.parse(validUntil)
-        now = datetime.now()
-        if valid_until < now:
-            return HttpResponse(
-                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
-            )
-        system = ArSystem.objects.get(system_id=systemId)
-        checksum_secret = getattr(system, "checksum_secret")
-        # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil + external systemId + external servicepointId
-        checksum_string = (
-            str(checksum_secret)
-            + str(systemId)
-            + str(servicePointId)
-            + str(user)
-            + str(valid_until)
-            + str(external_system_id)
-            + str(external_servicepoint_id)
-        )
 
-        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
-            return HttpResponse(
-                "Checksums did not match. "
-                + hashlib.sha256(checksum_string.encode("ascii")).hexdigest(),
-                status=status.HTTP_401_UNAUTHORIZED,
+            data = request.data
+            keys = ["ServicePointId", "SystemId", "User", "ValidUntil", "Checksum"]
+            for key in keys:
+                if key not in data:
+                    return HttpResponse(
+                        "Data does not contain required keys.",
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            external_servicepoint_id = data["ServicePointId"]
+            external_system_id = data["SystemId"]
+            user = data["User"]
+            checksum = data["Checksum"]
+            validUntil = data["ValidUntil"]
+
+            valid_until = parser.parse(validUntil)
+            now = datetime.now()
+            if valid_until < now:
+                return HttpResponse(
+                    "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            internalSystem = ArSystem.objects.get(system_id = systemId)
+            internalServicepoint = ArExternalServicepoint.objects.get(system = internalSystem, external_servicepoint_id = servicePointId)
+            externalSystem = ArSystem.objects.get(system_id = external_system_id)
+            servicepoint = ArServicepoint.objects.get(servicepoint_id = internalServicepoint.servicepoint_id)
+
+            checksum_secret = getattr(internalSystem, "checksum_secret")
+            # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil + external systemId + external servicepointId
+            checksum_string = (
+                str(checksum_secret)
+                + str(systemId)
+                + str(servicePointId)
+                + str(user)
+                + str(validUntil)
+                + str(external_system_id)
+                + str(external_servicepoint_id)
             )
-        # TODO: Figure out where to update the external stuff.
-        return HttpResponse("WIP.", status=status.HTTP_200_OK)
+
+            if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+                return HttpResponse(
+                    "Checksums did not match.",
+                    #+ hashlib.sha256(checksum_string.encode("ascii")).hexdigest(),
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+
+            # Don't update the external servicepoint if it already exists, so that created and created_by values are preserved
+            externalServicepointExists = ArExternalServicepoint.objects.filter(
+                external_servicepoint_id = external_servicepoint_id,
+                system = externalSystem,
+                servicepoint = servicepoint
+            ).exists()
+            if externalServicepointExists:
+                return HttpResponse("External servicepoint already exists.", status=status.HTTP_200_OK)
+
+            # Insert a new external servicepoint
+            ArExternalServicepoint.objects.create(
+                external_servicepoint_id = external_servicepoint_id,
+                system = externalSystem,
+                servicepoint = servicepoint,
+                created = now,
+                created_by = user
+            )
+
+            return HttpResponse("External servicepoint added.", status=status.HTTP_200_OK)
+        except Exception as error:
+            return Response("Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArRest01SentenceView(APIView):
