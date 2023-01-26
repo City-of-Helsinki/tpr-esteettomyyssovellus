@@ -367,6 +367,10 @@ class ArRest01Entrance(models.Model):
     sentences_created_by = models.TextField(blank=True, null=True)
     sentences_modified = models.DateTimeField(blank=True, null=True)
     sentences_modified_by = models.TextField(blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+    photo_text_fi = models.TextField(blank=True, null=True)
+    photo_text_sv = models.TextField(blank=True, null=True)
+    photo_text_en = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -389,6 +393,74 @@ class ArRest01EntranceAccessibility(models.Model):
     class Meta:
         managed = False  # Created from a view. Don't remove.
         db_table = "ar_rest01_entrance_accessibility"
+
+
+class ArRest01EntranceChoice(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    question_block_id = models.IntegerField(blank=True, null=True)
+    question_block_code = models.CharField(max_length=20, blank=True, null=True)
+    question_block_text_fi = models.TextField(blank=True, null=True)
+    question_block_text_sv = models.TextField(blank=True, null=True)
+    question_block_text_en = models.TextField(blank=True, null=True)
+    question_id = models.IntegerField(blank=True, null=True)
+    question_code = models.CharField(max_length=20, blank=True, null=True)
+    question_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    question_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    question_text_en = models.CharField(max_length=2000, blank=True, null=True)
+    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    question_choice_id = models.BigIntegerField(blank=True, null=True)
+    question_choice_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    question_choice_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    question_choice_text_en = models.CharField(max_length=2000, blank=True, null=True)
+    description_fi = models.CharField(max_length=2000, blank=True, null=True)
+    description_sv = models.CharField(max_length=2000, blank=True, null=True)
+    description_en = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_entrance_choice"
+
+
+class ArRest01EntrancePlace(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    system_id = models.UUIDField(blank=True, null=True)
+    external_servicepoint_id = models.CharField(max_length=100, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    heading_fi = models.CharField(max_length=250, blank=True, null=True)
+    heading_sv = models.CharField(max_length=250, blank=True, null=True)
+    heading_en = models.CharField(max_length=250, blank=True, null=True)
+    sentence_group_id = models.IntegerField(blank=True, null=True)
+    sentence_group_fi = models.CharField(max_length=250, blank=True, null=True)
+    sentence_group_sv = models.CharField(max_length=250, blank=True, null=True)
+    sentence_group_en = models.CharField(max_length=250, blank=True, null=True)
+    place_id = models.BigIntegerField(blank=True, null=True)
+    place_name_fi = models.CharField(max_length=250, blank=True, null=True)
+    place_name_sv = models.CharField(max_length=250, blank=True, null=True)
+    place_name_en = models.CharField(max_length=250, blank=True, null=True)
+    place_order_text = models.CharField(max_length=20, blank=True, null=True)
+    loc_easting = models.IntegerField(blank=True, null=True)
+    loc_northing = models.IntegerField(blank=True, null=True)
+    location_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    location_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    location_text_en = models.CharField(max_length=500, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_source_text = models.CharField(max_length=200, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=500, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_entrance_place"
 
 
 class ArRest01Reportshortage(models.Model):
@@ -451,6 +523,36 @@ class ArRest01Requirement(models.Model):
         db_table = "ar_rest01_requirement"
 
 
+class ArRest01Place(models.Model):
+    place_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    name_fi = models.TextField(blank=True, null=True)
+    name_sv = models.TextField(blank=True, null=True)
+    name_en = models.TextField(blank=True, null=True)
+    description_fi = models.TextField(blank=True, null=True)
+    description_sv = models.TextField(blank=True, null=True)
+    description_en = models.TextField(blank=True, null=True)
+    can_add_location = models.TextField(blank=True, null=True)
+    place_order = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_place"
+
+
+class ArRest01Questionnaire(models.Model):
+    id = models.IntegerField(blank=True, null=False, primary_key=True)
+    order_text = models.TextField(blank=True, null=True)
+    structure_code = models.TextField(blank=True, null=True)
+    color = models.TextField(blank=True, null=True)
+    contents_fi = models.TextField(blank=True, null=True)
+    contents_sv = models.TextField(blank=True, null=True)
+    contents_en = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_questionnaire"
+
+
 class ArRest01Sentence(models.Model):
     technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)
@@ -492,6 +594,9 @@ class ArRest01Servicepoint(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     modified_by = models.CharField(max_length=50, blank=True, null=True)
     entrances = models.TextField(blank=True, null=True)
+    contact_person_fi = models.CharField(max_length=250, blank=True, null=True)
+    contact_person_sv = models.CharField(max_length=250, blank=True, null=True)
+    contact_person_en = models.CharField(max_length=250, blank=True, null=True)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
