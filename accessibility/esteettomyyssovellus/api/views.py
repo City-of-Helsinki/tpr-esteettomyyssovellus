@@ -1253,7 +1253,7 @@ class ArRest01ServicepointView(APIView):
         )
 
         # TODO: If used often create function for checking checksum
-        if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+        if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
             return HttpResponse(
                 "Checksums did not match. ", status=status.HTTP_401_UNAUTHORIZED
             )
@@ -1433,10 +1433,9 @@ class ArRest01AddExternalReferenceView(APIView):
                 + str(external_servicepoint_id)
             )
 
-            if checksum != hashlib.sha256(checksum_string.encode("ascii")).hexdigest():
+            if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
                 return HttpResponse(
                     "Checksums did not match.",
-                    #+ hashlib.sha256(checksum_string.encode("ascii")).hexdigest(),
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
