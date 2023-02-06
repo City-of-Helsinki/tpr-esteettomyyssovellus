@@ -115,17 +115,26 @@ urlpatterns += [
         "api/v1/accessibility/questionnaire/", views.ArRest01QuestionnaireView.as_view()
     ),  # Works
     # CLIENT DATA
+    # servicePointId is str because it can be both uuid or int
+    # '/targets' urls are for meeting rooms
     path(
         "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",  # Works
         views.ArRest01ServicepointView.as_view(),
     ),
-    # servicePointId is str because it can be both uuid or int
+    path(
+        "api/v1/targets/<uuid:systemId>/<str:servicePointId>/",  # Works
+        views.ArRest01ServicepointView.as_view(),
+    ),
     path(
         "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",  # Works
         views.ArRest01EntranceView.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
+        views.ArRest01SentenceView.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
         views.ArRest01SentenceView.as_view(),
     ),
     path(
@@ -137,11 +146,23 @@ urlpatterns += [
         views.ArRest01ShortageView.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/shortages/
-        views.ArRest01ShortageView.as_view(),  # TODO: ADD EXCEPTION
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/properties/
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/properties/",
         views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
@@ -157,11 +178,19 @@ urlpatterns += [
         views.ArRest01EntranceChoiceViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/choices/",
+        views.ArRest01EntranceChoiceViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<str:entranceId>/choices/",
         views.ArRest01EntranceChoiceViewSet.as_view(),
     ),
     path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/places/",
+        views.ArRest01EntrancePlaceViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/places/",
         views.ArRest01EntrancePlaceViewSet.as_view(),
     ),
     path(
@@ -173,7 +202,15 @@ urlpatterns += [
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/summary/",
+        views.ArRest01SummaryViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/viewpoints/23/summary/
+        views.ArRest01SummaryViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/viewpoints/<str:viewPointId>/summary/",
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
@@ -181,7 +218,15 @@ urlpatterns += [
         views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/reportshortages/",
+        views.ArRest01ReportshortageViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/reportsummary/
+        views.ArRest01ReportsummaryViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/reportsummary/",
         views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
@@ -189,6 +234,7 @@ urlpatterns += [
         views.ArRest01AddExternalReferenceView.as_view(),
     ),
     # CLIENT DATA, MASSIVE QUERIES
+    # '/targets' urls are for meeting rooms
     path(
         "api/v1/servicepoints/<uuid:systemId>/",
         views.ArSystemServicepointsView.as_view(),
@@ -203,11 +249,23 @@ urlpatterns += [
         views.ArSystemSentencesView.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/sentences/",
+        views.ArSystemSentencesView.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/shortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/shortages/
         views.ArRest01ShortageView.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/shortages/",
+        views.ArRest01ShortageView.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/properties/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/properties/
+        views.ArRest01ServicepointAccessibilityViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/properties/",
         views.ArRest01ServicepointAccessibilityViewSet.as_view(),
     ),
     path(
@@ -219,7 +277,15 @@ urlpatterns += [
         views.ArRest01EntranceChoiceViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/choices/",
+        views.ArRest01EntranceChoiceViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/places/",
+        views.ArRest01EntrancePlaceViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/places/",
         views.ArRest01EntrancePlaceViewSet.as_view(),
     ),
     path(
@@ -227,11 +293,23 @@ urlpatterns += [
         views.ArRest01SummaryViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/summary/",
+        views.ArRest01SummaryViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/reportshortages/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/reportshortages/
         views.ArRest01ReportshortageViewSet.as_view(),
     ),
     path(
+        "api/v1/accessibility/targets/<uuid:systemId>/reportshortages/",
+        views.ArRest01ReportshortageViewSet.as_view(),
+    ),
+    path(
         "api/v1/accessibility/servicepoints/<uuid:systemId>/reportsummary/",  # http://localhost:8000/api/v1/accessibility/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/reportsummary/
+        views.ArRest01ReportsummaryViewSet.as_view(),
+    ),
+    path(
+        "api/v1/accessibility/targets/<uuid:systemId>/reportsummary/",
         views.ArRest01ReportsummaryViewSet.as_view(),
     ),
 ]
