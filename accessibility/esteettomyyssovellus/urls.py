@@ -100,45 +100,45 @@ urlpatterns += [
     # SYSTEM DATA
     path(
         "api/v1/accessibility/variables/", views.ArRest01AccessVariableView.as_view()
-    ),  # Works
+    ),
     path(
         "api/v1/accessibility/viewpoints/",
-        views.ArRest01AccessViewpointView.as_view(),  # Works
+        views.ArRest01AccessViewpointView.as_view(),
     ),
     path(
         "api/v1/accessibility/requirements/", views.ArRest01RequirementView.as_view()
-    ),  # Works
+    ),
     path(
         "api/v1/accessibility/place/", views.ArRest01PlaceView.as_view()
-    ),  # Works
+    ),
     path(
         "api/v1/accessibility/questionnaire/", views.ArRest01QuestionnaireView.as_view()
-    ),  # Works
+    ),
     # CLIENT DATA
     # servicePointId is str because it can be both uuid or int
     # '/targets' urls are for meeting rooms
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",  # Works
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/",
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
-        "api/v1/targets/<uuid:systemId>/<str:servicePointId>/",  # Works
+        "api/v1/targets/<uuid:systemId>/<str:servicePointId>/",
         views.ArRest01ServicepointView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",  # Works
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/",
         views.ArRest01EntranceView.as_view(),
     ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/<str:servicePointId>/sentences/",
         views.ArRest01SentenceView.as_view(),
     ),
     path(
-        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/sentences/",  # Works
+        "api/v1/accessibility/targets/<uuid:systemId>/<str:servicePointId>/sentences/",
         views.ArRest01SentenceView.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/",  # Works # http://localhost:8000/api/v1/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/sentences/
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/entrances/<int:entranceId>/sentences/", # http://localhost:8000/api/v1/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/5304/entrances/2214/sentences/
         views.ArRest01EntranceSentenceView.as_view(),
     ),
     path(
@@ -230,7 +230,7 @@ urlpatterns += [
         views.ArRest01ReportsummaryViewSet.as_view(),
     ),
     path(
-        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",  # Works
+        "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/externalservicepoint/",
         views.ArRest01AddExternalReferenceView.as_view(),
     ),
     # CLIENT DATA, MASSIVE QUERIES
@@ -238,14 +238,14 @@ urlpatterns += [
     path(
         "api/v1/servicepoints/<uuid:systemId>/",
         views.ArSystemServicepointsView.as_view(),
-    ),  # Works
+    ),
     # NOTE: The following is handled by "api/v1/servicepoints/<uuid:systemId>/<str:servicePointId>/" using servicePointId == "entrances"
     # path(
     #     "api/v1/servicepoints/<uuid:systemId>/entrances/",  # http://localhost:8000/api/v1/servicepoints/e186251e-1fb6-4f21-901c-cb6820aee164/entrances/
     #     views.ArSystemEntrancesView.as_view(), name="system-entrance"
     # ),
     path(
-        "api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/",  # Works
+        "api/v1/accessibility/servicepoints/<uuid:systemId>/sentences/",
         views.ArSystemSentencesView.as_view(),
     ),
     path(
