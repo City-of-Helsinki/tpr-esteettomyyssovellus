@@ -1031,7 +1031,7 @@ class ArRest01PlaceView(APIView):
 
     def get(self, request, format=JSON):
         try:
-            data = ArRest01Place.objects.all()
+            data = ArRest01Place.objects.all().order_by('place_order')
             modified_data = []
             for item in data:
                 place = {
@@ -1889,15 +1889,15 @@ class ArRest01EntranceChoiceViewSet(APIView):
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
-                )
+                ).order_by('question_order_text')
             elif servicePointId != None:
                 data = ArRest01EntranceChoice.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
-                )
+                ).order_by('question_order_text')
             else:
                 data = ArRest01EntranceChoice.objects.filter(
                     system_id=systemId,
-                )
+                ).order_by('question_order_text')
             modified_data = []
             for item in data:
                 choice = {
@@ -1974,15 +1974,15 @@ class ArRest01EntrancePlaceViewSet(APIView):
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
-                )
+                ).order_by('place_order_text')
             elif servicePointId != None:
                 data = ArRest01EntrancePlace.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
-                )
+                ).order_by('place_order_text')
             else:
                 data = ArRest01EntrancePlace.objects.filter(
                     system_id=systemId,
-                )
+                ).order_by('place_order_text')
             modified_data = []
             for item in data:
                 place = {
