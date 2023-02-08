@@ -109,7 +109,7 @@ urlpatterns += [
         "api/v1/accessibility/requirements/", views.ArRest01RequirementView.as_view()
     ),
     path(
-        "api/v1/accessibility/place/", views.ArRest01PlaceView.as_view()
+        "api/v1/accessibility/places/", views.ArRest01PlaceView.as_view()
     ),
     path(
         "api/v1/accessibility/questionnaire/", views.ArRest01QuestionnaireView.as_view()
