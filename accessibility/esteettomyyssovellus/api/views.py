@@ -1659,7 +1659,7 @@ class ArRest01ShortageView(APIView):
                         "systemId": str(item.system_id),
                     }
 
-                    if targetId != None:
+                    if targetId != None or "/targets/" in request.path:
                         shortage.update({
                             "targetId": item.external_servicepoint_id,
                         })
@@ -1817,12 +1817,24 @@ class ArSystemSentencesView(APIView):
             for item in data:
                 sentence = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "entranceId": item.entrance_id,
+                }
+
+                if "/targets/" in request.path:
+                    sentence.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    sentence.update({
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                    })
+
+                sentence.update({
                     "sentenceGroups": [],
                     "sentences": [],
                     "sentenceOrderText": item.sentence_order_text,
-                }
+                })
+
                 if item.sentence_group_fi:
                     sentence["sentenceGroups"].append(
                         {"language": "fi", "value": str(item.sentence_group_fi)}
@@ -1850,6 +1862,7 @@ class ArSystemSentencesView(APIView):
                     )
 
                 modified_data.append(sentence)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -1888,7 +1901,7 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     property.update({
                         "targetId": item.external_servicepoint_id,
                     })
@@ -1999,7 +2012,7 @@ class ArRest01EntranceChoiceViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     choice.update({
                         "targetId": item.external_servicepoint_id,
                     })
@@ -2106,7 +2119,7 @@ class ArRest01EntrancePlaceViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     place.update({
                         "targetId": item.external_servicepoint_id,
                     })
@@ -2219,7 +2232,7 @@ class ArRest01SummaryViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     property.update({
                         "targetId": item.external_servicepoint_id,
                     })
@@ -2281,7 +2294,7 @@ class ArRest01ReportshortageViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     property.update({
                         "targetId": item.external_servicepoint_id,
                     })
@@ -2362,7 +2375,7 @@ class ArRest01ReportsummaryViewSet(APIView):
                     "systemId": str(item.system_id),
                 }
 
-                if targetId != None:
+                if targetId != None or "/targets/" in request.path:
                     property.update({
                         "targetId": item.external_servicepoint_id,
                     })
