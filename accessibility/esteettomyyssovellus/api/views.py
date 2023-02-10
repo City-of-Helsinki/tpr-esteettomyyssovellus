@@ -1031,7 +1031,7 @@ class ArRest01PlaceView(APIView):
 
     def get(self, request, format=JSON):
         try:
-            data = ArRest01Place.objects.all()
+            data = ArRest01Place.objects.all().order_by('place_order')
             modified_data = []
             for item in data:
                 place = {
@@ -1108,7 +1108,7 @@ class ArRest01ServicepointView(APIView):
         "get",
     ]
 
-    def get(self, request, systemId=None, servicePointId=None, format=None):
+    def get(self, request, systemId=None, servicePointId=None, targetId=None, format=None):
         if servicePointId == "entrances":
             try:
                 data = ArRest01Entrance.objects.filter(system_id=systemId)
@@ -1161,16 +1161,35 @@ class ArRest01ServicepointView(APIView):
                 return HttpResponse(
                     "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
                 )
+
         try:
-            data = ArRest01Servicepoint.objects.filter(
-                system_id=systemId, external_servicepoint_id=servicePointId
-            )
+            if targetId != None:
+                data = ArRest01Servicepoint.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                )
+            else:
+                data = ArRest01Servicepoint.objects.filter(
+                    system_id=systemId, external_servicepoint_id=servicePointId
+                )
+
             if len(data) > 0:
                 item = data[0]
                 integer_map = map(int, item.entrances.split(","))
+
                 modified_data = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
+                }
+
+                if targetId != None:
+                    modified_data.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    modified_data.update({
+                        "servicePointId": item.external_servicepoint_id,
+                    })
+
+                modified_data.update({
                     "name": item.servicepoint_name,
                     "addressStreetName": item.address_street_name,
                     "addressNo": item.address_no,
@@ -1183,8 +1202,12 @@ class ArRest01ServicepointView(APIView):
                     "contactPersons": [],
                     "created": item.created.strftime("%Y-%m-%dT%H:%M:%S"),
                     "modified": item.modified.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "entrances": list(integer_map),
-                }
+                })
+
+                if targetId == None:
+                    modified_data.update({
+                        "entrances": list(integer_map),
+                    })
 
                 if item.contact_person_fi:
                     modified_data["contactPersons"].append({ "language": "fi", "value": item.contact_person_fi })
@@ -1465,21 +1488,39 @@ class ArRest01AddExternalReferenceView(APIView):
 class ArRest01SentenceView(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
-    def get(self, request, systemId=None, servicePointId=None, format=None):
+    def get(self, request, systemId=None, servicePointId=None, targetId=None, format=None):
         try:
-            data = ArRest01Sentence.objects.filter(
-                system_id=systemId, external_servicepoint_id=servicePointId
-            )
+            if targetId != None:
+                data = ArRest01Sentence.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                )
+            else:
+                data = ArRest01Sentence.objects.filter(
+                    system_id=systemId, external_servicepoint_id=servicePointId
+                )
+
             modified_data = []
             for item in data:
                 sentence = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "entranceId": item.entrance_id,
+                }
+
+                if targetId != None:
+                    sentence.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    sentence.update({
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                    })
+
+                sentence.update({
                     "sentenceGroups": [],
                     "sentences": [],
                     "sentenceOrderText": item.sentence_order_text,
-                }
+                })
+
                 if item.sentence_group_fi:
                     sentence["sentenceGroups"].append(
                         {"language": "fi", "value": str(item.sentence_group_fi)}
@@ -1507,6 +1548,7 @@ class ArRest01SentenceView(APIView):
                     )
 
                 modified_data.append(sentence)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -1584,14 +1626,24 @@ class ArRest01ShortageView(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(
-        self, request, systemId=None, servicePointId=None, viewPointId=None, format=None
+        self, request, systemId=None, servicePointId=None, targetId=None, viewPointId=None, format=None
     ):
         try:
-            if viewPointId != None:
+            if targetId != None and viewPointId != None:
+                data = ArRest01Shortage.objects.filter(
+                    system_id=systemId,
+                    external_servicepoint_id=targetId,
+                    viewpoint_id=viewPointId,
+                )
+            elif viewPointId != None:
                 data = ArRest01Shortage.objects.filter(
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
+                )
+            elif targetId != None:
+                data = ArRest01Shortage.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
                 )
             elif servicePointId != None:
                 data = ArRest01Shortage.objects.filter(
@@ -1599,16 +1651,29 @@ class ArRest01ShortageView(APIView):
                 )
             else:
                 data = ArRest01Shortage.objects.filter(system_id=systemId)
+
             if len(data) > 0:
                 modified_data = []
                 for item in data:
                     shortage = {
                         "systemId": str(item.system_id),
-                        "servicePointId": item.external_servicepoint_id,
+                    }
+
+                    if targetId != None or "/targets/" in request.path:
+                        shortage.update({
+                            "targetId": item.external_servicepoint_id,
+                        })
+                    else:
+                        shortage.update({
+                            "servicePointId": item.external_servicepoint_id,
+                        })
+
+                    shortage.update({
                         "viewpointId": item.viewpoint_id,
                         "requirementId": item.requirement_id,
                         "shortages": [],
-                    }
+                    })
+
                     if item.shortage_fi:
                         shortage["shortages"].append(
                             {"language": "fi", "value": item.shortage_fi}
@@ -1623,6 +1688,7 @@ class ArRest01ShortageView(APIView):
                         )
 
                     modified_data.append(shortage)
+
                 # return HttpResponse(
                 #     [json.dumps(modified_data, ensure_ascii=False)],
                 #     content_type="application/json; charset=utf-8",
@@ -1751,12 +1817,24 @@ class ArSystemSentencesView(APIView):
             for item in data:
                 sentence = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "entranceId": item.entrance_id,
+                }
+
+                if "/targets/" in request.path:
+                    sentence.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    sentence.update({
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                    })
+
+                sentence.update({
                     "sentenceGroups": [],
                     "sentences": [],
                     "sentenceOrderText": item.sentence_order_text,
-                }
+                })
+
                 if item.sentence_group_fi:
                     sentence["sentenceGroups"].append(
                         {"language": "fi", "value": str(item.sentence_group_fi)}
@@ -1784,6 +1862,7 @@ class ArSystemSentencesView(APIView):
                     )
 
                 modified_data.append(sentence)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -1800,10 +1879,14 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(
-        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+        self, request, systemId=None, servicePointId=None, targetId=None, entranceId=None, format=None
     ):
         try:
-            if servicePointId != None:
+            if targetId != None:
+                data = ArRest01ServicepointAccessibility.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                )
+            elif servicePointId != None:
                 data = ArRest01ServicepointAccessibility.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
                 )
@@ -1811,16 +1894,30 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
                 data = ArRest01ServicepointAccessibility.objects.filter(
                     system_id=systemId
                 )
+
             modified_data = []
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    property.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    property.update({
+                        "servicePointId": item.external_servicepoint_id,
+                    })
+
+                property.update({
                     "variableId": item.variable_id,
                     "variableName": item.variable_name,
                     "value": item.rest_value,
-                }
+                })
+
                 modified_data.append(property)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -1881,29 +1978,51 @@ class ArRest01EntranceChoiceViewSet(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(
-        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+        self, request, systemId=None, servicePointId=None, targetId=None, entranceId=None, format=None
     ):
         try:
-            if entranceId != None:
+            if targetId != None and entranceId != None:
+                data = ArRest01EntranceChoice.objects.filter(
+                    system_id=systemId,
+                    external_servicepoint_id=targetId,
+                    entrance_id=entranceId,
+                ).order_by('question_order_text')
+            elif entranceId != None:
                 data = ArRest01EntranceChoice.objects.filter(
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
-                )
+                ).order_by('question_order_text')
+            elif targetId != None:
+                data = ArRest01EntranceChoice.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                ).order_by('question_order_text')
             elif servicePointId != None:
                 data = ArRest01EntranceChoice.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
-                )
+                ).order_by('question_order_text')
             else:
                 data = ArRest01EntranceChoice.objects.filter(
                     system_id=systemId,
-                )
+                ).order_by('question_order_text')
+
             modified_data = []
             for item in data:
                 choice = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "entranceId": item.entrance_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    choice.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    choice.update({
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                    })
+
+                choice.update({
                     "questionBlockId": item.question_block_id,
                     "questionBlockCode": item.question_block_code,
                     "questionBlocks": [],
@@ -1916,7 +2035,7 @@ class ArRest01EntranceChoiceViewSet(APIView):
                     "descriptions": [],
                     "photoUrl": item.photo_url,
                     "photoTexts": [],
-                }
+                })
 
                 if item.question_block_text_fi:
                     choice["questionBlocks"].append({ "language": "fi", "value": item.question_block_text_fi })
@@ -1966,29 +2085,51 @@ class ArRest01EntrancePlaceViewSet(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
     def get(
-        self, request, systemId=None, servicePointId=None, entranceId=None, format=None
+        self, request, systemId=None, servicePointId=None, targetId=None, entranceId=None, format=None
     ):
         try:
-            if entranceId != None:
+            if targetId != None and entranceId != None:
+                data = ArRest01EntrancePlace.objects.filter(
+                    system_id=systemId,
+                    external_servicepoint_id=targetId,
+                    entrance_id=entranceId,
+                ).order_by('place_order_text')
+            elif entranceId != None:
                 data = ArRest01EntrancePlace.objects.filter(
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     entrance_id=entranceId,
-                )
+                ).order_by('place_order_text')
+            elif targetId != None:
+                data = ArRest01EntrancePlace.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                ).order_by('place_order_text')
             elif servicePointId != None:
                 data = ArRest01EntrancePlace.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
-                )
+                ).order_by('place_order_text')
             else:
                 data = ArRest01EntrancePlace.objects.filter(
                     system_id=systemId,
-                )
+                ).order_by('place_order_text')
+
             modified_data = []
             for item in data:
                 place = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
-                    "entranceId": item.entrance_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    place.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    place.update({
+                        "servicePointId": item.external_servicepoint_id,
+                        "entranceId": item.entrance_id,
+                    })
+
+                place.update({
                     "headings": [],
                     "sentenceGroups": [],
                     "placeId": item.place_id,
@@ -2000,7 +2141,7 @@ class ArRest01EntrancePlaceViewSet(APIView):
                     "photoUrl": item.photo_url,
                     "photoSource": item.photo_source_text,
                     "photoTexts": [],
-                }
+                })
 
                 if item.heading_fi:
                     place["headings"].append({ "language": "fi", "value": item.heading_fi })
@@ -2054,16 +2195,27 @@ class ArRest01SummaryViewSet(APIView):
         request,
         systemId=None,
         servicePointId=None,
+        targetId=None,
         entranceId=None,
         viewPointId=None,
         format=None,
     ):
         try:
-            if viewPointId != None:
+            if targetId != None and viewPointId != None:
+                data = ArRest01Summary.objects.filter(
+                    system_id=systemId,
+                    external_servicepoint_id=targetId,
+                    viewpoint_id=viewPointId,
+                )
+            elif viewPointId != None:
                 data = ArRest01Summary.objects.filter(
                     system_id=systemId,
                     external_servicepoint_id=servicePointId,
                     viewpoint_id=viewPointId,
+                )
+            elif targetId != None:
+                data = ArRest01Summary.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
                 )
             elif servicePointId != None:
                 data = ArRest01Summary.objects.filter(
@@ -2073,16 +2225,30 @@ class ArRest01SummaryViewSet(APIView):
                 data = ArRest01Summary.objects.filter(
                     system_id=systemId,
                 )
+
             modified_data = []
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    property.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    property.update({
+                        "servicePointId": item.external_servicepoint_id,
+                    })
+
+                property.update({
                     "viewpointId": item.viewpoint_id,
                     "isAccessible": item.is_accessible,
                     "shortageCount": item.shortage_count,
-                }
+                })
+
                 modified_data.append(property)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -2103,12 +2269,17 @@ class ArRest01ReportshortageViewSet(APIView):
         request,
         systemId=None,
         servicePointId=None,
+        targetId=None,
         entranceId=None,
         viewPointId=None,
         format=None,
     ):
         try:
-            if servicePointId != None:
+            if targetId != None:
+                data = ArRest01Reportshortage.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                )
+            elif servicePointId != None:
                 data = ArRest01Reportshortage.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
                 )
@@ -2116,11 +2287,23 @@ class ArRest01ReportshortageViewSet(APIView):
                 data = ArRest01Reportshortage.objects.filter(
                     system_id=systemId,
                 )
+
             modified_data = []
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    property.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    property.update({
+                        "servicePointId": item.external_servicepoint_id,
+                    })
+
+                property.update({
                     "viewpointId": item.viewpoint_id,
                     "isIndoorServicepoint": item.is_indoor_servicepoint == "Y",
                     "evaluationZone": item.evaluation_zone,
@@ -2129,7 +2312,8 @@ class ArRest01ReportshortageViewSet(APIView):
                     "requirementText": item.requirement_text,
                     "explanationWhyNot": item.explanation_why_not,
                     "shortages": [],
-                }
+                })
+
                 if item.shortage_fi:
                     property["shortages"].append(
                         {"language": "fi", "value": item.shortage_fi}
@@ -2144,6 +2328,7 @@ class ArRest01ReportshortageViewSet(APIView):
                     )
 
                 modified_data.append(property)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
@@ -2165,12 +2350,17 @@ class ArRest01ReportsummaryViewSet(APIView):
         request,
         systemId=None,
         servicePointId=None,
+        targetId=None,
         entranceId=None,
         viewPointId=None,
         format=None,
     ):
         try:
-            if servicePointId != None:
+            if targetId != None:
+                data = ArRest01Reportsummary.objects.filter(
+                    system_id=systemId, external_servicepoint_id=targetId
+                )
+            elif servicePointId != None:
                 data = ArRest01Reportsummary.objects.filter(
                     system_id=systemId, external_servicepoint_id=servicePointId
                 )
@@ -2178,11 +2368,23 @@ class ArRest01ReportsummaryViewSet(APIView):
                 data = ArRest01Reportsummary.objects.filter(
                     system_id=systemId,
                 )
+
             modified_data = []
             for item in data:
                 property = {
                     "systemId": str(item.system_id),
-                    "servicePointId": item.external_servicepoint_id,
+                }
+
+                if targetId != None or "/targets/" in request.path:
+                    property.update({
+                        "targetId": item.external_servicepoint_id,
+                    })
+                else:
+                    property.update({
+                        "servicePointId": item.external_servicepoint_id,
+                    })
+
+                property.update({
                     "isAccessible": item.is_accessible,
                     "shortageCount": item.shortage_count,
                     "shortageCountEasyToFix": item.shortage_count_easy_to_fix,
@@ -2200,9 +2402,10 @@ class ArRest01ReportsummaryViewSet(APIView):
                     "visualShortageCountInside": item.visual_shortage_count_inside,
                     "hearingIsAccessible": item.hearing_is_accessible,
                     "toiletIsAccessible": item.toilet_is_accessible,
-                }
+                })
 
                 modified_data.append(property)
+
             # return HttpResponse(
             #     [json.dumps(modified_data, ensure_ascii=False)],
             #     content_type="application/json; charset=utf-8",
