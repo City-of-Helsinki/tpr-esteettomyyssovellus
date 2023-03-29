@@ -1658,6 +1658,7 @@ class ArBackendEntranceSentenceGroup(models.Model):
     subheading_fi = models.CharField(max_length=255, blank=True, null=True)
     subheading_sv = models.CharField(max_length=255, blank=True, null=True)
     subheading_en = models.CharField(max_length=255, blank=True, null=True)
+    display_entrance_with_map = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False
