@@ -94,11 +94,9 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"], url_path="delete_entrance_data")
     def delete_entrance_data(self, request, *args, **kwargs):
-        # Post request to call the arp_delete_place_from_answer function in the psql
-        # database
+        # Post request to call the arp_delete_place_from_answer function in the psql database
         entrance_id = ""
 
-        #
         try:
             entrance = self.get_object()
             entrance_id = entrance.entrance_id
@@ -156,11 +154,9 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"], url_path="delete_entrance")
     def delete_entrance(self, request, *args, **kwargs):
-        # Post request to call the arp_delete_place_from_answer function in the psql
-        # database
+        # Post request to call the arp_delete_place_from_answer function in the psql database
         entrance_id = ""
 
-        #
         try:
             entrance = self.get_object()
             entrance_id = entrance.entrance_id
@@ -288,7 +284,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.save()
             return Response({"status": "address updated"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
     # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
     # def update_accessibility_contacts(self, request, *args, **kwargs):
@@ -306,7 +302,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #             status=status.HTTP_200_OK,
     #         )
     #     except Exception as e:
-    #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+    #         return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["POST"], url_path="update_external")
     def update_external(self, request, *args, **kwargs):
@@ -321,7 +317,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.save()
             return Response({"status": "external servicepoint id updated"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
     # @action(detail=True, methods=["POST"], url_path="set_searchable")
     # def set_searchable(self, request, *args, **kwargs):
@@ -334,7 +330,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #             status=status.HTTP_200_OK,
     #         )
     #     except Exception as e:
-    #         return Response("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+    #         return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArSystemViewSet(viewsets.ModelViewSet):
@@ -783,22 +779,19 @@ class ChopAddressView(APIView):
     def get(self, request, format=None):
         # Placeholder endpoint for get request
         return Response(
-            """Get called for a funcion call that requires
-                        parameters and a post"""
+            """Get called for a function call that requires parameters and a post"""
         )
 
     def post(self, request, format=None):
-        # Post request to call the ptv_chop_address function in the psql
-        # database
+        # Post request to call the ptv_chop_address function in the psql database
         address = ""
         post_office = ""
 
-        #
         try:
             address = request.data["address"]
             post_office = request.data["postOffice"]
         except:
-            print("Address data missing")
+            return HttpResponse("Address data missing", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             ps_connection = psycopg2.connect(
@@ -858,21 +851,19 @@ class GenerateSentencesView(APIView):
     def get(self, request, format=None):
         # Placeholder endpoint for get request
         return Response(
-            """Get called for a funcion call that requires
-                        parameters and a post"""
+            """Get called for a function call that requires parameters and a post"""
         )
 
     def post(self, request, format=None):
-        # Post request to call the arp_store_sentences function in the psql
-        # database
+        # Post request to call the arp_store_sentences function in the psql database
         entrance_id = -1
         form_submitted = "D"
-        #
+
         try:
             entrance_id = request.data["entrance_id"]
             form_submitted = request.data["form_submitted"]
         except:
-            print("Address data missing")
+            return HttpResponse("Entrance id or form submitted data missing", status=status.HTTP_400_BAD_REQUEST)
 
         if entrance_id > 0:
             try:
@@ -908,9 +899,73 @@ class GenerateSentencesView(APIView):
                     cursor.close()
                     ps_connection.close()
                     print("PostgreSQL connection is closed")
-                    return Response("Sentences created", status=status.HTTP_201_CREATED)
+                    return HttpResponse("Sentences created", status=status.HTTP_201_CREATED)
         else:
-            return HttpResponse("Error occured", status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Error occurred", status=status.HTTP_400_BAD_REQUEST)
+
+
+class DisplayEntranceWithMapView(APIView):
+    """
+    API endpoint for getting value of tf2_display_entrance_with_map for log id.
+    """
+
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response(
+            """Get called for a function call that requires parameters and a post"""
+        )
+
+    def post(self, request, format=None):
+        # Post request to call the tf2_display_entrance_with_map function in the psql database
+        log_id = -1
+
+        try:
+            log_id = request.data["logId"]
+        except:
+            return HttpResponse("Log id data missing", status=status.HTTP_400_BAD_REQUEST)
+
+        if log_id > 0:
+            result_string = ""
+
+            try:
+                ps_connection = psycopg2.connect(
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
+                )
+
+                cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Call the psql function that gets the display entrance with map value
+                cursor.execute("SELECT tf2_display_entrance_with_map(%s)", (log_id,))
+
+                # Get the returned values
+                return_cursor = cursor.fetchall()
+                print("return_cursor " + str(return_cursor))
+                result_string = return_cursor[0]["tf2_display_entrance_with_map"]
+
+            except (Exception, psycopg2.Error) as error:
+                print("Error while using database function tf2_display_entrance_with_map", error)
+                return HttpResponse(
+                    "Error while using database function",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                    print("PostgreSQL connection is closed")
+                    return HttpResponse(result_string, status=status.HTTP_200_OK)
+        else:
+            return HttpResponse("Error occurred", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArRest01AccessVariableView(APIView):
@@ -941,7 +996,7 @@ class ArRest01AccessVariableView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -986,7 +1041,7 @@ class ArRest01AccessViewpointView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1018,7 +1073,7 @@ class ArRest01RequirementView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1060,7 +1115,7 @@ class ArRest01PlaceView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1096,7 +1151,7 @@ class ArRest01QuestionnaireView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1159,7 +1214,7 @@ class ArRest01ServicepointView(APIView):
                 return Response(modified_data)
             except Exception as error:
                 return HttpResponse(
-                    "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                    "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
                 )
 
         try:
@@ -1226,7 +1281,7 @@ class ArRest01ServicepointView(APIView):
                 return HttpResponse([])
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
     def delete(self, request, systemId, servicePointId, format=None):
@@ -1393,7 +1448,7 @@ class ArRest01EntranceView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1482,7 +1537,7 @@ class ArRest01AddExternalReferenceView(APIView):
 
             return HttpResponse("External servicepoint added.", status=status.HTTP_200_OK)
         except Exception as error:
-            return Response("Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArRest01SentenceView(APIView):
@@ -1557,7 +1612,7 @@ class ArRest01SentenceView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1618,7 +1673,7 @@ class ArRest01EntranceSentenceView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1697,7 +1752,7 @@ class ArRest01ShortageView(APIView):
                 return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1747,7 +1802,7 @@ class ArSystemServicepointsView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1803,7 +1858,7 @@ class ArSystemEntrancesView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1871,7 +1926,7 @@ class ArSystemSentencesView(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1926,7 +1981,7 @@ class ArRest01ServicepointAccessibilityViewSet(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -1970,7 +2025,7 @@ class ArRest01EntranceAccessibilityViewSet(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2077,7 +2132,7 @@ class ArRest01EntranceChoiceViewSet(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2183,7 +2238,7 @@ class ArRest01EntrancePlaceViewSet(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2257,7 +2312,7 @@ class ArRest01SummaryViewSet(APIView):
             return Response(modified_data)
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2338,7 +2393,7 @@ class ArRest01ReportshortageViewSet(APIView):
 
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2415,7 +2470,7 @@ class ArRest01ReportsummaryViewSet(APIView):
 
         except Exception as error:
             return HttpResponse(
-                "Error occured: " + str(error), status=status.HTTP_400_BAD_REQUEST
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -2612,7 +2667,7 @@ class ArXPlaceAnswerBoxViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_204_NO_CONTENT,
             )
         except Exception as e:
-            return Response("Deletion failed.", status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Deletion failed.", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArXPlaceAnswerBoxTxtViewSet(viewsets.ModelViewSet):
@@ -2761,17 +2816,14 @@ class ArpDeletePlaceFromAnswer(APIView):
     def get(self, request, format=None):
         # Placeholder endpoint for get request
         return Response(
-            """Get called for a funcion call that requires
-                        parameters and a post"""
+            """Get called for a function call that requires parameters and a post"""
         )
 
     def delete(self, request, format=None):
-        # Post request to call the arp_delete_place_from_answer function in the psql
-        # database
+        # Post request to call the arp_delete_place_from_answer function in the psql database
         log_id = ""
         place_id = ""
 
-        #
         try:
             log_id = int(request.data["log_id"])
             place_id = int(request.data["place_id"])
