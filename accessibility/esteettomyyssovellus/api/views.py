@@ -913,6 +913,70 @@ class GenerateSentencesView(APIView):
             return HttpResponse("Error occured", status=status.HTTP_400_BAD_REQUEST)
 
 
+class DisplayEntranceWithMapView(APIView):
+    """
+    API endpoint for getting value of tf2_display_entrance_with_map for log id.
+    """
+
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def get(self, request, format=None):
+        # Placeholder endpoint for get request
+        return Response(
+            """Get called for a function call that requires parameters and a post"""
+        )
+
+    def post(self, request, format=None):
+        # Post request to call the tf2_display_entrance_with_map function in the psql database
+        log_id = -1
+
+        try:
+            log_id = request.data["logId"]
+        except:
+            return HttpResponse("Log id data missing", status=status.HTTP_400_BAD_REQUEST)
+
+        if log_id > 0:
+            result_string = ""
+
+            try:
+                ps_connection = psycopg2.connect(
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
+                )
+
+                cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Call the psql function that gets the display entrance with map value
+                cursor.execute("SELECT tf2_display_entrance_with_map(%s)", (log_id,))
+
+                # Get the returned values
+                return_cursor = cursor.fetchall()
+                print("return_cursor " + str(return_cursor))
+                result_string = return_cursor[0]["tf2_display_entrance_with_map"]
+
+            except (Exception, psycopg2.Error) as error:
+                print("Error while using database function tf2_display_entrance_with_map", error)
+                return HttpResponse(
+                    "Error while using database function",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            finally:
+                # closing database connection.
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                    print("PostgreSQL connection is closed")
+                    return HttpResponse(result_string, status=status.HTTP_200_OK)
+        else:
+            return HttpResponse("Error occurred", status=status.HTTP_400_BAD_REQUEST)
+
+
 class ArRest01AccessVariableView(APIView):
     """
     API endpoint for ar_rest01_access_variable.
