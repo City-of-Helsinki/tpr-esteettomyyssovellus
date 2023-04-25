@@ -73,11 +73,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "esteettomyyssovellus.api",
     "django_filters",
-    # "corsheaders",
+    "corsheaders",
     "drf_multiple_model",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -85,7 +86,6 @@ MIDDLEWARE = [
     # "django.contrib.auth.middleware.AuthenticationMiddleware",
     # "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "esteettomyyssovellus.urls"
@@ -197,5 +197,9 @@ REST_FRAMEWORK = {
 DATABASE_ROUTERS = ["routers.db_routers.AuthRouter", "routers.db_routers.Api"]
 
 
-# For now. Change later for production
-# CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
+CORS_ORIGIN_WHITELIST = [
+    "https://asiointi.hel.fi",
+    "https://palvelukartta.hel.fi",
+    "https://palvelukartta.turku.fi",
+    "http://localhost",
+]
