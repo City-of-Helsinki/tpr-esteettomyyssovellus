@@ -200,6 +200,9 @@ DATABASE_ROUTERS = ["routers.db_routers.AuthRouter", "routers.db_routers.Api"]
 CORS_ORIGIN_WHITELIST = [
     "https://asiointi.hel.fi",
     "https://palvelukartta.hel.fi",
+    "https://varaamo.hel.fi",
     "https://palvelukartta.turku.fi",
-    "http://localhost",
+    "https://testipalvelukartta.turku.fi",
+    "https://www.suomi.fi",
+    "http://localhost", # Development and test only, not production
 ]
