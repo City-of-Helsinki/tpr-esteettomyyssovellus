@@ -116,6 +116,18 @@ urlpatterns += [
     path(
         "api/v1/accessibility/questionnaire/", views.ArRest01QuestionnaireView.as_view()
     ),
+    path(
+        "api/v1/accessibility/forms/", views.ArRest01FormView.as_view()
+    ),
+    path(
+        "api/v1/accessibility/questionblocks/", views.ArRest01QuestionBlockView.as_view()
+    ),
+    path(
+        "api/v1/accessibility/questions/", views.ArRest01QuestionView.as_view()
+    ),
+    path(
+        "api/v1/accessibility/choices/", views.ArRest01ChoiceView.as_view()
+    ),
     # CLIENT DATA, MASSIVE QUERIES
     # '/targets' urls are for meeting rooms
     path(
