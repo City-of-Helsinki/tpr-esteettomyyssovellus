@@ -553,6 +553,78 @@ class ArRest01Questionnaire(models.Model):
         db_table = "ar_rest01_questionnaire"
 
 
+class ArRest01Form(models.Model):
+    form_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    title_fi = models.CharField(max_length=100, blank=True, null=False)
+    title_sv = models.CharField(max_length=100, blank=True, null=False)
+    title_en = models.CharField(max_length=100, blank=True, null=False)
+    description_fi = models.CharField(max_length=100, blank=True, null=False)
+    description_sv = models.CharField(max_length=100, blank=True, null=False)
+    description_en = models.CharField(max_length=100, blank=True, null=False)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_form"
+
+
+class ArRest01QuestionBlock(models.Model):
+    question_block_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    form_id = models.IntegerField(blank=True, null=False)
+    question_block_code = models.CharField(max_length=20, blank=True, null=True)
+    question_block_text_fi = models.TextField(blank=True, null=True)
+    question_block_text_sv = models.TextField(blank=True, null=True)
+    question_block_text_en = models.TextField(blank=True, null=True)
+    question_block_order_text = models.CharField(max_length=99, blank=True, null=True)
+    description_fi = models.CharField(max_length=2000, blank=True, null=True)
+    description_sv = models.CharField(max_length=2000, blank=True, null=True)
+    description_en = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_question_block"
+
+
+class ArRest01Question(models.Model):
+    question_id = models.IntegerField(blank=True, null=False, primary_key=True)
+    form_id = models.IntegerField(blank=True, null=False)
+    question_block_id = models.IntegerField(blank=True, null=False)
+    question_code = models.CharField(max_length=20, blank=True, null=True)
+    question_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    question_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    question_text_en = models.CharField(max_length=2000, blank=True, null=True)
+    question_order_text = models.CharField(max_length=99, blank=True, null=True)
+    description_fi = models.CharField(max_length=2000, blank=True, null=True)
+    description_sv = models.CharField(max_length=2000, blank=True, null=True)
+    description_en = models.CharField(max_length=2000, blank=True, null=True)
+    photo_url = models.CharField(max_length=500, blank=True, null=True)
+    photo_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    photo_text_en = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_question"
+
+
+class ArRest01Choice(models.Model):
+    choice_id = models.BigIntegerField(blank=True, null=False, primary_key=True)
+    form_id = models.IntegerField(blank=True, null=False)
+    question_block_id = models.IntegerField(blank=True, null=False)
+    question_id = models.IntegerField(blank=True, null=False)
+    choice_text_fi = models.CharField(max_length=2000, blank=True, null=True)
+    choice_text_sv = models.CharField(max_length=2000, blank=True, null=True)
+    choice_text_en = models.CharField(max_length=2000, blank=True, null=True)
+    choice_order_text = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = "ar_rest01_choice"
+
+
 class ArRest01Sentence(models.Model):
     technical_id = models.TextField(primary_key=True)
     system_id = models.UUIDField(blank=True, null=True)

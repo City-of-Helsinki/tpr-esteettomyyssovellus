@@ -1100,6 +1100,191 @@ class ArRest01QuestionnaireView(APIView):
             )
 
 
+class ArRest01FormView(APIView):
+    """
+    API endpoint for ar_rest01_form.
+    """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
+    def get(self, request, format=JSON):
+        try:
+            data = ArRest01Form.objects.all().order_by("form_id")
+            modified_data = []
+            for item in data:
+                form = {
+                    "formId": item.form_id,
+                    "titles": [],
+                    "descriptions": [],
+                }
+
+                if item.title_fi:
+                    form["titles"].append({ "language": "fi", "value": item.title_fi })
+                if item.title_sv:
+                    form["titles"].append({ "language": "sv", "value": item.title_sv })
+                if item.title_en:
+                    form["titles"].append({ "language": "en", "value": item.title_en })
+
+                if item.description_fi:
+                    form["descriptions"].append({ "language": "fi", "value": item.description_fi })
+                if item.description_sv:
+                    form["descriptions"].append({ "language": "sv", "value": item.description_sv })
+                if item.description_en:
+                    form["descriptions"].append({ "language": "en", "value": item.description_en })
+
+                modified_data.append(form)
+
+            return Response(modified_data)
+        except Exception as error:
+            return HttpResponse(
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01QuestionBlockView(APIView):
+    """
+    API endpoint for ar_rest01_question_block.
+    """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
+    def get(self, request, format=JSON):
+        try:
+            data = ArRest01QuestionBlock.objects.all().order_by("question_block_order_text")
+            modified_data = []
+            for item in data:
+                question_block = {
+                    "questionBlockId": item.question_block_id,
+                    "formId": item.form_id,
+                    "questionBlockCode": item.question_block_code,
+                    "questionBlocks": [],
+                    "questionBlockOrderText": item.question_block_order_text,
+                    "descriptions": [],
+                    "photoUrl": item.photo_url,
+                    "photoTexts": [],
+                }
+
+                if item.question_block_text_fi:
+                    question_block["questionBlocks"].append({ "language": "fi", "value": item.question_block_text_fi })
+                if item.question_block_text_sv:
+                    question_block["questionBlocks"].append({ "language": "sv", "value": item.question_block_text_sv })
+                if item.question_block_text_en:
+                    question_block["questionBlocks"].append({ "language": "en", "value": item.question_block_text_en })
+
+                if item.description_fi:
+                    question_block["descriptions"].append({ "language": "fi", "value": item.description_fi })
+                if item.description_sv:
+                    question_block["descriptions"].append({ "language": "sv", "value": item.description_sv })
+                if item.description_en:
+                    question_block["descriptions"].append({ "language": "en", "value": item.description_en })
+
+                if item.photo_text_fi:
+                    question_block["photoTexts"].append({ "language": "fi", "value": item.photo_text_fi })
+                if item.photo_text_sv:
+                    question_block["photoTexts"].append({ "language": "sv", "value": item.photo_text_sv })
+                if item.photo_text_en:
+                    question_block["photoTexts"].append({ "language": "en", "value": item.photo_text_en })
+
+                modified_data.append(question_block)
+
+            return Response(modified_data)
+        except Exception as error:
+            return HttpResponse(
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01QuestionView(APIView):
+    """
+    API endpoint for ar_rest01_question.
+    """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
+    def get(self, request, format=JSON):
+        try:
+            data = ArRest01Question.objects.all().order_by("question_order_text")
+            modified_data = []
+            for item in data:
+                question = {
+                    "questionId": item.question_id,
+                    "formId": item.form_id,
+                    "questionBlockId": item.question_block_id,
+                    "questionCode": item.question_code,
+                    "questions": [],
+                    "questionOrderText": item.question_order_text,
+                    "descriptions": [],
+                    "photoUrl": item.photo_url,
+                    "photoTexts": [],
+                }
+
+                if item.question_text_fi:
+                    question["questions"].append({ "language": "fi", "value": item.question_text_fi })
+                if item.question_text_sv:
+                    question["questions"].append({ "language": "sv", "value": item.question_text_sv })
+                if item.question_text_en:
+                    question["questions"].append({ "language": "en", "value": item.question_text_en })
+
+                if item.description_fi:
+                    question["descriptions"].append({ "language": "fi", "value": item.description_fi })
+                if item.description_sv:
+                    question["descriptions"].append({ "language": "sv", "value": item.description_sv })
+                if item.description_en:
+                    question["descriptions"].append({ "language": "en", "value": item.description_en })
+
+                if item.photo_text_fi:
+                    question["photoTexts"].append({ "language": "fi", "value": item.photo_text_fi })
+                if item.photo_text_sv:
+                    question["photoTexts"].append({ "language": "sv", "value": item.photo_text_sv })
+                if item.photo_text_en:
+                    question["photoTexts"].append({ "language": "en", "value": item.photo_text_en })
+
+                modified_data.append(question)
+
+            return Response(modified_data)
+        except Exception as error:
+            return HttpResponse(
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ArRest01ChoiceView(APIView):
+    """
+    API endpoint for ar_rest01_choice.
+    """
+
+    renderer_classes = (JSONRenderer,CustomXmlRenderer,)
+
+    def get(self, request, format=JSON):
+        try:
+            data = ArRest01Choice.objects.all().order_by("choice_order_text")
+            modified_data = []
+            for item in data:
+                choice = {
+                    "choiceId": item.choice_id,
+                    "formId": item.form_id,
+                    "questionBlockId": item.question_block_id,
+                    "questionId": item.question_id,
+                    "choices": [],
+                    "choiceOrderText": item.choice_order_text,
+                }
+
+                if item.choice_text_fi:
+                    choice["choices"].append({ "language": "fi", "value": item.choice_text_fi })
+                if item.choice_text_sv:
+                    choice["choices"].append({ "language": "sv", "value": item.choice_text_sv })
+                if item.choice_text_en:
+                    choice["choices"].append({ "language": "en", "value": item.choice_text_en })
+
+                modified_data.append(choice)
+
+            return Response(modified_data)
+        except Exception as error:
+            return HttpResponse(
+                "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 class ArRest01ServicepointView(APIView):
     renderer_classes = (JSONRenderer,CustomXmlRenderer,)
 
