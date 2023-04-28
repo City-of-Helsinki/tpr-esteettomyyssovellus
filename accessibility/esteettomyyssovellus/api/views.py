@@ -2263,33 +2263,11 @@ class ArRest01EntranceChoiceViewSet(APIView):
                     })
 
                 choice.update({
-                    "questionBlockId": item.question_block_id,
-                    "questionBlockCode": item.question_block_code,
-                    "questionBlocks": [],
                     "questionId": item.question_id,
-                    "questionCode": item.question_code,
-                    "questions": [],
                     "questionOrderText": item.question_order_text,
-                    "questionChoiceId": item.question_choice_id,
+                    "choiceId": item.question_choice_id,
                     "choices": [],
-                    "descriptions": [],
-                    "photoUrl": item.photo_url,
-                    "photoTexts": [],
                 })
-
-                if item.question_block_text_fi:
-                    choice["questionBlocks"].append({ "language": "fi", "value": item.question_block_text_fi })
-                if item.question_block_text_sv:
-                    choice["questionBlocks"].append({ "language": "sv", "value": item.question_block_text_sv })
-                if item.question_block_text_en:
-                    choice["questionBlocks"].append({ "language": "en", "value": item.question_block_text_en })
-
-                if item.question_text_fi:
-                    choice["questions"].append({ "language": "fi", "value": item.question_text_fi })
-                if item.question_text_sv:
-                    choice["questions"].append({ "language": "sv", "value": item.question_text_sv })
-                if item.question_text_en:
-                    choice["questions"].append({ "language": "en", "value": item.question_text_en })
 
                 if item.question_choice_text_fi:
                     choice["choices"].append({ "language": "fi", "value": item.question_choice_text_fi })
@@ -2297,20 +2275,6 @@ class ArRest01EntranceChoiceViewSet(APIView):
                     choice["choices"].append({ "language": "sv", "value": item.question_choice_text_sv })
                 if item.question_choice_text_en:
                     choice["choices"].append({ "language": "en", "value": item.question_choice_text_en })
-
-                if item.description_fi:
-                    choice["descriptions"].append({ "language": "fi", "value": item.description_fi })
-                if item.description_sv:
-                    choice["descriptions"].append({ "language": "sv", "value": item.description_sv })
-                if item.description_en:
-                    choice["descriptions"].append({ "language": "en", "value": item.description_en })
-
-                if item.photo_text_fi:
-                    choice["photoTexts"].append({ "language": "fi", "value": item.photo_text_fi })
-                if item.photo_text_sv:
-                    choice["photoTexts"].append({ "language": "sv", "value": item.photo_text_sv })
-                if item.photo_text_en:
-                    choice["photoTexts"].append({ "language": "en", "value": item.photo_text_en })
 
                 modified_data.append(choice)
 
