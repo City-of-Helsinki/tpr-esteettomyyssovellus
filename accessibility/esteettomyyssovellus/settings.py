@@ -204,5 +204,5 @@ CORS_ORIGIN_WHITELIST = [
     "https://palvelukartta.turku.fi",
     "https://testipalvelukartta.turku.fi",
     "https://www.suomi.fi",
-    "http://localhost", # Development and test only, not production
+    # "http://localhost", # Development and test only, not production
 ]
