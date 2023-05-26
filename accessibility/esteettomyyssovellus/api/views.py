@@ -578,9 +578,23 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
     ]
 
 
+class ArBackendFormViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for ar_backend_form.
+    """
+
+    queryset = ArBackendForm.objects.all()
+    serializer_class = ArBackendFormSerializer
+    pagination_class = None
+    filter_fields = ("form_id",)
+    permission_classes = [
+        TokenPermission,
+    ]
+
+
 class ArBackendFormGuideViewSet(viewsets.ModelViewSet):
     """
-    API endpoint for ar_backend_entrance.
+    API endpoint for ar_backend_form_guide.
     """
 
     queryset = ArBackendFormGuide.objects.all()
