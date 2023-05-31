@@ -96,12 +96,14 @@ class ArBackendEntranceAnswer(models.Model):
 
 
 class ArBackendForm(models.Model):
+    technical_id = models.TextField(primary_key=True)
     form_id = models.IntegerField(blank=True, null=True)
     language_id = models.BigIntegerField(blank=True, null=True)
     text = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
     guide_title = models.CharField(max_length=200, blank=True, null=True)
     guide_url = models.CharField(max_length=200, blank=True, null=True)
+    show_summary_page = models.CharField(max_length=1)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.

@@ -70,6 +70,7 @@ router.register(r"ArXPlaceAnswerBoxTxt", views.ArXPlaceAnswerBoxTxtViewSet)
 router.register(r"ArXQuestionBlockAnswerCmt", views.ArXQuestionBlockAnswerCmtViewSet)
 router.register(r"ArXQuestionBlockAnswer", views.ArXQuestionBlockAnswerViewSet)
 router.register(r"ArXQuestionBlockAnswerTxt", views.ArXQuestionBlockAnswerTxtViewSet)
+router.register(r"ArBackendForm", views.ArBackendFormViewSet)
 router.register(r"ArBackendFormGuide", views.ArBackendFormGuideViewSet)
 router.register(
     r"ArBackendEntranceSentenceGroup", views.ArBackendEntranceSentenceGroupViewSet
