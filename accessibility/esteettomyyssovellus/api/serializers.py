@@ -301,3 +301,9 @@ class ArBackendEntranceSentenceGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArBackendEntranceSentenceGroup
         fields = "__all__"
+
+
+class ArBackendPdfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArBackendPdf
+        fields = "__all__"
