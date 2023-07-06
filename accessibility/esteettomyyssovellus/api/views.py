@@ -39,6 +39,11 @@ from django.shortcuts import redirect
 from rest_framework.renderers import JSONRenderer
 from esteettomyyssovellus.api.renderers import CustomXmlRenderer
 
+# pdf imports
+from django.conf import settings as conf_settings
+from django.utils import timezone
+from django.views.generic import ListView
+from django_weasyprint import WeasyTemplateResponseMixin
 
 class TokenPermission(permissions.BasePermission):
     edit_methods = "__all__"
@@ -3043,3 +3048,94 @@ class ArpDeletePlaceFromAnswer(APIView):
                 ],
                 status=201,
             )
+
+
+class PdfReportView(ListView):
+    template_name = "pdf.html"
+    model = ArBackendPdf
+    serializer_class = ArBackendPdfSerializer
+    pagination_class = None
+    permission_classes = [
+        TokenPermission,
+    ]
+
+    def get_context_data(self, **kwargs):
+        # Get the target id from the url path
+        # Target id examples:
+        #   tpr:5304
+        #   ptv:7b5f2481-a80f-4773-8a95-bb7a43fc7a21
+        targetId = self.kwargs["target_id"]
+
+        # Get any specified query string values
+        purposeCode = self.request.GET.get("purpose", "LAST_QUESTION_ANSWER")
+        date = self.request.GET.get("date", None)
+        languageId = self.request.GET.get("language", 1)
+
+        # Get the internal servicepoint id corresponding to the target id
+        backendExternalServicepoint = ArBackendExternalServicepoint.objects.get(external_servicepoint_id = targetId)
+        servicepointId = backendExternalServicepoint.servicepoint_id
+        logIds = None
+
+        if purposeCode == "ARCHIVED_QUESTION_ANSWER" and date != None:
+            # Get the logs ids for the specified date
+            try:
+                ps_connection = psycopg2.connect(
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    database=DB,
+                    options="-c search_path={}".format(SEARCH_PATH),
+                )
+
+                cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Call the psql function that gets the log ids
+                cursor.execute("SELECT tf2_servicepoint_logids_before_date(%s, %s)", [servicepointId, date])
+
+                # Get the returned values
+                result = cursor.fetchall()
+                print("result " + str(result))
+                result_string = result[0]["tf2_servicepoint_logids_before_date"]
+                logIds = result_string.split(",")
+
+            except (Exception, psycopg2.Error) as error:
+                print("Error while using database function tf2_servicepoint_logids_before_date", error)
+            finally:
+                # Close the database connection
+                if ps_connection:
+                    cursor.close()
+                    ps_connection.close()
+                    print("PostgreSQL connection is closed")
+
+        # Store the data for the pdf template
+        context = super().get_context_data(**kwargs)
+        context["purpose"] = purposeCode
+        context["target"] = targetId
+        context["date"] = date
+
+        if logIds != None:
+            context["data"] = ArBackendPdf.objects.filter(purpose_code = purposeCode, language_id = languageId, servicepoint_id = servicepointId, log_id__in = logIds)
+        else:
+            context["data"] = ArBackendPdf.objects.filter(purpose_code = purposeCode, language_id = languageId, servicepoint_id = servicepointId)
+
+        return context
+
+
+class PdfView(WeasyTemplateResponseMixin, PdfReportView):
+    # The stylesheet is stored in accessibility/static/css
+    pdf_stylesheets = [
+        conf_settings.STATIC_ROOT + "css/pdf.css",
+    ]
+
+
+class PdfDownloadView(WeasyTemplateResponseMixin, PdfReportView):
+    # Dynamically generate filename
+    def get_pdf_filename(self):
+        return "esteettömyys-{at}.pdf".format(
+            at=timezone.now().strftime("%Y%m%d-%H%M"),
+        )
+
+    pdf_stylesheets = [
+        conf_settings.STATIC_ROOT + "css/pdf.css",
+    ]

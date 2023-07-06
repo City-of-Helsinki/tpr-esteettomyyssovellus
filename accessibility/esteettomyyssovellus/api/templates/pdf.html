@@ -1,0 +1,33 @@
+<!doctype html>
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'css/app.css' %}" />
+    </head>
+    <body>
+        <div>purpose={{ purpose }}, target={{ target }}, date={{ date }}</div>
+
+        {% for item in data %}
+            {% if item.row_format == "MAIN_TITLE" %}
+                <h1>{{ item.plain_text }}</h1>
+            {% elif item.row_format == "SERVICEPOINT" %}
+                <h2>{{ item.plain_text }}</h2>
+            {% elif item.row_format == "ENTRANCE" %}
+                <h3>{{ item.plain_text }}</h3>
+            {% elif item.row_format == "PHOTO" %}
+                <div class="photo">
+                    <img src="{{ item.plain_text }}" />
+                </div>
+            {% elif item.row_format == "PHOTO_TEXT" %}
+                <div>{{ item.plain_text }}</div>
+            {% elif item.row_format == "SECTION" %}
+                <h4>{{ item.code }} {{ item.plain_text }}</h4>
+            {% elif item.row_format == "ROW" %}
+                <div>
+                    <span>{{ item.code }} {{ item.plain_text }}</span>
+                    <span class="answer">{{ item.bold_text }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </body>
+</html>
