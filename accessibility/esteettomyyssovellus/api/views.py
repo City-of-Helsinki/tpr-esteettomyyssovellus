@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from esteettomyyssovellus.settings import (
     PUBLIC_AZURE_CONTAINER,
     AZURE_URL,
+    PDF_BASE_URL,
 )
 import uuid
 from azure.storage.blob import ContentSettings
@@ -3109,7 +3110,7 @@ class PdfReportView(ListView):
                     print("PostgreSQL connection is closed")
 
         # Get the full url to display as a link
-        link = self.request.build_absolute_uri("/api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
+        link = self.request.build_absolute_uri(PDF_BASE_URL + "api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
 
         # Store the data for the pdf template
         context = super().get_context_data(**kwargs)
