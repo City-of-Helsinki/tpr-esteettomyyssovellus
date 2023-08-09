@@ -3108,11 +3108,15 @@ class PdfReportView(ListView):
                     ps_connection.close()
                     print("PostgreSQL connection is closed")
 
+        # Get the full url to display as a link
+        link = self.request.build_absolute_uri("/api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
+
         # Store the data for the pdf template
         context = super().get_context_data(**kwargs)
         context["purpose"] = purposeCode
         context["target"] = targetId
         context["date"] = date
+        context["link"] = link
 
         if logIds != None:
             context["data"] = ArBackendPdf.objects.filter(purpose_code = purposeCode, language_id = languageId, servicepoint_id = servicepointId, log_id__in = logIds)
