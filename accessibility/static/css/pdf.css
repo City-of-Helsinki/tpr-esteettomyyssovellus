@@ -7,6 +7,32 @@ body {
   line-height: 1.5;
 }
 
+@page {
+  margin: 3cm 0cm 5cm 0cm;
+  size: A4;
+}
+
+header, footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+}
+
+header {
+  top: -3cm;
+  height: 2.5cm;
+  background-color: #ccf;
+}
+
+footer {
+  bottom: -5cm;
+  height: 4.5cm;
+}
+
+main {
+  margin: 0cm 1cm;
+}
+
 @font-face {
   font-family: HelsinkiGrotesk;
   font-weight: 400;
@@ -53,6 +79,50 @@ h4 {
 
 h5 {
   font-size: 16px !important;
+}
+
+.header-container {
+  padding: 0.5cm;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.header-text {
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+.header-link {
+  font-size: 12px;
+}
+
+.hds-koros {
+  line-height: 0;
+}
+
+.helsinki-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: #0000bf;
+  padding-bottom: 0.5cm;
+}
+
+.helsinki-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.helsinki-logo {
+  height: 40px;
 }
 
 .answer {
