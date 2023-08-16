@@ -1,37 +1,26 @@
-<!doctype html>
-{% load static %}
-{% load tz %}
-<html>
-    <head>
-        <link rel="stylesheet" href="{% static 'css/app.css' %}" />
-    </head>
-    <body>
-        {% timezone "Europe/Helsinki" %}
-            <div>{% now "j.n.Y G:i" %}</div>
-        {% endtimezone %}
-        <div><a href="{{ link }}">{{ link }}</a></div>
+{% extends "base.html" %}
 
-        {% for item in data %}
-            {% if item.row_format == "MAIN_TITLE" %}
-                <h1>{{ item.plain_text | default_if_none:"" }}</h1>
-            {% elif item.row_format == "SERVICEPOINT" %}
-                <h2>{{ item.plain_text | default_if_none:"" }}</h2>
-            {% elif item.row_format == "ENTRANCE" %}
-                <h3>{{ item.plain_text | default_if_none:"" }}</h3>
-            {% elif item.row_format == "PHOTO" %}
-                <div class="photo">
-                    <img src="{{ item.plain_text | default_if_none:"" }}" />
-                </div>
-            {% elif item.row_format == "PHOTO_TEXT" %}
-                <div>{{ item.plain_text | default_if_none:"" }}</div>
-            {% elif item.row_format == "SECTION" %}
-                <h4>{{ item.code | default_if_none:"" }} {{ item.plain_text | default_if_none:"" }}</h4>
-            {% elif item.row_format == "ROW" %}
-                <div>
-                    <span>{{ item.code | default_if_none:"" }} {{ item.plain_text | default_if_none:"" }}</span>
-                    <span class="answer">{{ item.bold_text | default_if_none:"" }}</span>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </body>
-</html>
+{% block content %}
+    {% for item in data %}
+        {% if item.row_format == "MAIN_TITLE" %}
+            <h1>{{ item.plain_text | default_if_none:"" }}</h1>
+        {% elif item.row_format == "SERVICEPOINT" %}
+            <h2>{{ item.plain_text | default_if_none:"" }}</h2>
+        {% elif item.row_format == "ENTRANCE" %}
+            <h3>{{ item.plain_text | default_if_none:"" }}</h3>
+        {% elif item.row_format == "PHOTO" %}
+            <div class="photo">
+                <img src="{{ item.plain_text | default_if_none:"" }}" />
+            </div>
+        {% elif item.row_format == "PHOTO_TEXT" %}
+            <div>{{ item.plain_text | default_if_none:"" }}</div>
+        {% elif item.row_format == "SECTION" %}
+            <h4>{{ item.code | default_if_none:"" }} {{ item.plain_text | default_if_none:"" }}</h4>
+        {% elif item.row_format == "ROW" %}
+            <div>
+                <span>{{ item.code | default_if_none:"" }} {{ item.plain_text | default_if_none:"" }}</span>
+                <span class="answer">{{ item.bold_text | default_if_none:"" }}</span>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

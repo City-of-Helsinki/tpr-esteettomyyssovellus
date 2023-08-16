@@ -1,0 +1,13 @@
+{% load tz %}
+
+<div class="header-container">
+  <div class="header-title">
+      <div class="header-text">Esteettömyystiedot</div>
+    {% timezone "Europe/Helsinki" %}
+      <div class="header-time">{% now "j.n.Y G:i" %}</div>
+    {% endtimezone %}
+  </div>
+  <div class="header-link">
+    <a href="{{ link }}">{{ link }}</a>
+  </div>
+</div>
