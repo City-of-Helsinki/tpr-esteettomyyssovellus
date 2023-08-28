@@ -3053,7 +3053,7 @@ class ArpDeletePlaceFromAnswer(APIView):
 
 class PdfReportView(ListView):
     template_name = "pdf.html"
-    model = ArBackendPdf
+    queryset = ArBackendPdf.objects.none()
     serializer_class = ArBackendPdfSerializer
     pagination_class = None
     permission_classes = [
@@ -3072,10 +3072,22 @@ class PdfReportView(ListView):
         date = self.request.GET.get("date", None)
         languageId = self.request.GET.get("language", 1)
 
+        # Translate the language id to a code
+        languageCode = ""
+        if languageId == 1:
+            languageCode = "fi"
+        elif languageId == 2:
+            languageCode = "sv"
+        elif languageId == 3:
+            languageCode = "en"
+
         # Get the internal servicepoint id corresponding to the target id
         backendExternalServicepoint = ArBackendExternalServicepoint.objects.get(external_servicepoint_id = targetId)
         servicepointId = backendExternalServicepoint.servicepoint_id
         logIds = None
+
+        # Get the logos to show in the footer, with the format 'helsinki+avi+okm'
+        logo = backendExternalServicepoint.logo
 
         if purposeCode == "ARCHIVED_QUESTION_ANSWER" and date != None:
             # Get the logs ids for the specified date
@@ -3112,12 +3124,21 @@ class PdfReportView(ListView):
         # Get the full url to display as a link
         link = self.request.build_absolute_uri(PDF_BASE_URL + "api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
 
+        # Make an array of the logo images to display in the footer, using the static base url
+        logo_base = self.request.build_absolute_uri(PDF_BASE_URL + "static/img/")
+        logos = []
+        if logo != None:
+            logos = logo.split("+")
+            logos = map(lambda item: item + "_" + languageCode + ".png", logos)
+
         # Store the data for the pdf template
         context = super().get_context_data(**kwargs)
         context["purpose"] = purposeCode
         context["target"] = targetId
         context["date"] = date
         context["link"] = link
+        context["logo_base"] = logo_base
+        context["logos"] = logos
 
         if logIds != None:
             context["data"] = ArBackendPdf.objects.filter(purpose_code = purposeCode, language_id = languageId, servicepoint_id = servicepointId, log_id__in = logIds)

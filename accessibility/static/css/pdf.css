@@ -3,12 +3,12 @@ body {
   padding: 0;
   margin: 0;
   font-family: HelsinkiGrotesk, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
 @page {
-  margin: 3cm 0cm 5cm 0cm;
+  margin: 3cm 0cm 3cm 0cm;
   size: A4;
 }
 
@@ -20,13 +20,10 @@ header, footer {
 
 header {
   top: -3cm;
-  height: 2.5cm;
-  background-color: #ccf;
 }
 
 footer {
-  bottom: -5cm;
-  height: 4.5cm;
+  bottom: -3cm;
 }
 
 main {
@@ -62,26 +59,29 @@ main {
 }
 
 h1 {
-  font-size: 32px !important;
+  font-size: 28px !important;
 }
 
 h2 {
-  font-size: 24px !important;
-}
-
-h3 {
   font-size: 20px !important;
 }
 
-h4 {
-  font-size: 18px !important;
-}
-
-h5 {
+h3 {
   font-size: 16px !important;
 }
 
+h4 {
+  font-size: 14px !important;
+}
+
+h5 {
+  font-size: 12px !important;
+}
+
 .header-container {
+  height: 1.5cm;
+  background-color: #ccf;
+  font-size: 16px;
   padding: 0.5cm;
 }
 
@@ -97,31 +97,32 @@ h5 {
 }
 
 .header-link {
-  font-size: 12px;
+  font-size: 11px;
 }
 
-.hds-koros {
-  line-height: 0;
-}
-
-.helsinki-footer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  background-color: #0000bf;
-  padding-bottom: 0.5cm;
-}
-
-.helsinki-logo-container {
+.footer-container {
+  height: 2cm;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fff;
-  font-size: 14px;
+  background-color: #ccf;
+  font-size: 12px;
   white-space: nowrap;
+  padding-bottom: 0.5cm;
 }
 
-.helsinki-logo {
+.footer-logo-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.logo {
+  flex-shrink: 0;
+  margin: 10px;
+}
+
+.logo img {
   height: 40px;
 }
 
