@@ -232,6 +232,7 @@ class ArBackendServicepoint(models.Model):
 class ArBackendExternalServicepoint(models.Model):
     servicepoint_id = models.BigIntegerField(primary_key=True)
     external_servicepoint_id = models.CharField(max_length=100)
+    logo = models.CharField(max_length=80)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
