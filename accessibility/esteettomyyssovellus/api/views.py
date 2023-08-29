@@ -3131,7 +3131,13 @@ class PdfReportView(ListView):
                     print("PostgreSQL connection is closed")
 
         # Get the full url to display as a link
-        link = self.request.build_absolute_uri(PDF_BASE_URL + "api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
+        fullUrl = PDF_BASE_URL + "api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode)
+        if date != None:
+            fullUrl += "&date=" + str(date)
+        else:
+            fullUrl += "&date=" + timezone.now().strftime("%Y-%m-%d")
+        fullUrl += "&language=" + str(languageCode)
+        link = self.request.build_absolute_uri(fullUrl)
 
         # Make an array of the logo images to display in the footer, using the static base url
         logoBase = self.request.build_absolute_uri(PDF_BASE_URL + "static/img/")
