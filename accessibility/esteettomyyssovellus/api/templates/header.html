@@ -2,7 +2,14 @@
 
 <div class="header-container">
   <div class="header-title">
+    {% if language_code == "sv" %}
+      <div class="header-text">Blankett för tillgänglighetsrapport</div>
+    {% elif language_code == "en" %}
+      <div class="header-text">Accessibility report form</div>
+    {% else %}
       <div class="header-text">Esteettömyysselvityslomake</div>
+    {% endif %}
+
     {% timezone "Europe/Helsinki" %}
       <div class="header-time">{% now "j.n.Y G:i" %}</div>
     {% endtimezone %}

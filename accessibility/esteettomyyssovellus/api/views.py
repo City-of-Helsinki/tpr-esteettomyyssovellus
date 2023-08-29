@@ -3070,15 +3070,24 @@ class PdfReportView(ListView):
         # Get any specified query string values
         purposeCode = self.request.GET.get("purpose", "LAST_QUESTION_ANSWER")
         date = self.request.GET.get("date", None)
-        languageId = self.request.GET.get("language", 1)
+        languageId = self.request.GET.get("language", "1")
 
         # Translate the language id to a code
         languageCode = ""
-        if languageId == 1:
+        if languageId == "1":
             languageCode = "fi"
-        elif languageId == 2:
+        elif languageId == "2":
             languageCode = "sv"
-        elif languageId == 3:
+        elif languageId == "3":
+            languageCode = "en"
+        elif languageId == "fi":
+            languageId = "1"
+            languageCode = "fi"
+        elif languageId == "sv":
+            languageId = "2"
+            languageCode = "sv"
+        elif languageId == "en":
+            languageId = "3"
             languageCode = "en"
 
         # Get the internal servicepoint id corresponding to the target id
@@ -3125,7 +3134,7 @@ class PdfReportView(ListView):
         link = self.request.build_absolute_uri(PDF_BASE_URL + "api/pdfview/" + str(targetId) + "/?purpose=" + str(purposeCode) + "&date=" + str(date) + "&language=" + str(languageId))
 
         # Make an array of the logo images to display in the footer, using the static base url
-        logo_base = self.request.build_absolute_uri(PDF_BASE_URL + "static/img/")
+        logoBase = self.request.build_absolute_uri(PDF_BASE_URL + "static/img/")
         logos = []
         if logo != None:
             logos = logo.split("+")
@@ -3137,7 +3146,8 @@ class PdfReportView(ListView):
         context["target"] = targetId
         context["date"] = date
         context["link"] = link
-        context["logo_base"] = logo_base
+        context["language_code"] = languageCode
+        context["logo_base"] = logoBase
         context["logos"] = logos
 
         if logIds != None:
