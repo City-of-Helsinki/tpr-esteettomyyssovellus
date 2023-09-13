@@ -329,7 +329,14 @@ urlpatterns += [
     ),
 ]
 
+# Image handling
 urlpatterns += [
     path("api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
     path("app/api/azure_upload/<str:servicepoint_id>/", views.AzureUploader.as_view()),
+]
+
+# PDF handling
+urlpatterns += [
+    path("api/pdfview/<str:target_id>/", views.PdfView.as_view()),
+    path("api/pdfdownload/<str:target_id>/", views.PdfDownloadView.as_view()),
 ]

@@ -232,6 +232,7 @@ class ArBackendServicepoint(models.Model):
 class ArBackendExternalServicepoint(models.Model):
     servicepoint_id = models.BigIntegerField(primary_key=True)
     external_servicepoint_id = models.CharField(max_length=100)
+    logo = models.CharField(max_length=80)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -1737,3 +1738,21 @@ class ArBackendEntranceSentenceGroup(models.Model):
     class Meta:
         managed = False
         db_table = "ar_backend_entrance_sentence_group"
+
+
+class ArBackendPdf(models.Model):
+    technical_id = models.TextField(primary_key=True)
+    purpose_code = models.CharField(max_length=40, blank=True, null=True)
+    servicepoint_id = models.BigIntegerField(blank=True, null=True)
+    entrance_id = models.BigIntegerField(blank=True, null=True)
+    log_id = models.BigIntegerField(blank=True, null=True)
+    language_id = models.BigIntegerField(blank=True, null=True)
+    row_format = models.CharField(max_length=40, blank=True, null=True)
+    code = models.TextField(blank=True, null=True)
+    plain_text = models.TextField(blank=True, null=True)
+    bold_text = models.TextField(blank=True, null=True)
+    order_text = models.CharField(max_length=80, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ar_backend_pdf"

@@ -1,0 +1,17 @@
+<div class="footer-container">
+  <div class="footer-logo-container">
+    {% for logo in logos %}
+      <div class="logo">
+        <img src="{{ logo_base }}{{ logo }}" />
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if language_code == "sv" %}
+    <div>Tillgänglighetsinformationstjänsten underhålls av Helsingfors stad</div>
+  {% elif language_code == "en" %}
+    <div>The accessibility information service is maintained by Helsinki City</div>
+  {% else %}
+    <div>Esteettömyystietopalvelua ylläpitää Helsingin kaupunki</div>
+  {% endif %}
+</div>

@@ -1,0 +1,25 @@
+<!doctype html>
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'css/pdf.css' %}" />
+    </head>
+    <body>
+        <header>
+            {% block header %}
+                {% include "header.html" %}
+            {% endblock %}
+        </header>
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer>
+            {% block footer %}
+                {% include "footer.html" %}
+            {% endblock %}
+        </footer>
+    </body>
+</html>
