@@ -48,6 +48,7 @@ PUBLIC_AZURE_CONNECTION_STRING = env("PUBLIC_AZURE_CONNECTION_STRING")
 # JWT_IMAGE_SECRET = env("JWT_IMAGE_SECRET")
 
 PDF_BASE_URL = env("PDF_BASE_URL")
+PDF_STATIC_URL = env("PDF_STATIC_URL")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
