@@ -9,6 +9,7 @@ from esteettomyyssovellus.settings import (
     PUBLIC_AZURE_CONTAINER,
     AZURE_URL,
     PDF_BASE_URL,
+    PDF_STATIC_URL,
 )
 import uuid
 from azure.storage.blob import ContentSettings
@@ -3140,7 +3141,7 @@ class PdfReportView(ListView):
         link = self.request.build_absolute_uri(fullUrl)
 
         # Make an array of the logo images to display in the footer, using the static base url
-        logoBase = self.request.build_absolute_uri(PDF_BASE_URL + "static/img/")
+        logoBase = self.request.build_absolute_uri(PDF_STATIC_URL + "img/")
         logos = []
         if logo != None:
             logos = logo.split("+")
