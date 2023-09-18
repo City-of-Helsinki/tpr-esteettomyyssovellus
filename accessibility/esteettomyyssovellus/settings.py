@@ -57,7 +57,7 @@ PDF_STATIC_URL = env("PDF_STATIC_URL")
 SECRET_KEY = "django-insecure-616n+sxdkwqu0qc(sk=pdg$mmc00ch3z^6_6mz#74q8iy#hop5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -209,7 +209,7 @@ CORS_ORIGIN_WHITELIST = [
     "https://palvelukartta.turku.fi",
     "https://testipalvelukartta.turku.fi",
     "https://www.suomi.fi",
-    # "http://localhost", # Development and test only, not production
+    "http://localhost", # Development and test only, not production
 ]
 
 
