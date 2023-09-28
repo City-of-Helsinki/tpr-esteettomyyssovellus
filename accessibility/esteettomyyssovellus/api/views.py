@@ -318,6 +318,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint = self.get_object()
             servicepoint.servicepoint_name = request_data["servicepoint_name"]
             servicepoint.ext_servicepoint_id = request_data["ext_servicepoint_id"]
+            servicepoint.system_id = request_data["system_id"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.is_searchable = "Y"
