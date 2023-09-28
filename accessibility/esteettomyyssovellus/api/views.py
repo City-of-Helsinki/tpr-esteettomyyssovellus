@@ -291,7 +291,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.save()
             return Response({"status": "address updated"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "address updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
     # def update_accessibility_contacts(self, request, *args, **kwargs):
@@ -309,7 +309,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #             status=status.HTTP_200_OK,
     #         )
     #     except Exception as e:
-    #         return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+    #         return Response({"status": "accessibility information updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["POST"], url_path="update_external")
     def update_external(self, request, *args, **kwargs):
@@ -325,7 +325,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
             servicepoint.save()
             return Response({"status": "external servicepoint id updated"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "external servicepoint id updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     # @action(detail=True, methods=["POST"], url_path="set_searchable")
     # def set_searchable(self, request, *args, **kwargs):
@@ -338,7 +338,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     #             status=status.HTTP_200_OK,
     #         )
     #     except Exception as e:
-    #         return HttpResponse("Updating failed", status=status.HTTP_400_BAD_REQUEST)
+    #         return Response({"status": "servicepoint searchable updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ArSystemViewSet(viewsets.ModelViewSet):
