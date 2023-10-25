@@ -1669,15 +1669,15 @@ class ArRest01AddExternalReferenceView(APIView):
         # "Checksum":"C6FC721604E5F093B19071DD8903C5643B6BDE0EF1C8D62CBE869A7416BF9551"
         #  }
         try:
-            systems = ArSystem.objects.all()
-            is_in_systems = False
-            for system in systems:
-                if system.system_id == systemId:
-                    is_in_systems = True
-            if not is_in_systems:
-                return HttpResponse(
-                    "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
-                )
+            # systems = ArSystem.objects.all()
+            # is_in_systems = False
+            # for system in systems:
+            #     if system.system_id == systemId:
+            #         is_in_systems = True
+            # if not is_in_systems:
+            #     return HttpResponse(
+            #         "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
+            #     )
 
             data = request.data
             keys = ["ServicePointId", "SystemId", "User", "ValidUntil", "Checksum"]
@@ -1701,10 +1701,25 @@ class ArRest01AddExternalReferenceView(APIView):
                     "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
                 )
 
-            internalSystem = ArSystem.objects.get(system_id = systemId)
-            internalServicepoint = ArExternalServicepoint.objects.get(system = internalSystem, external_servicepoint_id = servicePointId)
-            externalSystem = ArSystem.objects.get(system_id = external_system_id)
-            servicepoint = ArServicepoint.objects.get(servicepoint_id = internalServicepoint.servicepoint_id)
+            internalSystems = ArSystem.objects.filter(system_id = systemId)
+            internalSystem = None if len(internalSystems) == 0 else internalSystems[0]
+            if internalSystem == None:
+                return HttpResponse("System id " + str(systemId) + " not found!", status=status.HTTP_400_BAD_REQUEST)
+
+            internalServicepoints = ArExternalServicepoint.objects.filter(system = internalSystem, external_servicepoint_id = servicePointId)
+            internalServicepoint = None if len(internalServicepoints) == 0 else internalServicepoints[0]
+            if internalServicepoint == None:
+                return HttpResponse("External servicepoint id " + str(servicePointId) + " not found!", status=status.HTTP_400_BAD_REQUEST)
+
+            externalSystems = ArSystem.objects.filter(system_id = external_system_id)
+            externalSystem = None if len(externalSystems) == 0 else externalSystems[0]
+            if externalSystem == None:
+                return HttpResponse("System id " + str(external_system_id) + " not found!", status=status.HTTP_400_BAD_REQUEST)
+
+            servicepoints = ArServicepoint.objects.filter(servicepoint_id = internalServicepoint.servicepoint_id)
+            servicepoint = None if len(servicepoints) == 0 else servicepoints[0]
+            if servicepoint == None:
+                return HttpResponse("Servicepoint id " + str(internalServicepoint.servicepoint_id) + " not found!", status=status.HTTP_400_BAD_REQUEST)
 
             checksum_secret = getattr(internalSystem, "checksum_secret")
             # concatenation order: checksumSecret + systemId +  servicePointId + user + validUntil + external systemId + external servicepointId
