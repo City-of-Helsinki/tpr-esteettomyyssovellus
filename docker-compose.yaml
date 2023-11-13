@@ -7,6 +7,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: bash -c "./run_web.sh"
+        env_file:
+            - ./local_dev/.env
         ports:
             - 8000:8000
         volumes:
