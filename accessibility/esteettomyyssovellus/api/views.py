@@ -37,7 +37,7 @@ import base64
 from urllib.parse import urlparse, parse_qs
 from dateutil import parser
 from datetime import datetime
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from rest_framework.renderers import JSONRenderer
 from esteettomyyssovellus.api.renderers import CustomXmlRenderer
 
@@ -1545,7 +1545,7 @@ class ArRest01ServicepointView(APIView):
 
         # Call arp_delete_entrance_data to all entrances of the servicepoint
 
-        servicepoint = ArServicepoint.objects.get(ext_servicepoint_id=servicePointId)
+        servicepoint = get_object_or_404(ArServicepoint, ext_servicepoint_id=servicePointId)
         entrances = ArEntrance.objects.filter(
             servicepoint_id=servicepoint.servicepoint_id
         )
