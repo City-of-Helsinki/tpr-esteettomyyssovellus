@@ -208,6 +208,7 @@ CORS_ORIGIN_WHITELIST = [
     "https://varaamo.hel.fi",
     "https://palvelukartta.turku.fi",
     "https://testipalvelukartta.turku.fi",
+    "https://palvelukartta-testi.turku.fi",
     "https://www.suomi.fi",
     "http://localhost", # Development and test only, not production
 ]
