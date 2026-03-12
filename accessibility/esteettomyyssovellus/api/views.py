@@ -278,20 +278,56 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"], url_path="update_address")
     def update_address(self, request, *args, **kwargs):
+        ps_connection = None
         try:
             request_data = request.data
             servicepoint = self.get_object()
             servicepoint.address_street_name = request_data["address_street_name"]
             servicepoint.address_no = request_data["address_no"]
             servicepoint.address_city = request_data["address_city"]
-            servicepoint.loc_easting = request_data["loc_easting"]
-            servicepoint.loc_northing = request_data["loc_northing"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
+
+            # Use arp_fix_servicepoint_location to update servicepoint coordinates
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+            cursor = ps_connection.cursor()
+            cursor.execute(
+                "SELECT arp_fix_servicepoint_location(%s, %s, %s, %s, %s)",
+                (
+                    servicepoint.servicepoint_id,
+                    request_data["old_loc_easting"],
+                    request_data["old_loc_northing"],
+                    request_data["loc_easting"],
+                    request_data["loc_northing"],
+                ),
+            )
+            ps_connection.commit()
+
+            # arp_fix_servicepoint_location does not update ar_entrance, so do it here.
+            # Match only entrances whose coordinates equal the old values (same logic as the DB function).
+            ArEntrance.objects.filter(
+                servicepoint_id=servicepoint.servicepoint_id,
+                loc_easting=request_data["old_loc_easting"],
+                loc_northing=request_data["old_loc_northing"],
+            ).update(
+                loc_easting=request_data["loc_easting"],
+                loc_northing=request_data["loc_northing"],
+            )
+
             return Response({"status": "address updated"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "address updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        finally:
+            if ps_connection:
+                ps_connection.close()
 
     # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
     # def update_accessibility_contacts(self, request, *args, **kwargs):
