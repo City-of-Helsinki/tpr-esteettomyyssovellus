@@ -30,6 +30,8 @@ from esteettomyyssovellus.settings import (
     SEARCH_PATH,
     API_TOKEN,
 )
+import csv
+import io
 import hashlib
 from rest_framework import permissions
 from .storage import create_blob_client
@@ -313,14 +315,14 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
 
             # arp_fix_servicepoint_location does not update ar_entrance, so do it here.
             # Match only entrances whose coordinates equal the old values (same logic as the DB function).
-            ArEntrance.objects.filter(
-                servicepoint_id=servicepoint.servicepoint_id,
-                loc_easting=request_data["old_loc_easting"],
-                loc_northing=request_data["old_loc_northing"],
-            ).update(
-                loc_easting=request_data["loc_easting"],
-                loc_northing=request_data["loc_northing"],
-            )
+            #ArEntrance.objects.filter(
+            #    servicepoint_id=servicepoint.servicepoint_id,
+            #    loc_easting=request_data["old_loc_easting"],
+            #    loc_northing=request_data["old_loc_northing"],
+            #).update(
+            #    loc_easting=request_data["loc_easting"],
+            #    loc_northing=request_data["loc_northing"],
+            #)
 
             return Response({"status": "address updated"}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -869,18 +871,13 @@ class ChopAddressView(APIView):
             # Get the returned values
             return_cursor = cursor.fetchall()
 
-            # The psql function returns a string of type
-            # "('address',1,Helsinki)". Strip the data
-            # and turn it into a List
-
-            # First strip the "(" and ")"
+            # The psql function returns a PostgreSQL composite type string like
+            # ("STREET, NAME","",CITY). Strip the outer parentheses and use
+            # csv.reader to correctly handle commas inside quoted fields.
             print(return_cursor[0]["ptv_chop_address"])
             return_string = return_cursor[0]["ptv_chop_address"][1:][:-1]
-            # Split by commas
-            return_strings = return_string.split(",")
-            # Strip the additional quotes from the address
-            if return_strings[0][0] == '"':
-                return_strings[0] = return_strings[0][1:][:-1]
+            reader = csv.reader(io.StringIO(return_string))
+            return_strings = next(reader)
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while using database function", error)
