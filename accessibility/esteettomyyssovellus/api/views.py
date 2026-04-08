@@ -1401,6 +1401,7 @@ class ArRest01ServicepointView(APIView):
     http_method_names = [
         "delete",
         "get",
+        "patch",
     ]
 
     def get(self, request, systemId=None, servicePointId=None, targetId=None, format=None):
@@ -1523,6 +1524,115 @@ class ArRest01ServicepointView(APIView):
             return HttpResponse(
                 "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
+
+    def patch(self, request, systemId, servicePointId, format=None):
+        # Validate system
+        systems = ArSystem.objects.all()
+        is_in_systems = any(system.system_id == systemId for system in systems)
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        URL = request.build_absolute_uri()
+        parsed_url = urlparse(URL)
+        query = parse_qs(parsed_url.query)
+        keys = [
+            "user",
+            "newStreetAddress",
+            "newPostOffice",
+            "newEasting",
+            "newNorthing",
+            "checksum",
+        ]
+        for key in keys:
+            if key not in query:
+                return HttpResponse(
+                    "Required query parameter missing: " + key,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        user = str(query["user"][0])
+        new_street_address = str(query["newStreetAddress"][0])
+        new_post_office = str(query["newPostOffice"][0])
+        new_easting = str(query["newEasting"][0])
+        new_northing = str(query["newNorthing"][0])
+        checksum = str(query["checksum"][0])
+
+        # Validate checksum
+        # concatenation order: checksumSecret + systemId + servicePointId + user
+        #   + newStreetAddress + newPostOffice + newEasting + newNorthing
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + user
+            + new_street_address
+            + new_post_office
+            + new_easting
+            + new_northing
+        )
+        if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
+            return HttpResponse(
+                "Checksums did not match.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Get current servicepoint and read old coordinates from DB
+        servicepoint = get_object_or_404(ArServicepoint, ext_servicepoint_id=servicePointId)
+        old_easting = servicepoint.loc_easting
+        old_northing = servicepoint.loc_northing
+
+        # Update address fields and call arp_fix_servicepoint_location in a single
+        # transaction so both succeed or both fail together.
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Split the address into name, number and city using ptv_chop_address
+            cursor.execute("SELECT ptv_chop_address(%s, %s)", [new_street_address, new_post_office])
+            chop_result = cursor.fetchone()["ptv_chop_address"]
+            # Result is a PostgreSQL composite type string like ("STREET, NAME","123","CITY")
+            chop_parts = next(csv.reader(io.StringIO(chop_result[1:][:-1])))
+            chopped_street = chop_parts[0] if len(chop_parts) > 0 else new_street_address
+            chopped_no     = chop_parts[1] if len(chop_parts) > 1 else ""
+            chopped_city   = chop_parts[2] if len(chop_parts) > 2 else new_post_office
+
+            cursor.execute(
+                "UPDATE ar_servicepoint SET address_street_name=%s, address_no=%s, address_city=%s WHERE servicepoint_id=%s",
+                [chopped_street, chopped_no, chopped_city, servicepoint.servicepoint_id],
+            )
+            cursor.execute(
+                "SELECT arp_fix_servicepoint_location(%s, %s, %s, %s, %s)",
+                [
+                    servicepoint.servicepoint_id,
+                    old_easting,
+                    old_northing,
+                    int(new_easting),
+                    int(new_northing),
+                ],
+            )
+            ps_connection.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while updating servicepoint location", error)
+            return HttpResponse(
+                "Error updating location: " + str(error),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+
+        return HttpResponse("Updated", status=status.HTTP_200_OK)
 
     def delete(self, request, systemId, servicePointId, format=None):
         systems = ArSystem.objects.all()
