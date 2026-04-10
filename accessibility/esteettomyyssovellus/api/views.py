@@ -1607,8 +1607,8 @@ class ArRest01ServicepointView(APIView):
             chopped_city   = chop_parts[2] if len(chop_parts) > 2 else new_post_office
 
             cursor.execute(
-                "UPDATE ar_servicepoint SET address_street_name=%s, address_no=%s, address_city=%s WHERE servicepoint_id=%s",
-                [chopped_street, chopped_no, chopped_city, servicepoint.servicepoint_id],
+                "UPDATE ar_servicepoint SET address_street_name=%s, address_no=%s, address_city=%s, modified_by=%s, modified=NOW() WHERE servicepoint_id=%s",
+                [chopped_street, chopped_no, chopped_city, user, servicepoint.servicepoint_id],
             )
             cursor.execute(
                 "SELECT arp_fix_servicepoint_location(%s, %s, %s, %s, %s)",
