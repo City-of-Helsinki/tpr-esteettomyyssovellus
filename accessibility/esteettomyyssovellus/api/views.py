@@ -1543,6 +1543,7 @@ class ArRest01ServicepointView(APIView):
             "newPostOffice",
             "newEasting",
             "newNorthing",
+            "validUntil",
             "checksum",
         ]
         for key in keys:
@@ -1557,11 +1558,19 @@ class ArRest01ServicepointView(APIView):
         new_post_office = str(query["newPostOffice"][0])
         new_easting = str(query["newEasting"][0])
         new_northing = str(query["newNorthing"][0])
+        valid_until_str = str(query["validUntil"][0])
         checksum = str(query["checksum"][0])
+
+        # Validate validUntil
+        valid_until = parser.parse(valid_until_str)
+        if valid_until < datetime.now():
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
 
         # Validate checksum
         # concatenation order: checksumSecret + systemId + servicePointId + user
-        #   + newStreetAddress + newPostOffice + newEasting + newNorthing
+        #   + newStreetAddress + newPostOffice + newEasting + newNorthing + validUntil
         system = ArSystem.objects.get(system_id=systemId)
         checksum_secret = getattr(system, "checksum_secret")
         checksum_string = (
@@ -1573,6 +1582,7 @@ class ArRest01ServicepointView(APIView):
             + new_post_office
             + new_easting
             + new_northing
+            + valid_until_str
         )
         if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
             return HttpResponse(
