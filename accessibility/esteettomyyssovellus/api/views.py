@@ -1539,11 +1539,11 @@ class ArRest01ServicepointView(APIView):
         query = parse_qs(parsed_url.query)
         keys = [
             "user",
+            "validUntil",
             "newStreetAddress",
             "newPostOffice",
-            "newEasting",
             "newNorthing",
-            "validUntil",
+            "newEasting",
             "checksum",
         ]
         for key in keys:
@@ -1554,11 +1554,11 @@ class ArRest01ServicepointView(APIView):
                 )
 
         user = str(query["user"][0])
+        valid_until_str = str(query["validUntil"][0])
         new_street_address = str(query["newStreetAddress"][0])
         new_post_office = str(query["newPostOffice"][0])
-        new_easting = str(query["newEasting"][0])
         new_northing = str(query["newNorthing"][0])
-        valid_until_str = str(query["validUntil"][0])
+        new_easting = str(query["newEasting"][0])
         checksum = str(query["checksum"][0])
 
         # Validate validUntil
@@ -1570,7 +1570,7 @@ class ArRest01ServicepointView(APIView):
 
         # Validate checksum
         # concatenation order: checksumSecret + systemId + servicePointId + user
-        #   + newStreetAddress + newPostOffice + newEasting + newNorthing + validUntil
+        #   + validUntil + newStreetAddress + newPostOffice + newNorthing + newEasting
         system = ArSystem.objects.get(system_id=systemId)
         checksum_secret = getattr(system, "checksum_secret")
         checksum_string = (
@@ -1578,11 +1578,11 @@ class ArRest01ServicepointView(APIView):
             + str(systemId)
             + str(servicePointId)
             + user
+            + valid_until_str
             + new_street_address
             + new_post_office
-            + new_easting
             + new_northing
-            + valid_until_str
+            + new_easting
         )
         if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
             return HttpResponse(
