@@ -30,6 +30,8 @@ from esteettomyyssovellus.settings import (
     SEARCH_PATH,
     API_TOKEN,
 )
+import csv
+import io
 import hashlib
 from rest_framework import permissions
 from .storage import create_blob_client
@@ -278,20 +280,56 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["POST"], url_path="update_address")
     def update_address(self, request, *args, **kwargs):
+        ps_connection = None
         try:
             request_data = request.data
             servicepoint = self.get_object()
             servicepoint.address_street_name = request_data["address_street_name"]
             servicepoint.address_no = request_data["address_no"]
             servicepoint.address_city = request_data["address_city"]
-            servicepoint.loc_easting = request_data["loc_easting"]
-            servicepoint.loc_northing = request_data["loc_northing"]
             servicepoint.modified_by = request_data["modified_by"]
             servicepoint.modified = request_data["modified"]
             servicepoint.save()
+
+            # Use arp_fix_servicepoint_location to update servicepoint coordinates
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+            cursor = ps_connection.cursor()
+            cursor.execute(
+                "SELECT arp_fix_servicepoint_location(%s, %s, %s, %s, %s)",
+                (
+                    servicepoint.servicepoint_id,
+                    request_data["old_loc_easting"],
+                    request_data["old_loc_northing"],
+                    request_data["loc_easting"],
+                    request_data["loc_northing"],
+                ),
+            )
+            ps_connection.commit()
+
+            # arp_fix_servicepoint_location does not update ar_entrance, so do it here.
+            # Match only entrances whose coordinates equal the old values (same logic as the DB function).
+            #ArEntrance.objects.filter(
+            #    servicepoint_id=servicepoint.servicepoint_id,
+            #    loc_easting=request_data["old_loc_easting"],
+            #    loc_northing=request_data["old_loc_northing"],
+            #).update(
+            #    loc_easting=request_data["loc_easting"],
+            #    loc_northing=request_data["loc_northing"],
+            #)
+
             return Response({"status": "address updated"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": "address updating failed: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        finally:
+            if ps_connection:
+                ps_connection.close()
 
     # @action(detail=True, methods=["POST"], url_path="update_accessibility_contacts")
     # def update_accessibility_contacts(self, request, *args, **kwargs):
@@ -833,18 +871,13 @@ class ChopAddressView(APIView):
             # Get the returned values
             return_cursor = cursor.fetchall()
 
-            # The psql function returns a string of type
-            # "('address',1,Helsinki)". Strip the data
-            # and turn it into a List
-
-            # First strip the "(" and ")"
+            # The psql function returns a PostgreSQL composite type string like
+            # ("STREET, NAME","",CITY). Strip the outer parentheses and use
+            # csv.reader to correctly handle commas inside quoted fields.
             print(return_cursor[0]["ptv_chop_address"])
             return_string = return_cursor[0]["ptv_chop_address"][1:][:-1]
-            # Split by commas
-            return_strings = return_string.split(",")
-            # Strip the additional quotes from the address
-            if return_strings[0][0] == '"':
-                return_strings[0] = return_strings[0][1:][:-1]
+            reader = csv.reader(io.StringIO(return_string))
+            return_strings = next(reader)
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while using database function", error)
@@ -1368,6 +1401,7 @@ class ArRest01ServicepointView(APIView):
     http_method_names = [
         "delete",
         "get",
+        "patch",
     ]
 
     def get(self, request, systemId=None, servicePointId=None, targetId=None, format=None):
@@ -1490,6 +1524,125 @@ class ArRest01ServicepointView(APIView):
             return HttpResponse(
                 "Error occurred: " + str(error), status=status.HTTP_400_BAD_REQUEST
             )
+
+    def patch(self, request, systemId, servicePointId, format=None):
+        # Validate system
+        systems = ArSystem.objects.all()
+        is_in_systems = any(system.system_id == systemId for system in systems)
+        if not is_in_systems:
+            return HttpResponse(
+                "System not in AR.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        URL = request.build_absolute_uri()
+        parsed_url = urlparse(URL)
+        query = parse_qs(parsed_url.query)
+        keys = [
+            "user",
+            "validUntil",
+            "newStreetAddress",
+            "newPostOffice",
+            "newNorthing",
+            "newEasting",
+            "checksum",
+        ]
+        for key in keys:
+            if key not in query:
+                return HttpResponse(
+                    "Required query parameter missing: " + key,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        user = str(query["user"][0])
+        valid_until_str = str(query["validUntil"][0])
+        new_street_address = str(query["newStreetAddress"][0])
+        new_post_office = str(query["newPostOffice"][0])
+        new_northing = str(query["newNorthing"][0])
+        new_easting = str(query["newEasting"][0])
+        checksum = str(query["checksum"][0])
+
+        # Validate validUntil
+        valid_until = parser.parse(valid_until_str)
+        if valid_until < datetime.now():
+            return HttpResponse(
+                "The request is no longer valid.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Validate checksum
+        # concatenation order: checksumSecret + systemId + servicePointId + user
+        #   + validUntil + newStreetAddress + newPostOffice + newNorthing + newEasting
+        system = ArSystem.objects.get(system_id=systemId)
+        checksum_secret = getattr(system, "checksum_secret")
+        checksum_string = (
+            str(checksum_secret)
+            + str(systemId)
+            + str(servicePointId)
+            + user
+            + valid_until_str
+            + new_street_address
+            + new_post_office
+            + new_northing
+            + new_easting
+        )
+        if checksum.lower() != hashlib.sha256(checksum_string.encode("ascii")).hexdigest().lower():
+            return HttpResponse(
+                "Checksums did not match.", status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Get current servicepoint and read old coordinates from DB
+        servicepoint = get_object_or_404(ArServicepoint, ext_servicepoint_id=servicePointId)
+        old_easting = servicepoint.loc_easting
+        old_northing = servicepoint.loc_northing
+
+        # Update address fields and call arp_fix_servicepoint_location in a single
+        # transaction so both succeed or both fail together.
+        try:
+            ps_connection = psycopg2.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB,
+                options="-c search_path={}".format(SEARCH_PATH),
+            )
+            cursor = ps_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            # Split the address into name, number and city using ptv_chop_address
+            cursor.execute("SELECT ptv_chop_address(%s, %s)", [new_street_address, new_post_office])
+            chop_result = cursor.fetchone()["ptv_chop_address"]
+            # Result is a PostgreSQL composite type string like ("STREET, NAME","123","CITY")
+            chop_parts = next(csv.reader(io.StringIO(chop_result[1:][:-1])))
+            chopped_street = chop_parts[0] if len(chop_parts) > 0 else new_street_address
+            chopped_no     = chop_parts[1] if len(chop_parts) > 1 else ""
+            chopped_city   = chop_parts[2] if len(chop_parts) > 2 else new_post_office
+
+            cursor.execute(
+                "UPDATE ar_servicepoint SET address_street_name=%s, address_no=%s, address_city=%s, modified_by=%s, modified=NOW() WHERE servicepoint_id=%s",
+                [chopped_street, chopped_no, chopped_city, user, servicepoint.servicepoint_id],
+            )
+            cursor.execute(
+                "SELECT arp_fix_servicepoint_location(%s, %s, %s, %s, %s)",
+                [
+                    servicepoint.servicepoint_id,
+                    old_easting,
+                    old_northing,
+                    int(new_easting),
+                    int(new_northing),
+                ],
+            )
+            ps_connection.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error while updating servicepoint location", error)
+            return HttpResponse(
+                "Error updating location: " + str(error),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        finally:
+            if ps_connection:
+                cursor.close()
+                ps_connection.close()
+
+        return HttpResponse("Updated", status=status.HTTP_200_OK)
 
     def delete(self, request, systemId, servicePointId, format=None):
         systems = ArSystem.objects.all()
