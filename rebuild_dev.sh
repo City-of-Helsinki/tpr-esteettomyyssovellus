@@ -1,2 +1,2 @@
 docker-compose down
-docker-compose build tpr-esteettomyyssovellus
+docker-compose build --no-cache tpr-esteettomyyssovellus

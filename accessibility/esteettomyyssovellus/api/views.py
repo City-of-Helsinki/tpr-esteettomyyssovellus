@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from django.db import transaction
 from django.http import QueryDict
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
@@ -100,6 +101,27 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
         "servicepoint",
         "form",
     )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if serializer.validated_data.get("is_main_entrance") == "Y":
+            servicepoint = serializer.validated_data["servicepoint"]
+
+            with transaction.atomic(using="ar_db"):
+                ArServicepoint.objects.select_for_update().get(pk=servicepoint.servicepoint_id)
+                if ArEntrance.objects.filter(servicepoint_id=servicepoint.servicepoint_id, is_main_entrance="Y").exists():
+                    return Response(
+                        {"detail": "A main entrance already exists for this service point."},
+                        status=status.HTTP_409_CONFLICT,
+                    )
+                self.perform_create(serializer)
+        else:
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=True, methods=["POST"], url_path="delete_entrance_data")
     def delete_entrance_data(self, request, *args, **kwargs):
