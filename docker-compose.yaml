@@ -30,3 +30,19 @@ services:
             - 80:80
         networks:
             - default
+
+    
+    tpr-esteettomyys-db:
+        hostname: tpr-esteettomyys-db
+        build:
+            context: ./local_dev
+            dockerfile: Dockerfile.database
+        environment: 
+            - POSTGRES_PASSWORD=plop123
+            - PGDATA=/pgdata
+        ports:
+            - 5432:5432
+        volumes:
+            - ./pgdata:/pgdata
+        networks:
+            - default

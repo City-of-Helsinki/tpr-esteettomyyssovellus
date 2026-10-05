@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from django.db import connections, transaction
 from django.http import QueryDict
 from django.http.response import HttpResponse
 from psycopg2.extensions import JSON
@@ -100,6 +101,51 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
         "servicepoint",
         "form",
     )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if serializer.validated_data.get("is_main_entrance") == "Y":
+            servicepoint = serializer.validated_data["servicepoint"]
+
+            with transaction.atomic(using="ar_db"):
+                ArServicepoint.objects.using("ar_db").select_for_update().get(pk=servicepoint.servicepoint_id)
+
+                existing_main_entrances = list(
+                    ArEntrance.objects.using("ar_db")
+                    .filter(servicepoint_id=servicepoint.servicepoint_id, is_main_entrance="Y")
+                    .order_by("entrance_id")
+                )
+                if existing_main_entrances:
+                    submitted_entrance_ids = set(
+                        ArXAnswerLog.objects.using("ar_db").filter(
+                            entrance_id__in=[entrance.entrance_id for entrance in existing_main_entrances],
+                            form_submitted="Y",
+                        ).values_list("entrance_id", flat=True)
+                    )
+
+                    if submitted_entrance_ids:
+                        return Response(
+                            {"detail": "A submitted main entrance already exists for this service point."},
+                            status=status.HTTP_409_CONFLICT,
+                        )
+
+                    # Remove empty/draft main entrances, including entrances
+                    # left behind by the historical duplicate-entrance bug.
+                    # Use the same database function as the existing delete
+                    # endpoint so related draft data is removed as well.
+                    for entrance in existing_main_entrances:
+                        with connections["ar_db"].cursor() as cursor:
+                            cursor.execute("SELECT arp_delete_entrance_data(%s)", [entrance.entrance_id])
+                        entrance.delete(using="ar_db")
+
+                self.perform_create(serializer)
+        else:
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=True, methods=["POST"], url_path="delete_entrance_data")
     def delete_entrance_data(self, request, *args, **kwargs):
