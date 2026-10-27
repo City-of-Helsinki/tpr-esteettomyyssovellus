@@ -55,8 +55,8 @@ class TokenPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if not DEBUG and (
-            "HTTP_AUTHORIZATION" not in request.META
-            or request.META["HTTP_AUTHORIZATION"]
+            "authorization" not in request.headers
+            or request.headers["authorization"]
             != hashlib.sha256(API_TOKEN.encode("ascii")).hexdigest()
         ):
             return False
@@ -97,7 +97,7 @@ class ArEntranceViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
-    filter_fields = (
+    filterset_fields = (
         "servicepoint",
         "form",
     )
@@ -293,7 +293,7 @@ class ArXQuestionViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = ("form_id",)
+    filterset_fields = ("form_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -319,7 +319,7 @@ class ArServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArServicepoint.objects.all()
     serializer_class = ArServicepointSerializer
     pagination_class = None
-    filter_fields = ("servicepoint_id",)
+    filterset_fields = ("servicepoint_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -432,7 +432,7 @@ class ArSystemViewSet(viewsets.ModelViewSet):
 
     queryset = ArSystem.objects.all()
     serializer_class = ArSystemSerializer
-    filter_fields = (
+    filterset_fields = (
         "system_id",
         "name",
     )
@@ -449,7 +449,7 @@ class ArExternalServicepointViewSet(viewsets.ModelViewSet):
 
     queryset = ArExternalServicepoint.objects.all()
     serializer_class = ArExternalServicepointSerializer
-    filter_fields = (
+    filterset_fields = (
         "servicepoint_id",
         "system_id",
         "external_servicepoint_id",
@@ -567,7 +567,7 @@ class ArBackendQuestionViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = (
+    filterset_fields = (
         "form_id",
         "question_id",
         "language_id",
@@ -589,7 +589,7 @@ class ArBackendQuestionBlockViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = (
+    filterset_fields = (
         "form_id",
         "language_id",
         "question_block_id",
@@ -610,7 +610,7 @@ class ArBackendQuestionChoiceViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = (
+    filterset_fields = (
         "form_id",
         "language_id",
         "question_block_id",
@@ -633,7 +633,7 @@ class ArBackendEntranceFieldViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = (
+    filterset_fields = (
         "log_id",
         "entrance_id",
         "question_block_id",
@@ -656,7 +656,7 @@ class ArBackendEntranceAnswerViewSet(viewsets.ModelViewSet):
 
     # In order to filter form_id with URL type for example:
     # http://localhost:8000/api/ArXQuestions/?form_id=1
-    filter_fields = (
+    filterset_fields = (
         "entrance_id",
         "log_id",
         "form_submitted",
@@ -678,7 +678,7 @@ class ArBackendFormViewSet(viewsets.ModelViewSet):
     queryset = ArBackendForm.objects.all()
     serializer_class = ArBackendFormSerializer
     pagination_class = None
-    filter_fields = ("form_id",)
+    filterset_fields = ("form_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -692,7 +692,7 @@ class ArBackendFormGuideViewSet(viewsets.ModelViewSet):
     queryset = ArBackendFormGuide.objects.all()
     serializer_class = ArBackendFormGuideSerializer
     pagination_class = None
-    filter_fields = ("form_id",)
+    filterset_fields = ("form_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -783,7 +783,7 @@ class ArXAnswerLogViewSet(viewsets.ModelViewSet):
     queryset = ArXAnswerLog.objects.all()
     serializer_class = ArXAnswerLogSerializer
     pagination_class = None
-    filter_fields = ("entrance",)
+    filterset_fields = ("entrance",)
     permission_classes = [
         TokenPermission,
     ]
@@ -807,7 +807,7 @@ class ArXQuestionAnswerViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionAnswer.objects.all()
     serializer_class = ArXQuestionAnswerSerializer
     pagination_class = None
-    filter_fields = ("log",)
+    filterset_fields = ("log",)
     permission_classes = [
         TokenPermission,
     ]
@@ -867,7 +867,7 @@ class ArXQuestionBlockAnswerFieldViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionBlockAnswerField.objects.all()
     serializer_class = ArXQuestionBlockAnswerFieldSerializer
     pagination_class = None
-    filter_fields = ("log_id",)
+    filterset_fields = ("log_id",)
     permission_classes = [
         TokenPermission,
     ]
@@ -2867,7 +2867,7 @@ class ArBackendEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntrance.objects.all()
     serializer_class = ArBackendEntranceSerializer
     pagination_class = None
-    filter_fields = ("entrance_id", "log_id", "servicepoint_id", "form_submitted")
+    filterset_fields = ("entrance_id", "log_id", "servicepoint_id", "form_submitted")
     permission_classes = [
         TokenPermission,
     ]
@@ -2881,7 +2881,7 @@ class ArBackendServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArBackendServicepoint.objects.all()
     serializer_class = ArBackendServicepointSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "servicepoint_id",
         "log_id",
         "main_entrance_id",
@@ -2900,7 +2900,7 @@ class ArBackendExternalServicepointViewSet(viewsets.ModelViewSet):
     queryset = ArBackendExternalServicepoint.objects.all()
     serializer_class = ArBackendExternalServicepointSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "external_servicepoint_id",
     )
     permission_classes = [
@@ -2914,7 +2914,7 @@ class ArBackendQuestionBlockFieldViewSet(viewsets.ModelViewSet):
     queryset = ArBackendQuestionBlockField.objects.all()
     serializer_class = ArBackendQuestionBlockFieldSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "question_block_id",
         "form_id",
         "language_id",
@@ -2929,7 +2929,7 @@ class ArBackendEntranceChoiceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceChoice.objects.all()
     serializer_class = ArBackendEntranceChoiceSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "entrance_id",
         "log_id",
         "language_id",
@@ -2948,7 +2948,7 @@ class ArBackendEntrancePlaceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntrancePlace.objects.all()
     serializer_class = ArBackendEntrancePlaceSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "log_id",
         "entrance_id",
         "question_block_id",
@@ -2965,7 +2965,7 @@ class ArBackendEntranceSentenceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceSentence.objects.all()
     serializer_class = ArBackendEntranceSentenceSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "entrance_id",
         "form_submitted",
         "log_id",
@@ -2986,7 +2986,7 @@ class ArBackendPlaceViewSet(viewsets.ModelViewSet):
     permission_classes = [
         TokenPermission,
     ]
-    filter_fields = (
+    filterset_fields = (
         "place_id",
         "language_id",
     )
@@ -2996,7 +2996,7 @@ class ArBackendCopyableEntranceViewSet(viewsets.ModelViewSet):
     queryset = ArBackendCopyableEntrance.objects.all()
     serializer_class = ArBackendCopyableEntranceSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "entrance_id",
     )
     permission_classes = [
@@ -3008,7 +3008,7 @@ class ArBackendEntranceSentenceGroupViewSet(viewsets.ModelViewSet):
     queryset = ArBackendEntranceSentenceGroup.objects.all()
     serializer_class = ArBackendEntranceSentenceGroupSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "servicepoint_id",
         "entrance_id",
     )
@@ -3085,7 +3085,7 @@ class ArXQuestionBlockAnswerCmtViewSet(viewsets.ModelViewSet):
     queryset = ArXQuestionBlockAnswerCmt.objects.all()
     serializer_class = ArXQuestionBlockAnswerCmtSerializer
     pagination_class = None
-    filter_fields = (
+    filterset_fields = (
         "question_block_id",
     )
     permission_classes = [

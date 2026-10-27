@@ -1,15 +1,17 @@
-FROM python:3.7
+FROM python:3.12-bookworm
 
-RUN apt update
-# https://docs.djangoproject.com/en/2.2/ref/contrib/gis/install/geolibs/
-#RUN apt-get install -y binutils libproj-dev gdal-bin
+# Native libraries required by WeasyPrint's PDF renderer.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 \
+    && apt-get clean
 
 # add requirements.txt to the image
 COPY requirements.txt /app/requirements.txt
 WORKDIR /app/
 
 # install python dependencies
-RUN pip install -r requirements.txt
+RUN python -m pip install --upgrade pip setuptools \
+    && python -m pip install --no-cache-dir -r requirements.txt
 
 COPY ./accessibility/ /app
 COPY ./local_dev/run_web.sh /app/run_web.sh
